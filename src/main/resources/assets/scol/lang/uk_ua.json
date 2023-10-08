@@ -1,0 +1,70 @@
+{
+  "item.scol.frostmourne": "Крижана Скорбота",
+  "item.scol.frostmourne_handle": "Рукоятка Крижаної Скорботи",
+  "item.scol.frostmourne_blade": "Лезо Крижаної Скорботи",
+  "item.scol.phoenixring_inactive": "Неактивне Кільце Фенікса",
+  "item.scol.phoenixring": "Кільце Фенікса",
+  "item.scol.dragon_soul": "Душа Дракона",
+  "item.scol.wither_soul": "Душа Візера",
+  "item.scol.worldwing": "Світові крила",
+  "item.scol.zangetsu": "Зангецу",
+  "item.scol.tensa_zangetsu": "Тенса Зангецу",
+  "item.scol.part_mask_first": "Уламок маски",
+  "item.scol.part_mask_second": "Уламок маски",
+  "item.scol.part_mask_third": "Уламок маски",
+  "item.scol.part_mask_fourth": "Уламок маски",
+  "item.scol.summon_mask": "Маска заклику",
+  "item.scol.zangetsu_training_sword": "Зангецу?",
+  "item.scol.music_disc_bossfight": "Платівка",
+  "item.scol.music_disc_bossfight.desc": "scrrxll - metal 3",
+  "item.scol.kimano_chest": "Кімано",
+  "item.scol.kimano_leggings": "",
+  "item.scol.ring_midas": "Кільце Мідаса",
+
+
+  "attribute.name.scol.magical_damage": "до магічної сили атаки",
+
+
+  "tooltip.item.frostmourne.0": "§7Душ поглинено: %d",
+  "tooltip.item.test_item.0": "Як ти отримав це?",
+  "tooltip.scol.phoenixring_inactive.0": "§5§oТільки справжній герой сможе впоратися з силою цього кільця",
+  "tooltip.scol.phoenixring_inactive.1": "§5§oЯкий зібрав душі найдавніших духів двох світів",
+  "tooltip.scol.phoenixring.0": "§5§oНе дає померти і робить вас на деякий час безсмертним",
+  "tooltip.scol.phoenixring.1": "§5§oМає перезарядку",
+  "tooltip.scol.worldwing.0": "§5§oКрила зростаються з душею",
+  "tooltip.scol.worldwing.1": "§4§lНеможливо зняти",
+  "tooltip.scol.worldwing.2": "§5Швидкість крил: §d%1$s",
+  "tooltip.scol.hold_shift": "§8§lУтримуйте SHIFT для деталей",
+  "tooltip.scol.hold_ctrl": "§8§lУтримуйте CTRL для подробиць",
+  "tooltip.scol.empty": "",
+  "tooltip.scol.currentKeybind": "§6Поточна клавіша: §d%1$s",
+
+
+  "curios.identifier.scolwings": "Крила",
+
+
+  "entity.scol.ichigo_vazard": "Порожній Ічіґо",
+  "entity.scol.zangetsu_entity": "Дідусь Зангецу",
+
+  "effect.scol.training_effect": "Тренування!",
+
+  "chat.send.truezangetsu": "§5Ви відчуваєте, що стали сильнішим...",
+  "chat.send.wingspeed": "Швидкість крил: %d",
+
+
+  "enchantment.scol.vampirism_enchant": "Вампіризм",
+  "enchantment.scol.attack_speed_increase": "Швидкість рук",
+
+
+  "death.attack.frostmourne_hurt": "%1$s був убитий Крижаною Скорботою гравця %2$s",
+  "death.attack.ReturnDamageIchigo": "Я повинен визнати, що мене ніколи не перестає дивувати яким безмозглим %1$s може бути",
+
+
+  "key.categories.scol": "Soul Collector",
+  "key.worldWing": "Переключити швидкість крил",
+
+  "item.minecraft.potion.effect.hero_of_village": "Зілля героя селища",
+  "item.minecraft.splash_potion.effect.hero_of_village": "Вибухове зілля героя селища",
+  "item.minecraft.lingering_potion.effect.hero_of_village": "Осідаюче зілля героя селища",
+  "item.minecraft.tipped_arrow.effect.hero_of_village": "Стріла героя селища"
+}

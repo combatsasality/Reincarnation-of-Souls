@@ -1,0 +1,17 @@
+    {
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item": "scol:frostmourne_handle"
+        },
+        {
+            "item": "minecraft:nether_star"
+        },
+        {
+            "item": "scol:frostmourne_blade"
+        }
+    ],
+    "result": {
+        "item": "scol:frostmourne"
+    }
+}

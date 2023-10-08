@@ -1,0 +1,70 @@
+{
+  "item.scol.frostmourne": "FrostMourne",
+  "item.scol.frostmourne_handle": "Handle FrostMourne",
+  "item.scol.frostmourne_blade": "Blade FrostMourne",
+  "item.scol.phoenixring_inactive": "Inactive Phoenix Ring",
+  "item.scol.phoenixring": "Phoenix Ring",
+  "item.scol.dragon_soul": "Dragon Soul",
+  "item.scol.wither_soul": "Wither Soul",
+  "item.scol.worldwing": "World Wings",
+  "item.scol.zangetsu": "Zangetsu",
+  "item.scol.tensa_zangetsu": "Tensa Zangetsu",
+  "item.scol.part_mask_first": "Mask fragment",
+  "item.scol.part_mask_second": "Mask fragment",
+  "item.scol.part_mask_third": "Mask fragment",
+  "item.scol.part_mask_fourth": "Mask fragment",
+  "item.scol.summon_mask": "Summon mask",
+  "item.scol.zangetsu_training_sword": "Zangetsu?",
+  "item.scol.music_disc_bossfight": "Music Disc",
+  "item.scol.music_disc_bossfight.desc": "scrrxll - metal 3",
+  "item.scol.kimano_chest": "Kimano",
+  "item.scol.kimano_leggings": "",
+  "item.scol.ring_midas": "Midas Ring",
+
+
+  "attribute.name.scol.magical_damage": "Magical Damage",
+
+
+  "tooltip.item.frostmourne.0": "§7Souls absorbed: %d",
+  "tooltip.item.test_item.0": "How did you get it?",
+  "tooltip.scol.phoenixring_inactive.0": "§5§oThe only true hero can overcome the power of this ring",
+  "tooltip.scol.phoenixring_inactive.1": "§5§oWhich has collected the souls of the ancient spirits of two worlds",
+  "tooltip.scol.phoenixring.0": "§5§oDoes not let you die and makes you immortal for a while",
+  "tooltip.scol.phoenixring.1": "§5§oHas a cooldown",
+  "tooltip.scol.worldwing.0": "§5§oWings merge with the soul",
+  "tooltip.scol.worldwing.1": "§4§lImpossible to remove",
+  "tooltip.scol.worldwing.2": "§5Wing speed: §d%1$s",
+  "tooltip.scol.hold_shift": "§8§lHold SHIFT for details",
+  "tooltip.scol.hold_ctrl": "§8§lHold CTRL for more details",
+  "tooltip.scol.empty": "",
+  "tooltip.scol.currentKeybind": "§6Current Key: §d%1$s",
+
+
+  "curios.identifier.scolwings": "Wings",
+
+
+  "entity.scol.ichigo_vazard": "Vasto Lorde Ichigo",
+  "entity.scol.zangetsu_entity": "Old man Zangetsu",
+
+  "effect.scol.training_effect": "Training!",
+
+  "chat.send.truezangetsu": "§5You feel that you have become stronger...",
+  "chat.send.wingspeed": "Wing speed: %d",
+
+
+  "enchantment.scol.vampirism_enchant": "Vampirism",
+  "enchantment.scol.attack_speed_increase": "Hand speed",
+
+
+  "death.attack.frostmourne_hurt": "%1$s was killed by the FrostMourne player %2$s",
+  "death.attack.ReturnDamageIchigo": "I must admit, it never ceases to amaze me how brainless %1$s can be",
+
+
+  "key.categories.scol": "Soul Collector",
+  "key.worldWing": "Switch the speed of the wings",
+
+  "item.minecraft.potion.effect.hero_of_village": "Potion of the village hero",
+  "item.minecraft.splash_potion.effect.hero_of_village": "Splash Potion of the village hero",
+  "item.minecraft.lingering_potion.effect.hero_of_village": "Lingering Potion of the village hero",
+  "item.minecraft.tipped_arrow.effect.hero_of_village": "Arrow of the village hero"
+}

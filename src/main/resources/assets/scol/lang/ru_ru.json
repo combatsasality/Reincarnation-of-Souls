@@ -1,0 +1,70 @@
+{
+    "item.scol.frostmourne": "Ледяная Скорбь",
+    "item.scol.frostmourne_handle": "Рукоятка Ледяной Скорби",
+    "item.scol.frostmourne_blade": "Лезвие Ледяной Скорби",
+    "item.scol.phoenixring_inactive": "Неактивное Кольцо Феникса",
+    "item.scol.phoenixring": "Кольцо Феникса",
+    "item.scol.dragon_soul": "Душа Дракона",
+    "item.scol.wither_soul": "Душа Визера",
+    "item.scol.worldwing": "Мировые Крылья",
+    "item.scol.zangetsu": "Зангецу",
+    "item.scol.tensa_zangetsu": "Тенса Зангецу",
+    "item.scol.part_mask_first": "Осколок маски",
+    "item.scol.part_mask_second": "Осколок маски",
+    "item.scol.part_mask_third": "Осколок маски",
+    "item.scol.part_mask_fourth": "Осколок маски",
+    "item.scol.summon_mask": "Маска призыва",
+    "item.scol.zangetsu_training_sword": "Зангецу?",
+    "item.scol.music_disc_bossfight": "Пластинка",
+    "item.scol.music_disc_bossfight.desc": "scrrxll - metal 3",
+    "item.scol.kimano_chest": "Кимано",
+    "item.scol.kimano_leggings": "",
+    "item.scol.ring_midas": "Кольцо Мидаса",
+
+
+    "attribute.name.scol.magical_damage": "к магическому урону",
+
+
+    "tooltip.item.frostmourne.0": "§7Душ поглощено: %d",
+    "tooltip.item.test_item.0": "Как ты получил это?",
+    "tooltip.scol.phoenixring_inactive.0": "§5§oЛишь истинный герой сможет совладать с силой этого кольца",
+    "tooltip.scol.phoenixring_inactive.1": "§5§oКоторый собрал души древнейших духов двух миров",
+    "tooltip.scol.phoenixring.0": "§5§oНе дает умереть и на время делает бессмертным",
+    "tooltip.scol.phoenixring.1": "§5§oИмеет перезарядку",
+    "tooltip.scol.worldwing.0": "§5§oКрыла срастаются с душей",
+    "tooltip.scol.worldwing.1": "§4§lНевозможно снять",
+    "tooltip.scol.worldwing.2": "§5Скорость крыльев: §d%1$s",
+    "tooltip.scol.hold_shift": "§8§lУдерживайте SHIFT для деталей",
+    "tooltip.scol.hold_ctrl": "§8§lУдерживайте CTRL для подробностей",
+    "tooltip.scol.empty": "",
+    "tooltip.scol.currentKeybind": "§6Текущая клавиша: §d%1$s",
+
+
+    "curios.identifier.scolwings": "Крылья",
+
+
+    "entity.scol.ichigo_vazard": "Пустой Ичиго",
+    "entity.scol.zangetsu_entity": "Старик Зангецу",
+
+    "effect.scol.training_effect": "Тренировка!",
+
+    "chat.send.truezangetsu": "§5Вы чувствуете что стали сильнее...",
+    "chat.send.wingspeed": "Скорость крыльев: %d",
+
+
+    "enchantment.scol.vampirism_enchant": "Вампиризм",
+    "enchantment.scol.attack_speed_increase": "Скорость рук",
+
+
+    "death.attack.frostmourne_hurt": "%1$s был убит Ледяной Скорбью игрока %2$s",
+    "death.attack.ReturnDamageIchigo": "Я должен признать, что меня никогда не перестаёт удивлять каким безмозглым %1$s может быть",
+
+
+    "key.categories.scol": "Soul Collector",
+    "key.worldWing": "Переключить скорость крыльев",
+
+    "item.minecraft.potion.effect.hero_of_village": "Зелье героя деревни",
+    "item.minecraft.splash_potion.effect.hero_of_village": "Взрывное зелье героя деревни",
+    "item.minecraft.lingering_potion.effect.hero_of_village": "Туманное зелье героя деревни",
+    "item.minecraft.tipped_arrow.effect.hero_of_village": "Стрела героя деревни"
+}

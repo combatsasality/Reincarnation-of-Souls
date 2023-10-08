@@ -1,0 +1,26 @@
+        {
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA",
+        "XDX",
+        "ABA"
+    ],
+    "key" : {
+        "A": {
+            "item": "minecraft:netherite_ingot"
+        },
+        "B": {
+            "item": "minecraft:end_crystal"
+        },
+        "X" : {
+            "item": "minecraft:phantom_membrane"
+        },
+        "D" : {
+            "item": "minecraft:bone"
+        }
+    },
+    "result": {
+        "item": "scol:frostmourne_blade"
+    }
+
+}

@@ -1,0 +1,17 @@
+modLoader="javafml"
+loaderVersion="[36,)"
+license="All rights reserved"
+
+[[mods]]
+modId="${mod_id}"
+version="${version}"
+displayName="${mod_name}"
+logoFile="${mod_icon}"
+credits="Maxim aka jumabeabs, danya seul, sh1xyzz, harmeing"
+authors="${mod_author}"
+description="${mod_description}"
+
+[[dependencies.scol]]
+modId = "curios"
+mandatory = true
+versionRange = "[1.16.5-4.1.0.0,)"
