@@ -7,11 +7,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -20,19 +23,26 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.BasicTrade;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import scol.Main;
+import scol.entity.CustomItemEntity;
 import scol.items.PhoenixRing;
+import scol.items.SummonMask;
+import scol.items.Zangetsu;
 import scol.scolCapability;
 import top.theillusivec4.curios.api.CuriosApi;
 
@@ -96,7 +106,8 @@ public class EventHandler {
     @OnlyIn(Dist.CLIENT)
     public static void propertyOverrideRegistry(FMLClientSetupEvent event) {
         event.enqueueWork(() -> {
-            ItemModelsProperties.register(Main.phoenixRing.getItem(), new ResourceLocation("scol:chick"), (itemStack, clientWorld, livingEntity) -> PhoenixRing.GetFloatFor(itemStack));
+            ItemModelsProperties.register(Main.phoenixRing.getItem(), new ResourceLocation("scol:chick"), (itemStack, clientWorld, livingEntity) -> PhoenixRing.getFloatForChickRing(itemStack));
+            ItemModelsProperties.register(Main.zangetsu.getItem(), new ResourceLocation("scol:zangetsu_model"), (itemStack, clientWorld, livingEntity) -> Zangetsu.getZangetsuModel(itemStack));
         });
     }
 
@@ -151,6 +162,71 @@ public class EventHandler {
                     }
                 }
             });
+        }
+    }
+
+    @SubscribeEvent
+    public void AddVilagerTrade(VillagerTradesEvent event) {
+        if (event.getType().equals(VillagerProfession.ARMORER)) {
+            ItemStack emerald = new ItemStack(Items.EMERALD);
+            emerald.setCount(64);
+            ItemStack nether = new ItemStack(Items.NETHERITE_INGOT);
+            nether.setCount(5);
+            event.getTrades().get(5).add(new BasicTrade(emerald, nether, new ItemStack(Main.firstPartMask), 2, 0, 0));
+        } else if (event.getType().equals(VillagerProfession.CLERIC)) {
+            ItemStack flesh = new ItemStack(Items.ROTTEN_FLESH);
+            flesh.setCount(64);
+            ItemStack bone = new ItemStack(Items.BONE);
+            bone.setCount(64);
+            event.getTrades().get(5).add(new BasicTrade(flesh, bone, new ItemStack(Main.thirdPartMask), 2, 0, 0));
+
+        }
+    }
+
+    @SubscribeEvent
+    public void EntityDroppingZang(EntityJoinWorldEvent event) {
+        if (event.getWorld().isClientSide) return;
+        if (event.getEntity() instanceof ItemEntity && ((ItemEntity) event.getEntity()).getItem().getItem().equals(Main.zangetsu)) {
+            ItemEntity ent = (ItemEntity) event.getEntity();
+            if (Zangetsu.getOwner(ent.getItem()).isEmpty()) {
+                ent.remove();
+                return;
+            }
+            ent.remove();
+            CustomItemEntity newEntity = new CustomItemEntity(ent.level, ent.getX(), ent.getY(), ent.getZ(), ent.getItem());
+            newEntity.setPickupDelay(40);
+            newEntity.setDeltaMovement(ent.getDeltaMovement());
+            newEntity.setNoGravity(false);
+            newEntity.setInvulnerable(false);
+            event.getWorld().addFreshEntity(newEntity);
+        }
+    }
+    @SubscribeEvent
+    public void DropZangetsu(LivingDropsEvent event) {
+        if (event.getEntity() instanceof ServerPlayerEntity) {
+            if (event.getDrops().stream().anyMatch(t -> t.getItem().getItem().getRegistryName().equals(new ResourceLocation("enigmaticlegacy:enigmatic_amulet")))) {
+                return;
+            }
+            ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+            boolean check = false;
+
+            for (ItemEntity entity : event.getDrops()) {
+                if (entity.getItem().getItem().equals(Main.zangetsu)) {
+                    if (check || Zangetsu.getOwner(entity.getItem()).isEmpty()) {
+                        entity.remove();
+                    } else {
+                        ItemStack stack = entity.getItem();
+                        Zangetsu.setDeathModel(stack, true);
+                        if (!stack.getHoverName().getString().equalsIgnoreCase("combatsasality")) {
+                            Zangetsu.setDisableGravity(stack, true);
+                        }
+                        CustomItemEntity newEntity = new CustomItemEntity(player.level, player.getX(),player.getY(),player.getZ(), entity.getItem());
+                        entity.remove();
+                        player.level.addFreshEntity(newEntity);
+                        check = true;
+                    }
+                }
+            }
         }
     }
 }

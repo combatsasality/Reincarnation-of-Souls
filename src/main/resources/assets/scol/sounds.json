@@ -1,0 +1,24 @@
+{
+  "sonido": {
+    "subtitle": "sonido",
+    "sounds": [
+      "scol:sonido"
+    ]
+  },
+  "music.boss_fight": {
+    "sounds": [
+      {
+        "name": "scol:music/boss_fight",
+        "stream": true
+      }
+    ]
+  },
+  "music.boss_music": {
+    "sounds": [
+      {
+        "name": "scol:music/boss_music",
+        "stream": true
+      }
+    ]
+  }
+}

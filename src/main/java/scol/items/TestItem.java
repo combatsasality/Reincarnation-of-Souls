@@ -4,12 +4,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -47,5 +50,11 @@ public class TestItem extends Item {
             player.addEffect(new EffectInstance(Effects.NIGHT_VISION, 1000, 1, true, false));
         }
         super.inventoryTick(p_77663_1_, p_77663_2_, entity, p_77663_4_, p_77663_5_);
+    }
+
+    @Override
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        player.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(1d);
+        return super.use(world, player, hand);
     }
 }

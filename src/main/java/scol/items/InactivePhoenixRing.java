@@ -28,15 +28,15 @@ import java.util.UUID;
 public class InactivePhoenixRing extends Item implements ICurioItem {
     public InactivePhoenixRing() {
         super(new Properties().tab(Main.TAB).stacksTo(1));
-        this.setRegistryName("phoenixring_inactive");
+        this.setRegistryName("phoenix_ring_inactive");
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World p_77624_2_, List<ITextComponent> list, ITooltipFlag tooltip) {
         list.add(new TranslationTextComponent("tooltip.scol.empty"));
         if (Screen.hasShiftDown()) {
-            list.add(new TranslationTextComponent("tooltip.scol.phoenixring_inactive.0"));
-            list.add(new TranslationTextComponent("tooltip.scol.phoenixring_inactive.1"));
+            list.add(new TranslationTextComponent("tooltip.scol.phoenix_ring_inactive.0"));
+            list.add(new TranslationTextComponent("tooltip.scol.phoenix_ring_inactive.1"));
         } else {
             list.add(new TranslationTextComponent("tooltip.scol.hold_shift"));
         }

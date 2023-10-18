@@ -26,6 +26,9 @@ public class scolCapability {
         void setCoolDownPhoenixRing(int i);
 
         boolean canUsePhoenixRing();
+
+        boolean isHasZangetsu();
+        void setHasZangetsu(boolean b);
     }
 
     public static class DataCapability implements ICapability {
@@ -59,6 +62,16 @@ public class scolCapability {
         @Override
         public boolean canUsePhoenixRing() {
             return this.nbt.getInt("coolDownPhoenixRing") == 0;
+        }
+
+        @Override
+        public boolean isHasZangetsu() {
+            return this.nbt.getBoolean("hasZangetsu");
+        }
+
+        @Override
+        public void setHasZangetsu(boolean b) {
+            this.nbt.putBoolean("hasZangetsu", b);
         }
 
         public static class Storage implements Capability.IStorage<DataCapability> {

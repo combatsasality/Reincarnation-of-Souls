@@ -25,10 +25,10 @@ import java.util.List;
 public class PhoenixRing extends Item implements ICurioItem {
     public PhoenixRing() {
         super(new Properties().fireResistant().tab(Main.TAB).stacksTo(1));
-        this.setRegistryName("phoenixring");
+        this.setRegistryName("phoenix_ring");
     }
 
-    public static int GetFloatFor(ItemStack item) {
+    public static int getFloatForChickRing(ItemStack item) {
         if (item.getHoverName().getString().equalsIgnoreCase("\u043a\u043e\u043b\u044c\u0446\u043e \u043f\u0442\u0435\u043d\u0446\u0430") || item.getHoverName().getString().equalsIgnoreCase("chick ring")) {
             return 1;
         } else {
@@ -39,8 +39,8 @@ public class PhoenixRing extends Item implements ICurioItem {
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag tooltip) {
         list.add(new TranslationTextComponent("tooltip.scol.empty"));
         if (Screen.hasShiftDown()) {
-            list.add(new TranslationTextComponent("tooltip.scol.phoenixring.0"));
-            list.add(new TranslationTextComponent("tooltip.scol.phoenixring.1"));
+            list.add(new TranslationTextComponent("tooltip.scol.phoenix_ring.0"));
+            list.add(new TranslationTextComponent("tooltip.scol.phoenix_ring.1"));
         } else {
             list.add(new TranslationTextComponent("tooltip.scol.hold_shift"));
         }
