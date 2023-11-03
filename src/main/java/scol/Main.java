@@ -1,6 +1,5 @@
 package scol;
 
-import com.mojang.datafixers.types.templates.Sum;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -108,7 +107,6 @@ public class Main {
         summonMask = new SummonMask();
         zangetsu = new Zangetsu();
 
-
         //Regs
 
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -156,7 +154,7 @@ public class Main {
     @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents{
         @SubscribeEvent
-        public static void ItemRegistry(final RegistryEvent.Register<Item> event) {
+        public static void itemRegistry(final RegistryEvent.Register<Item> event) {
             event.getRegistry().registerAll(
                     testItem,
                     frostMourne,
