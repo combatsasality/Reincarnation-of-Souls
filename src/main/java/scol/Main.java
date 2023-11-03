@@ -76,6 +76,7 @@ public class Main {
     public static SoundEvent sonidoSound;
     public static SoundEvent bossMusicForFight;
     public static SoundEvent bossMusicForDisc;
+    public static SpiderLeg spiderLeg;
 
 
     public Main() {
@@ -107,6 +108,7 @@ public class Main {
         fourthPartMask = new ItemBase("part_mask_fourth");
         summonMask = new SummonMask();
         zangetsu = new Zangetsu();
+        spiderLeg = new SpiderLeg();
 
 
         //Regs
@@ -172,7 +174,8 @@ public class Main {
                     thirdPartMask,
                     fourthPartMask,
                     summonMask,
-                    zangetsu
+                    zangetsu,
+                    spiderLeg
             );
         }
         @SubscribeEvent
