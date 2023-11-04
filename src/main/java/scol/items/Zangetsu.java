@@ -1,9 +1,38 @@
 package scol.items;
 
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.Attribute;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.item.ArmorStandEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.Hand;
+import net.minecraft.util.SoundEvents;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.entity.PartEntity;
 import scol.Main;
+import scol.entity.CustomItemEntity;
 import scol.handlers.ItemTier;
+import scol.scolCapability;
 
 public class Zangetsu extends SwordItem {
     public Zangetsu() {
@@ -11,16 +40,10 @@ public class Zangetsu extends SwordItem {
         this.setRegistryName("zangetsu");
     }
     public static boolean isBankai(ItemStack stack) {
-        return stack.getOrCreateTag().getBoolean("scol.bankai") || stack.getOrCreateTag().getInt("scol.bankai_time") != 0;
+        return stack.getOrCreateTag().getBoolean("scol.bankai");
     }
     public static void setBankai(ItemStack stack, boolean b) {
         stack.getOrCreateTag().putBoolean("scol.bankai", b);
-    }
-    public static int getBankaiTime(ItemStack stack) {
-        return stack.getOrCreateTag().getInt("scol.bankai_time");
-    }
-    public static void setBankaiTime(ItemStack stack, int i) {
-        stack.getOrCreateTag().putInt("scol.bankai_time", i);
     }
     public static boolean isDeathModel(ItemStack stack) {
         return stack.getOrCreateTag().getBoolean("scol.death");
@@ -29,10 +52,86 @@ public class Zangetsu extends SwordItem {
         stack.getOrCreateTag().putBoolean("scol.death", b);
     }
     public static boolean isDisableGravity(ItemStack stack) {
-        return stack.getOrCreateTag().getBoolean("scol.disableGravity");
+        return stack.getOrCreateTag().getBoolean("scol.disable_gravity");
     }
     public static void setDisableGravity(ItemStack stack, boolean b) {
-        stack.getOrCreateTag().putBoolean("scol.disableGravity", b);
+        stack.getOrCreateTag().putBoolean("scol.disable_gravity", b);
+    }
+
+    @Override
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (!world.isClientSide()) {
+            if (player.isCrouching()) {
+                LazyOptional<scolCapability.DataCapability> capability = player.getCapability(scolCapability.NeedVariables);
+                if (capability.map(capa -> capa.canUseBankai()).orElse(false) && capability.isPresent()) {
+                    int levelBankai = capability.map(capa -> capa.getLevelBankai()).orElse(0);
+                    if (levelBankai < 4) {
+                        capability.ifPresent(capa -> capa.raiseLevelBankai());
+                    }
+
+                    if (levelBankai >= 3) {
+                        capability.ifPresent(capa -> capa.setActiveBankai(!capa.isActiveBankai()));
+                    } else {
+                        capability.ifPresent(capa -> capa.setActiveBankaiTime(3600));
+                        capability.ifPresent(capa -> capa.setCooldownBankai(24000 / (levelBankai+1)));
+                    }
+                }
+            } else if (isBankai(player.getItemInHand(hand))) {
+                Vector3d viewPos = player.pick(20.0D, 0.0F, false).getLocation();
+                BlockState viewBlockOneUp = world.getBlockState(new BlockPos(viewPos.x,viewPos.y+1,viewPos.z));
+                if (viewBlockOneUp.getBlock().equals(Blocks.AIR) || viewBlockOneUp.getBlock().equals(Blocks.WATER)) {
+                    player.getCooldowns().addCooldown(this, 60 / player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(1));
+                    player.teleportTo(viewPos.x, viewPos.y, viewPos.z);
+                    player.level.playSound(null, viewPos.x, viewPos.y, viewPos.z, Main.sonidoSound, player.getSoundSource(), 1.0F, 1.0F);
+                }
+            }
+        }
+        return super.use(world, player, hand);
+    }
+    @Override
+    public void inventoryTick(ItemStack stack, World world, Entity entity, int p_77663_4_, boolean p_77663_5_) {
+        if (!world.isClientSide && entity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity player = (ServerPlayerEntity) entity;
+            if (getOwner(stack).isEmpty()) {stack.setCount(0);return;}
+            if (!getOwner(stack).equals(player.getGameProfile().getName())) {
+                setDeathModel(stack, true);
+                if (!stack.getHoverName().equals("combatsasality")) {
+                    setDisableGravity(stack, true);
+                }
+                CustomItemEntity itemEntity = new CustomItemEntity(world, player.getX(), player.getY(), player.getZ(), stack.copy());
+                stack.setCount(0);
+                world.addFreshEntity(itemEntity);
+                entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ANVIL_PLACE, entity.getSoundSource(), 1.0F, 1.0F);
+                return;
+            }
+
+            LazyOptional<scolCapability.DataCapability> capability = entity.getCapability(scolCapability.NeedVariables);
+            if (capability.map(capa -> capa.getCooldownBankai()).orElse(0) > 0) {
+                capability.ifPresent(capa -> capa.consumeCooldownBankai(1));
+            }
+            boolean activeBankai = capability.map(capa -> capa.isActiveBankai()).orElse(false);
+            int levelBankai = capability.map(capa -> capa.getLevelBankai()).orElse(0);
+
+            if (activeBankai) {
+                if (!isBankai(stack)) {
+                    setBankai(stack, true);
+                }
+                if (capability.map(capa -> capa.getActiveBankaiTime()).orElse(0) > 0) {
+                    capability.ifPresent(capa -> capa.consumeActiveBankaiTime(1));
+                }
+                player.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 200, levelBankai-1, false, false, true, null));
+                player.addEffect(new EffectInstance(Effects.DIG_SPEED, 200, levelBankai-1, false, false, true, null));
+                player.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 200, levelBankai-1, false, false, true, null));
+                player.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 200, levelBankai-1, false, false, true, null));
+                player.addEffect(new EffectInstance(Effects.REGENERATION, 200, levelBankai-1, false, false, true, null));
+                player.getFoodData().eat(20, 1.0F);
+                return;
+            }
+
+            setBankai(stack, false);
+
+        }
+        super.inventoryTick(stack, world, entity, p_77663_4_, p_77663_5_);
     }
 
     public static String getOwner(ItemStack stack) {
@@ -65,4 +164,50 @@ public class Zangetsu extends SwordItem {
         return 0;
     }
 
+    @Override
+    public boolean isFoil(ItemStack p_77636_1_) {
+        return false;
+    }
+
+    @Override
+    public boolean isEnchantable(ItemStack stack) {
+        return !stack.isEnchanted();
+    }
+
+    @Override
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+        ImmutableMultimap.Builder<Attribute, AttributeModifier> map = ImmutableMultimap.builder();
+        if (slot.equals(EquipmentSlotType.MAINHAND)) {
+            if (isBankai(stack)) {
+                map.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 99, AttributeModifier.Operation.ADDITION));
+                map.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", 6, AttributeModifier.Operation.ADDITION));
+            } else {
+                map.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", this.getDamage(), AttributeModifier.Operation.ADDITION));
+                map.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.5, AttributeModifier.Operation.ADDITION));
+            }
+        }
+        return map.build();
+
+    }
+
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
+        if (entity.isAttackable() && !player.level.isClientSide() && !isBankai(stack)) {
+            if (entity instanceof PartEntity) {
+                entity.hurt(DamageSource.playerAttack(player), 1+(float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
+                return true;
+            }
+            for (LivingEntity livingEntity : player.level.getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(1.0D))) {
+                if (livingEntity != player && (!(livingEntity instanceof ArmorStandEntity))) {
+                    livingEntity.knockback(0.4F, (double) MathHelper.sin(player.yRot * ((float) Math.PI / 180F)), (double) (-MathHelper.cos(player.yRot * ((float) Math.PI / 180F))));
+                    livingEntity.hurt(DamageSource.playerAttack(player), 1+(float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE)    );
+                    EnchantmentHelper.doPostDamageEffects(livingEntity, player);
+                }
+            }
+            player.level.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
+            player.sweepAttack();
+            return true;
+        }
+        return super.onLeftClickEntity(stack, player, entity);
+    }
 }

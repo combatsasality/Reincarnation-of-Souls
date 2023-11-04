@@ -21,14 +21,37 @@ public class scolCapability {
     public interface ICapability {
         CompoundNBT getNBT();
         void setNBT(CompoundNBT nbt);
+
+        // Phoenix Ring
         int getCoolDownPhoenixRing();
         void consumeCoolDownPhoenixRing(int i);
         void setCoolDownPhoenixRing(int i);
-
         boolean canUsePhoenixRing();
 
+        // Zangetsu
         boolean isHasZangetsu();
         void setHasZangetsu(boolean b);
+
+        // Level Bankai
+        int getLevelBankai();
+        void raiseLevelBankai();
+
+        // Cooldown Bankai
+        int getCooldownBankai();
+        void setCooldownBankai(int i);
+        void consumeCooldownBankai(int i);
+
+        // Active Bankai
+        void setActiveBankai(boolean b);
+        boolean isActiveBankai();
+        void setActiveBankaiTime(int i);
+        int getActiveBankaiTime();
+        void consumeActiveBankaiTime(int i);
+
+        // Bankai
+        boolean canUseBankai();
+
+
     }
 
     public static class DataCapability implements ICapability {
@@ -46,32 +69,98 @@ public class scolCapability {
 
         @Override
         public int getCoolDownPhoenixRing() {
-            return this.nbt.getInt("coolDownPhoenixRing");
+            return this.nbt.getInt("cooldown_phoenix_ring");
         }
 
         @Override
         public void consumeCoolDownPhoenixRing(int i) {
-            this.nbt.putInt("coolDownPhoenixRing", this.nbt.getInt("coolDownPhoenixRing") - i);
+            if (this.nbt.getInt("cooldown_phoenix_ring") < i) {
+                this.nbt.putInt("cooldown_phoenix_ring", 0);
+                return;
+            }
+            this.nbt.putInt("cooldown_phoenix_ring", this.nbt.getInt("cooldown_phoenix_ring") - i);
         }
 
         @Override
         public void setCoolDownPhoenixRing(int i) {
-            this.nbt.putInt("coolDownPhoenixRing", i);
+            this.nbt.putInt("cooldown_phoenix_ring", i);
         }
 
         @Override
         public boolean canUsePhoenixRing() {
-            return this.nbt.getInt("coolDownPhoenixRing") == 0;
+            return this.nbt.getInt("cooldown_phoenix_ring") == 0;
         }
 
         @Override
         public boolean isHasZangetsu() {
-            return this.nbt.getBoolean("hasZangetsu");
+            return this.nbt.getBoolean("has_zangetsu");
         }
 
         @Override
         public void setHasZangetsu(boolean b) {
-            this.nbt.putBoolean("hasZangetsu", b);
+            this.nbt.putBoolean("has_zangetsu", b);
+        }
+
+        @Override
+        public int getLevelBankai() {
+            return this.nbt.getInt("level_bankai");
+        }
+
+        @Override
+        public void raiseLevelBankai() {
+            if (this.nbt.getInt("level_bankai") >= 4) {
+                return;
+            }
+            this.nbt.putInt("level_bankai", this.nbt.getInt("level_bankai")+1);
+        }
+
+        @Override
+        public int getCooldownBankai() {
+            return this.nbt.getInt("cooldown_bankai");
+        }
+
+        @Override
+        public void setCooldownBankai(int i) {
+            this.nbt.putInt("cooldown_bankai", i);
+        }
+
+        @Override
+        public void consumeCooldownBankai(int i) {
+            if (this.nbt.getInt("cooldown_bankai") < i || this.nbt.getInt("cooldown_bankai") < 0) {
+                this.nbt.putInt("cooldown_bankai", 0);
+                return;
+            }
+            this.nbt.putInt("cooldown_bankai", this.nbt.getInt("cooldown_bankai") - i);
+        }
+
+        @Override
+        public void setActiveBankai(boolean b) {
+            this.nbt.putBoolean("active_bankai", b);
+        }
+
+        @Override
+        public boolean isActiveBankai() {
+            return this.nbt.getBoolean("active_bankai") || this.nbt.getInt("active_bankai_time") > 0;
+        }
+
+        @Override
+        public void setActiveBankaiTime(int i) {
+            this.nbt.putInt("active_bankai_time", i);
+        }
+
+        @Override
+        public int getActiveBankaiTime() {
+            return this.nbt.getInt("active_bankai_time");
+        }
+
+        @Override
+        public void consumeActiveBankaiTime(int i) {
+            this.nbt.putInt("active_bankai_time", this.nbt.getInt("active_bankai_time") - i);
+        }
+
+        @Override
+        public boolean canUseBankai() {
+            return this.nbt.getInt("cooldown_bankai") == 0 || this.nbt.getInt("cooldown_bankai") == 0 && this.nbt.getInt("level_bankai") >= 3;
         }
 
         public static class Storage implements Capability.IStorage<DataCapability> {
