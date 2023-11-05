@@ -57,6 +57,7 @@ public class Main {
     public static KeyBindHandler keyBinds;
     public static TestItem testItem;
     public static FrostMourne frostMourne;
+    public static ThunderBlade thunderBlade;
     public static ItemBase bladeFrost;
     public static ItemBase handleFrost;
     public static PhoenixRing phoenixRing;
@@ -75,6 +76,7 @@ public class Main {
     public static SoundEvent sonidoSound;
     public static SoundEvent bossMusicForFight;
     public static SoundEvent bossMusicForDisc;
+
 
 
     public Main() {
@@ -106,6 +108,8 @@ public class Main {
         fourthPartMask = new ItemBase("part_mask_fourth");
         summonMask = new SummonMask();
         zangetsu = new Zangetsu();
+        thunderBlade = new ThunderBlade();
+
 
         //Regs
 
@@ -170,7 +174,9 @@ public class Main {
                     thirdPartMask,
                     fourthPartMask,
                     summonMask,
-                    zangetsu
+                    zangetsu,
+                    thunderBlade
+
             );
         }
         @SubscribeEvent

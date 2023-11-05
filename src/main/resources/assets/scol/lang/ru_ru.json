@@ -20,6 +20,7 @@
     "item.scol.kimano_chest": "Кимано",
     "item.scol.kimano_leggings": "",
     "item.scol.ring_midas": "Кольцо Мидаса",
+    "item.scol.thunder_blade": "Лезвие молнии",
 
 
     "attribute.name.scol.magical_damage": "к магическому урону",
@@ -38,6 +39,7 @@
     "tooltip.scol.hold_ctrl": "§8§lУдерживайте CTRL для подробностей",
     "tooltip.scol.empty": "",
     "tooltip.scol.currentKeybind": "§6Текущая клавиша: §d%1$s",
+    "tooltip.scol.thunder_blade": "ЗЕВС УЛЬТА",
 
 
     "curios.identifier.scolwings": "Крылья",

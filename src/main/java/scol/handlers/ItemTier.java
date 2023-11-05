@@ -6,7 +6,8 @@ import net.minecraft.item.crafting.Ingredient;
 public enum ItemTier implements IItemTier {
 
     FOR_ALL(0,0, 0.0F, 0, 22),
-    FOR_TRAINING(10, 0, 0.0F, 0,0);
+    FOR_TRAINING(10, 0, 0.0F, 0,0),
+    FOR_THUNDER(225, 2, 10.0F, 0, 15);
 
     public int durability = 0;
     public float speed = 0;

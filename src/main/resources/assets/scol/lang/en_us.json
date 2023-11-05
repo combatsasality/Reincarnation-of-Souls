@@ -20,6 +20,7 @@
   "item.scol.kimano_chest": "Kimano",
   "item.scol.kimano_leggings": "",
   "item.scol.ring_midas": "Midas Ring",
+  "item.scol.thunder_blade": "Thunder blade",
 
 
   "attribute.name.scol.magical_damage": "Magical Damage",
@@ -38,6 +39,7 @@
   "tooltip.scol.hold_ctrl": "§8§lHold CTRL for more details",
   "tooltip.scol.empty": "",
   "tooltip.scol.currentKeybind": "§6Current Key: §d%1$s",
+  "tooltip.scol.thunder_blade": "ЗЕВС УЛЬТА",
 
 
   "curios.identifier.scolwings": "Wings",
