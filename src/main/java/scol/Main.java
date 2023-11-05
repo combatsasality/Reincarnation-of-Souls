@@ -91,7 +91,7 @@ public class Main {
         //Attributes
         MAGICAL_DAMAGE = new RangedAttribute("attribute.name.scol.magical_damage", 0.0D, 0.0d, 100000000).setRegistryName("magical_damage").setSyncable(true);
 
-        //Keybinds
+        //Key binds
         keyBinds = new KeyBindHandler();
 
         //Sounds
@@ -99,7 +99,7 @@ public class Main {
         bossMusicForFight = new SoundEvent(new ResourceLocation("scol:music.boss_fight")).setRegistryName("music.boss_fight");
         bossMusicForDisc = new SoundEvent(new ResourceLocation("scol:music.boss_music")).setRegistryName("music.boss_music");
 
-        // Music Dics
+        // Music disc
         scrrxllDisc = new MusicDiscItem(1, bossMusicForDisc, new Item.Properties().rarity(Rarity.EPIC).stacksTo(1).tab(Main.TAB));
         scrrxllDisc.setRegistryName("music_disc_scrrxll");
 
