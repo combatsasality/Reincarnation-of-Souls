@@ -1,4 +1,5 @@
 {
+    "itemGroup.scol": "Soul Collector",
     "item.scol.frostmourne": "Ледяная Скорбь",
     "item.scol.frostmourne_handle": "Рукоятка Ледяной Скорби",
     "item.scol.frostmourne_blade": "Лезвие Ледяной Скорби",
@@ -15,8 +16,8 @@
     "item.scol.part_mask_fourth": "Осколок маски",
     "item.scol.summon_mask": "Маска призыва",
     "item.scol.zangetsu_training_sword": "Зангецу?",
-    "item.scol.music_disc_bossfight": "Пластинка",
-    "item.scol.music_disc_bossfight.desc": "scrrxll - metal 3",
+    "item.scol.music_disc_scrrxll": "Пластинка",
+    "item.scol.music_disc_scrrxll.desc": "scrrxll - metal 3",
     "item.scol.kimano_chest": "Кимано",
     "item.scol.kimano_leggings": "",
     "item.scol.ring_midas": "Кольцо Мидаса",

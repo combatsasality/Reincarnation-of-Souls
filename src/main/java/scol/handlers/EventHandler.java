@@ -5,16 +5,17 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemModelsProperties;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.*;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -27,11 +28,13 @@ import net.minecraftforge.common.BasicTrade;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
@@ -47,6 +50,8 @@ import scol.items.SummonMask;
 import scol.items.Zangetsu;
 import scol.scolCapability;
 import top.theillusivec4.curios.api.CuriosApi;
+
+import java.util.Random;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EventHandler {
@@ -231,5 +236,62 @@ public class EventHandler {
             }
         }
     }
+    @SubscribeEvent
+    public void ringMidasDrop(LivingDropsEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayerEntity) {
+            ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getEntity();
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, Main.ringMidas).isPresent()) {
+                float random = EnchantmentHelper.getMobLooting(player) * 0.01F + new Random().nextFloat();
+                if (random > 0.70) {
+                    ItemEntity item = new ItemEntity(event.getEntity().level, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ());
+                    if (random > 0.97) {
+                        ItemStack stack = new ItemStack(Items.NETHERITE_SCRAP);
+                        stack.setCount(1 + EnchantmentHelper.getMobLooting(player));
+                        item.setItem(stack);
+                    } else if (random > 0.90) {
+                        ItemStack stack = new ItemStack(Items.DIAMOND);
+                        stack.setCount(1 + EnchantmentHelper.getMobLooting(player));
+                        item.setItem(stack);
+                    } else if (random > 0.80) {
+                        ItemStack stack = new ItemStack(Items.GOLD_INGOT);
+                        stack.setCount(1 + EnchantmentHelper.getMobLooting(player));
+                        item.setItem(stack);
+                    } else {
+                        ItemStack stack = new ItemStack(Items.IRON_INGOT);
+                        stack.setCount(1 + EnchantmentHelper.getMobLooting(player));
+                        item.setItem(stack);
+                    }
+                    event.getDrops().clear();
+                    event.getDrops().add(item);
+                }
+            }
+        }
+    }
 
+    @SubscribeEvent
+    public void doVampiric(LivingHurtEvent event) {
+        if (event.getSource().getEntity() instanceof LivingEntity && !event.getEntity().level.isClientSide() && event.getSource().getEntity().isAlive()) {
+            int enchantLevel = EnchantmentHelper.getEnchantmentLevel(Main.vampiricEnchant, (LivingEntity) event.getSource().getEntity());
+            LivingEntity entity = (LivingEntity) event.getSource().getEntity();
+            if (enchantLevel != 0) {
+                entity.heal((float) (event.getAmount() * (enchantLevel * 0.1 * 2)));
+            }
+        }
+    }
+    @SubscribeEvent
+    public void doSpeedEnchant (ItemAttributeModifierEvent event) {
+        int levelEnchant = EnchantmentHelper.getItemEnchantmentLevel(Main.attackSpeedEnchant, event.getItemStack());
+        if (levelEnchant != 0) {
+            if (event.getSlotType().equals(EquipmentSlotType.MAINHAND) && event.getItemStack().getItem() instanceof SwordItem) {
+                double attack_speed = event.getModifiers().get(Attributes.ATTACK_SPEED).stream().mapToDouble(AttributeModifier::getAmount).sum();
+                double attack_damage = event.getModifiers().get(Attributes.ATTACK_DAMAGE).stream().mapToDouble(AttributeModifier::getAmount).sum();
+                event.removeModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4, AttributeModifier.Operation.ADDITION));
+                event.removeModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", attack_damage, AttributeModifier.Operation.ADDITION));
+                if (attack_damage != 0) {
+                    event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", attack_damage, AttributeModifier.Operation.ADDITION));
+                }
+                event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", attack_speed+(levelEnchant*0.5), AttributeModifier.Operation.ADDITION));
+            }
+        }
+    }
 }

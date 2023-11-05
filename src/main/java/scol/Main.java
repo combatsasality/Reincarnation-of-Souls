@@ -1,13 +1,12 @@
 package scol;
 
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
+import net.minecraft.item.*;
+import net.minecraft.potion.*;
 import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
@@ -31,6 +30,8 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scol.enchantment.AttackSpeedEnchant;
+import scol.enchantment.VampiricEnchant;
 import scol.entity.CustomItemEntity;
 import scol.entity.IchigoVazard;
 import scol.handlers.EventHandler;
@@ -73,10 +74,17 @@ public class Main {
     public static ItemBase fourthPartMask;
     public static SummonMask summonMask;
     public static WorldWing worldWing;
+    public static RingMidas ringMidas;
 
     public static SoundEvent sonidoSound;
     public static SoundEvent bossMusicForFight;
     public static SoundEvent bossMusicForDisc;
+    public static MusicDiscItem scrrxllDisc;
+    public static VampiricEnchant vampiricEnchant;
+    public static AttackSpeedEnchant attackSpeedEnchant;
+    public static Potion potionHeroOfVillage;
+    public static Potion potionStrongHeroOfVillage;
+    public static Potion potionLongHeroOfVillage;
 
 
     public Main() {
@@ -90,6 +98,10 @@ public class Main {
         sonidoSound = new SoundEvent(new ResourceLocation("scol:sonido")).setRegistryName("sonido");
         bossMusicForFight = new SoundEvent(new ResourceLocation("scol:music.boss_fight")).setRegistryName("music.boss_fight");
         bossMusicForDisc = new SoundEvent(new ResourceLocation("scol:music.boss_music")).setRegistryName("music.boss_music");
+
+        // Music Dics
+        scrrxllDisc = new MusicDiscItem(1, bossMusicForDisc, new Item.Properties().rarity(Rarity.EPIC).stacksTo(1).tab(Main.TAB));
+        scrrxllDisc.setRegistryName("music_disc_scrrxll");
 
 
         //Items
@@ -108,6 +120,24 @@ public class Main {
         fourthPartMask = new ItemBase("part_mask_fourth");
         summonMask = new SummonMask();
         zangetsu = new Zangetsu();
+        ringMidas = new RingMidas();
+
+        //Enchantments
+        vampiricEnchant = new VampiricEnchant();
+        attackSpeedEnchant = new AttackSpeedEnchant();
+
+        // Potions
+        potionHeroOfVillage = new Potion("hero_of_village", new EffectInstance(Effects.HERO_OF_THE_VILLAGE, 3600));
+        potionHeroOfVillage.setRegistryName("potion_hero_of_village");
+        potionLongHeroOfVillage = new Potion("hero_of_village", new EffectInstance(Effects.HERO_OF_THE_VILLAGE, 9600));
+        potionLongHeroOfVillage.setRegistryName("potion_long_hero_of_village");
+        potionStrongHeroOfVillage = new Potion("hero_of_village", new EffectInstance(Effects.HERO_OF_THE_VILLAGE, 1800, 1));
+        potionStrongHeroOfVillage.setRegistryName("potion_strong_hero_of_village");
+
+        //Potion brewing
+        PotionBrewing.addMix(Potions.WATER, Items.EMERALD_BLOCK, potionHeroOfVillage);
+        PotionBrewing.addMix(potionHeroOfVillage, Items.BROWN_MUSHROOM, potionStrongHeroOfVillage);
+        PotionBrewing.addMix(potionHeroOfVillage, Items.GLISTERING_MELON_SLICE, potionLongHeroOfVillage);
 
         //Regs
 
@@ -172,9 +202,27 @@ public class Main {
                     thirdPartMask,
                     fourthPartMask,
                     summonMask,
-                    zangetsu
+                    zangetsu,
+                    ringMidas,
+                    scrrxllDisc
             );
         }
+        @SubscribeEvent
+        public static void potionRegistry(final RegistryEvent.Register<Potion> event) {
+            event.getRegistry().registerAll(
+                    potionHeroOfVillage,
+                    potionStrongHeroOfVillage,
+                    potionLongHeroOfVillage
+            );
+        }
+        @SubscribeEvent
+        public static void registerEnchants(final RegistryEvent.Register<Enchantment> event) {
+            event.getRegistry().registerAll(
+                    vampiricEnchant,
+                    attackSpeedEnchant
+            );
+        }
+
         @SubscribeEvent
         public static void registerCustomAttribute(final RegistryEvent.Register<Attribute> event) {
             event.getRegistry().register(MAGICAL_DAMAGE);
@@ -193,7 +241,9 @@ public class Main {
                     new EntityAdditionModifier.Serializer(0.98F, 0.01F).setRegistryName
                             (new ResourceLocation("scol:part_mask_second_from_wither")),
                     new StructureAdditionModifier.Serializer(0.75F).setRegistryName
-                            (new ResourceLocation("scol:part_mask_in_end_city"))
+                            (new ResourceLocation("scol:part_mask_in_end_city")),
+                    new EntityAdditionModifier.Serializer(0.99F, 0F).setRegistryName
+                            (new ResourceLocation("scol:sound_disk_from_pig"))
             );
         }
 

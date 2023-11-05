@@ -1,4 +1,5 @@
 {
+  "itemGroup.scol": "Soul Collector",
   "item.scol.frostmourne": "FrostMourne",
   "item.scol.frostmourne_handle": "Handle FrostMourne",
   "item.scol.frostmourne_blade": "Blade FrostMourne",
@@ -15,8 +16,8 @@
   "item.scol.part_mask_fourth": "Mask fragment",
   "item.scol.summon_mask": "Summon mask",
   "item.scol.zangetsu_training_sword": "Zangetsu?",
-  "item.scol.music_disc_bossfight": "Music Disc",
-  "item.scol.music_disc_bossfight.desc": "scrrxll - metal 3",
+  "item.scol.music_disc_scrrxll": "Music Disc",
+  "item.scol.music_disc_scrrxll.desc": "scrrxll - metal 3",
   "item.scol.kimano_chest": "Kimano",
   "item.scol.kimano_leggings": "",
   "item.scol.ring_midas": "Midas Ring",

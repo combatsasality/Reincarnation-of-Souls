@@ -1,4 +1,5 @@
 {
+  "itemGroup.scol": "Soul Collector",
   "item.scol.frostmourne": "Крижана Скорбота",
   "item.scol.frostmourne_handle": "Рукоятка Крижаної Скорботи",
   "item.scol.frostmourne_blade": "Лезо Крижаної Скорботи",
@@ -15,8 +16,8 @@
   "item.scol.part_mask_fourth": "Уламок маски",
   "item.scol.summon_mask": "Маска заклику",
   "item.scol.zangetsu_training_sword": "Зангецу?",
-  "item.scol.music_disc_bossfight": "Платівка",
-  "item.scol.music_disc_bossfight.desc": "scrrxll - metal 3",
+  "item.scol.music_disc_scrrxll": "Платівка",
+  "item.scol.music_disc_scrrxll.desc": "scrrxll - metal 3",
   "item.scol.kimano_chest": "Кімано",
   "item.scol.kimano_leggings": "",
   "item.scol.ring_midas": "Кільце Мідаса",

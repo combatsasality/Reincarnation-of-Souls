@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "XYX",
+      "YZY",
+      "XYX"
+    ],
+    "key" : {
+      "X": {
+        "item": "minecraft:beacon"
+      },
+      "Y": {
+        "item": "minecraft:netherite_block"
+      },
+      "Z": {
+        "item": "scol:music_disc_scrrxll"
+      }
+    },
+    "result": {
+      "item": "scol:ring_midas"
+    }
+  
+  }
