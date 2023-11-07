@@ -4,9 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
@@ -56,14 +53,8 @@ public class TestItem extends Item {
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> {
-            if (player.isCrouching()) {
-                capa.getNBT().putInt("level_bankai", 0);
-                capa.setActiveBankai(false);
-            }
-            capa.setCooldownBankai(0);
-            capa.setActiveBankaiTime(0);
-        });
+        player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> capa.setCooldownBankai(0));
+        player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> capa.setActiveBankaiTime(0));
         return super.use(world, player, hand);
     }
 

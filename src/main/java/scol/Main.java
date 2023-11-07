@@ -7,12 +7,9 @@ import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.item.*;
 import net.minecraft.potion.*;
-import net.minecraft.util.RegistryKey;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,6 +31,7 @@ import scol.enchantment.AttackSpeedEnchant;
 import scol.enchantment.VampiricEnchant;
 import scol.entity.CustomItemEntity;
 import scol.entity.IchigoVazard;
+import scol.entity.projectile.PowerWaveEntity;
 import scol.handlers.EventHandler;
 import scol.handlers.KeyBindHandler;
 import scol.handlers.lootModifiers.EntityAdditionModifier;
@@ -258,8 +256,23 @@ public class Main {
 
         @SubscribeEvent
         public static void onEntitiesRegistry(final RegistryEvent.Register<EntityType<?>> event) {
-            event.getRegistry().register(EntityType.Builder.<CustomItemEntity>of(CustomItemEntity::new, EntityClassification.MISC).sized(0.25F, 2.0F).setTrackingRange(64).setCustomClientFactory((spawnEntity, world) -> new CustomItemEntity(CustomItemEntity.TYPE, world)).setUpdateInterval(2).setShouldReceiveVelocityUpdates(true).build(modid+":custom_item_entity_ent").setRegistryName(new ResourceLocation(modid, "custom_item_entity_ent")));
-            event.getRegistry().register(EntityType.Builder.<IchigoVazard>of(IchigoVazard::new, EntityClassification.MISC).sized(0.75f, 1.85f).build(Main.modid+":ichigo_vazard").setRegistryName("ichigo_vazard"));
+            event.getRegistry().register(EntityType.Builder.<CustomItemEntity>of(
+                    CustomItemEntity::new, EntityClassification.MISC).sized(0.25F, 2.0F)
+                    .setTrackingRange(64).setCustomClientFactory((spawnEntity, world) -> new CustomItemEntity(CustomItemEntity.TYPE, world))
+                    .setUpdateInterval(2).setShouldReceiveVelocityUpdates(true).build(modid+":custom_item_entity_ent").
+                    setRegistryName(new ResourceLocation(modid, "custom_item_entity_ent")));
+
+            event.getRegistry().register(EntityType.Builder.<IchigoVazard>of(
+                    IchigoVazard::new, EntityClassification.MISC).sized(0.75f, 1.85f)
+                    .setTrackingRange(64).setCustomClientFactory((spawnEntity, world) -> new IchigoVazard(IchigoVazard.TYPE, world))
+                    .build(Main.modid+":ichigo_vazard").setRegistryName("ichigo_vazard"));
+
+            event.getRegistry().register(EntityType.Builder.<PowerWaveEntity>of(
+                            PowerWaveEntity::new, EntityClassification.MISC).sized(4.0F, 0.1F)
+                            .noSave()
+                    .setCustomClientFactory((spawnEntity, world) -> new PowerWaveEntity(PowerWaveEntity.TYPE, world))
+                    .setTrackingRange(64).build(Main.modid+":power_wave").setRegistryName("power_wave"));
+
         }
 
         @SubscribeEvent

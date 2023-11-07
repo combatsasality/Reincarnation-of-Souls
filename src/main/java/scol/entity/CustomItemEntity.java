@@ -102,7 +102,6 @@ public class CustomItemEntity extends Entity {
 
     @Override
     public void tick() {
-
         if (this.getItem().isEmpty()) {
             this.remove();
         } else {
@@ -119,6 +118,9 @@ public class CustomItemEntity extends Entity {
 
             if (!this.isNoGravity()) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0.0D, -0.04D, 0.0D));
+            }
+            if (Zangetsu.isDeathModel(this.getItem())) {
+                this.setDeltaMovement(0.0D, 0.0D, 0.0D);
             }
 
             if (this.level.isClientSide) {

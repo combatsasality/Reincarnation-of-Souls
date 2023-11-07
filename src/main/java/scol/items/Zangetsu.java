@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -31,6 +30,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.entity.PartEntity;
 import scol.Main;
 import scol.entity.CustomItemEntity;
+import scol.entity.projectile.PowerWaveEntity;
 import scol.handlers.ItemTier;
 import scol.scolCapability;
 
@@ -61,8 +61,8 @@ public class Zangetsu extends SwordItem {
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (!world.isClientSide()) {
+            LazyOptional<scolCapability.DataCapability> capability = player.getCapability(scolCapability.NeedVariables);
             if (player.isCrouching()) {
-                LazyOptional<scolCapability.DataCapability> capability = player.getCapability(scolCapability.NeedVariables);
                 if (capability.map(capa -> capa.canUseBankai()).orElse(false) && capability.isPresent()) {
                     int levelBankai = capability.map(capa -> capa.getLevelBankai()).orElse(0);
                     if (levelBankai < 4) {
@@ -83,6 +83,13 @@ public class Zangetsu extends SwordItem {
                     player.getCooldowns().addCooldown(this, 60 / player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(1));
                     player.teleportTo(viewPos.x, viewPos.y, viewPos.z);
                     player.level.playSound(null, viewPos.x, viewPos.y, viewPos.z, Main.sonidoSound, player.getSoundSource(), 1.0F, 1.0F);
+                }
+            } else {
+                if (capability.map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
+                    player.getCooldowns().addCooldown(this, 150 / player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(1));
+                    PowerWaveEntity powerWaveEntity = new PowerWaveEntity(world, player);
+                    powerWaveEntity.shootFromRotation();
+                    world.addFreshEntity(powerWaveEntity);
                 }
             }
         }
@@ -192,21 +199,26 @@ public class Zangetsu extends SwordItem {
 
     @Override
     public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
-        if (entity.isAttackable() && !player.level.isClientSide() && !isBankai(stack)) {
-            if (entity instanceof PartEntity) {
-                entity.hurt(DamageSource.playerAttack(player), 1+(float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
+        if (!player.level.isClientSide()) {
+            if (entity.isAttackable() && !isBankai(stack)) {
+                if (entity instanceof PartEntity) {
+                    entity.hurt(DamageSource.playerAttack(player), 1 + (float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
+                    return true;
+                }
+                for (LivingEntity livingEntity : player.level.getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(1.0D))) {
+                    if (livingEntity != player && (!(livingEntity instanceof ArmorStandEntity))) {
+                        livingEntity.knockback(0.4F, (double) MathHelper.sin(player.yRot * ((float) Math.PI / 180F)), (double) (-MathHelper.cos(player.yRot * ((float) Math.PI / 180F))));
+                        livingEntity.hurt(DamageSource.playerAttack(player), 1 + (float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
+                        EnchantmentHelper.doPostDamageEffects(livingEntity, player);
+                    }
+                }
+                player.level.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
+                player.sweepAttack();
                 return true;
             }
-            for (LivingEntity livingEntity : player.level.getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(1.0D))) {
-                if (livingEntity != player && (!(livingEntity instanceof ArmorStandEntity))) {
-                    livingEntity.knockback(0.4F, (double) MathHelper.sin(player.yRot * ((float) Math.PI / 180F)), (double) (-MathHelper.cos(player.yRot * ((float) Math.PI / 180F))));
-                    livingEntity.hurt(DamageSource.playerAttack(player), 1+(float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE)    );
-                    EnchantmentHelper.doPostDamageEffects(livingEntity, player);
-                }
+            if (entity.isAttackable() && isBankai(stack) && player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
+                entity.invulnerableTime = 0;
             }
-            player.level.playSound((PlayerEntity) null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
-            player.sweepAttack();
-            return true;
         }
         return super.onLeftClickEntity(stack, player, entity);
     }
