@@ -1,5 +1,10 @@
 {
-  "itemGroup.scol": "Soul Collector",
+  "advancement.scol_advancements": "Soul Collector",
+  "advancement.scol_advancements.desc": "Початок чогось більшого",
+  "advancement.scol:worldWing": "Де твої крила? Які так подобалися мені...",
+  "advancement.scol:worldWing.desc": "Отримайте світові крила",
+
+  "itemGroup.scolTab": "Soul Collector",
   "item.scol.frostmourne": "Крижана Скорбота",
   "item.scol.frostmourne_handle": "Рукоятка Крижаної Скорботи",
   "item.scol.frostmourne_blade": "Лезо Крижаної Скорботи",

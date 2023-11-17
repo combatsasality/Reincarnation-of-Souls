@@ -279,5 +279,6 @@ public class Main {
         public static void addEntityAttributes(EntityAttributeCreationEvent event) {
             event.put(IchigoVazard.TYPE, IchigoVazard.setCustomAttrbiutes().build());
         }
+
     }
 }

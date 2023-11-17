@@ -17,7 +17,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import scol.Main;
 import scol.entity.CustomItemEntity;
 import scol.items.Zangetsu;
 

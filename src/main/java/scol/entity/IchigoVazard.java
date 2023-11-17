@@ -13,7 +13,6 @@ import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;

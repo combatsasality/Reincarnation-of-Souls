@@ -53,8 +53,7 @@ public class TestItem extends Item {
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> capa.setCooldownBankai(0));
-        player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> capa.setActiveBankaiTime(0));
+
         return super.use(world, player, hand);
     }
 

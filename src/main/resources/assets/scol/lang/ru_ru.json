@@ -1,5 +1,10 @@
 {
-    "itemGroup.scol": "Soul Collector",
+    "advancement.scol_advancements": "Soul Collector",
+    "advancement.scol_advancements.desc": "Начало чего то большего",
+    "advancement.scol:worldWing": "Где твои крылья? Которые так нравились мне...",
+    "advancement.scol:worldWing.desc": "Получите мировые крылья",
+
+    "itemGroup.scolTab": "Soul Collector",
     "item.scol.frostmourne": "Ледяная Скорбь",
     "item.scol.frostmourne_handle": "Рукоятка Ледяной Скорби",
     "item.scol.frostmourne_blade": "Лезвие Ледяной Скорби",

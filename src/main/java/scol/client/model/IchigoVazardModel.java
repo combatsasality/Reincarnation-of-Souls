@@ -3,14 +3,10 @@ package scol.client.model;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.vertex.IVertexBuilder;
 import net.minecraft.client.renderer.entity.model.BipedModel;
-import net.minecraft.client.renderer.model.ModelHelper;
 import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.Hand;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
 import scol.entity.IchigoVazard;
-
-import java.io.Console;
 
 public class IchigoVazardModel<T extends IchigoVazard> extends BipedModel<T>{
     private final ModelRenderer Head;

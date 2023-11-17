@@ -9,6 +9,7 @@ import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -51,6 +52,11 @@ public class InactivePhoenixRing extends Item implements ICurioItem {
     }
 
     @Override
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
+        return super.getAttributeModifiers(slot, stack);
+    }
+
+    @Override
     public boolean canEquipFromUse(SlotContext slotContext, ItemStack stack) {
         return false;
     }
@@ -65,7 +71,7 @@ public class InactivePhoenixRing extends Item implements ICurioItem {
         if (livingEntity.getHealth() > livingEntity.getMaxHealth()) {
             //livingEntity.hurt(new DamageSource("inactive_phoenix_ring_damage"), livingEntity.getHealth() - livingEntity.getMaxHealth());
             //livingEntity.heal(1.0F);
-            livingEntity.setHealth(livingEntity.getMaxHealth());
+            //livingEntity.setHealth(livingEntity.getMaxHealth());
         }
     }
 

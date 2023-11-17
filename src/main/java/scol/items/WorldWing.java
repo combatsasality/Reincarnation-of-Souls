@@ -4,7 +4,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
@@ -33,7 +32,7 @@ public class WorldWing extends Item implements ICurioItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag tooltip) {
-        list.add(new TranslationTextComponent("tooltip.scol.world_wing.2", stack.getOrCreateTag().getInt("qwe.speed")).withStyle(TextFormatting.LIGHT_PURPLE));
+        list.add(new TranslationTextComponent("tooltip.scol.world_wing.2", stack.getOrCreateTag().getInt("scol.speed")).withStyle(TextFormatting.LIGHT_PURPLE));
         list.add(new TranslationTextComponent("tooltip.scol.currentKeybind", KeyBinding.createNameSupplier("key.world_wing").get().getString().toUpperCase()).withStyle().withStyle(TextFormatting.LIGHT_PURPLE));
         list.add(new TranslationTextComponent("tooltip.scol.empty"));
 

@@ -1,5 +1,10 @@
 {
-  "itemGroup.scol": "Soul Collector",
+  "advancement.scol_advancements": "Soul Collector",
+  "advancement.scol_advancements.desc": "The start of something bigger",
+  "advancement.scol:worldWing": "Where are your wings? That I loved so much...",
+  "advancement.scol:worldWing.desc": "Get the world's wings",
+
+  "itemGroup.scolTab": "Soul Collector",
   "item.scol.frostmourne": "FrostMourne",
   "item.scol.frostmourne_handle": "Handle FrostMourne",
   "item.scol.frostmourne_blade": "Blade FrostMourne",

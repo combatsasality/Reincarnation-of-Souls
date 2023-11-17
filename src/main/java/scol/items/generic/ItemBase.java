@@ -1,6 +1,5 @@
 package scol.items.generic;
 
-import net.minecraft.item.Food;
 import net.minecraft.item.Item;
 import scol.Main;
 
