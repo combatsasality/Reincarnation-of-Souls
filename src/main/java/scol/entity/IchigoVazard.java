@@ -191,6 +191,7 @@ public class IchigoVazard extends MonsterEntity {
                     }
                 }
             }
+            //Сделать отключалку полета епты )))
         }
     }
 

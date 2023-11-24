@@ -15,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Rarity;
 import net.minecraft.item.SwordItem;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -24,6 +25,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
@@ -31,12 +33,13 @@ import net.minecraftforge.entity.PartEntity;
 import scol.Main;
 import scol.entity.CustomItemEntity;
 import scol.entity.projectile.PowerWaveEntity;
+import scol.handlers.HelpHandler;
 import scol.handlers.ItemTier;
 import scol.scolCapability;
 
 public class Zangetsu extends SwordItem {
     public Zangetsu() {
-        super(ItemTier.FOR_ALL, 39, 0, new Properties().tab(Main.TAB).fireResistant());
+        super(ItemTier.FOR_ALL, 39, 0, new Properties().tab(Main.TAB).fireResistant().rarity(Rarity.EPIC));
         this.setRegistryName("zangetsu");
     }
     public static boolean isBankai(ItemStack stack) {
@@ -79,6 +82,7 @@ public class Zangetsu extends SwordItem {
             } else if (isBankai(player.getItemInHand(hand))) {
                 Vector3d viewPos = player.pick(20.0D, 0.0F, false).getLocation();
                 BlockState viewBlockOneUp = world.getBlockState(new BlockPos(viewPos.x,viewPos.y+1,viewPos.z));
+
                 if (viewBlockOneUp.getBlock().equals(Blocks.AIR) || viewBlockOneUp.getBlock().equals(Blocks.WATER)) {
                     player.getCooldowns().addCooldown(this, 60 / player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(1));
                     player.teleportTo(viewPos.x, viewPos.y, viewPos.z);
