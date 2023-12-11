@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "scol.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "scol.refmap.json",
+  "verbose": true,
+  "mixins": [
+    "MixinAssemble",
+    "MixinTridentItem",
+    "MixinTridentEntity"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

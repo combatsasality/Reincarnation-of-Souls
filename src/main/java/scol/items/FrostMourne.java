@@ -37,7 +37,7 @@ public class FrostMourne extends SwordItem {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World p_77624_2_, List<ITextComponent> list, ITooltipFlag p_77624_4_) {
-        list.add(1 ,new TranslationTextComponent("tooltip.item.frostmourne.0", stack.getOrCreateTag().getInt("scol.souls")).withStyle(TextFormatting.DARK_RED));
+        list.add(1 ,new TranslationTextComponent("tooltip.item.frostmourne.0", stack.getOrCreateTag().getInt("scol.Souls")).withStyle(TextFormatting.DARK_RED));
         super.appendHoverText(stack, p_77624_2_, list, p_77624_4_);
     }
 
@@ -56,10 +56,16 @@ public class FrostMourne extends SwordItem {
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
         ImmutableMultimap.Builder<Attribute, AttributeModifier> map = ImmutableMultimap.builder();
         if (slot == EquipmentSlotType.MAINHAND) {
-            map.put(Main.MAGICAL_DAMAGE, new AttributeModifier(MAGICAL_DAMAGE_UUID, "Weapon modifier", stack.getOrCreateTag().getInt("scol.souls")+10, AttributeModifier.Operation.ADDITION));
+            map.put(Main.MAGICAL_DAMAGE, new AttributeModifier(MAGICAL_DAMAGE_UUID, "Weapon modifier", stack.getOrCreateTag().getInt("scol.Souls")+10, AttributeModifier.Operation.ADDITION));
             map.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -3.2F, AttributeModifier.Operation.ADDITION));
         }
         return map.build();
     }
-
+    @Override
+    public void onCraftedBy(ItemStack stack, World world, PlayerEntity player) {
+        System.out.println(stack);
+        System.out.println(world);
+        System.out.println(player);
+        super.onCraftedBy(stack, world, player);
+    }
 }

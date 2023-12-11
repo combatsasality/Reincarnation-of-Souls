@@ -14,7 +14,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public class PacketWorldWing {
-    public static UUID uuidsend = UUID.fromString("427d8cdc-1e87-4484-b785-279ec4721cd5");
+    public static UUID uuidSend = UUID.fromString("427d8cdc-1e87-4484-b785-279ec4721cd5");
     private final boolean pressed;
 
     public PacketWorldWing(boolean pressed) {
@@ -48,3 +48,4 @@ public class PacketWorldWing {
     }
 
 }
+

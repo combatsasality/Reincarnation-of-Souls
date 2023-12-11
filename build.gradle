@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1+', changing: true
-        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7.+'
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -24,7 +24,7 @@ archivesBaseName = "${mod_id}"
 java.toolchain.languageVersion = JavaLanguageVersion.of(8) // Mojang ships Java 8 to end users, so your mod should target Java 8.
 
 mixin {
-    add sourceSets.main, "qwe.refmap.json"
+    add sourceSets.main, "scol.refmap.json"
 }
 
 minecraft {
@@ -40,39 +40,9 @@ minecraft {
             property 'forge.logging.markers', 'REGISTRIES'
 
             property 'forge.logging.console.level', 'debug'
-
+//            arg "-mixin.config=scol.mixins.json"
             mods {
-                qwe {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run')
-
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-
-            property 'forge.logging.console.level', 'debug'
-
-            mods {
-                qwe {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'qwe', '--all', '--output', file('src/generated/resources/')
-
-            mods {
-                qwe {
+                scol {
                     source sourceSets.main
                 }
             }
@@ -120,7 +90,8 @@ jar {
                 "Implementation-Title": "${mod_name}",
                 "Implementation-Version": "${mod_version}",
                 "Implementation-Vendor" :"${mod_author}",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConnector": "${project.group}.MixinConnector"
         ])
     }
 }

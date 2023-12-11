@@ -25,7 +25,6 @@ public class ShieldLayer<T extends LivingEntity, M extends BipedModel<T>> extend
 
     @Override
     public void render(MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int light, LivingEntity livingEntity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        matrixStack.pushPose();
         CuriosApi.getCuriosHelper().findFirstCurio(livingEntity, Main.phoenixRing.getItem()).ifPresent(slot -> {
             if (PhoenixRing.godModeIsActive(slot.getStack())) {
                 matrixStack.pushPose();
@@ -38,6 +37,5 @@ public class ShieldLayer<T extends LivingEntity, M extends BipedModel<T>> extend
                 matrixStack.popPose();
             }
         });
-        matrixStack.popPose();
     }
 }

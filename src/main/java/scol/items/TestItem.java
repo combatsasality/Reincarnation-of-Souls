@@ -19,6 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 import scol.Main;
 import scol.packets.client.PacketCapa;
+import scol.packets.server.PacketGetCapability;
 import scol.scolCapability;
 
 import javax.annotation.Nullable;
@@ -36,6 +37,7 @@ public class TestItem extends Item {
         if (Screen.hasShiftDown()) {
             tooltip.add(new StringTextComponent(Minecraft.getInstance().player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getNBT()).orElse(null).toString()));
         }
+        Main.packetInstance.send(PacketDistributor.SERVER.noArg(), new PacketGetCapability(true));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
     }
 
@@ -43,7 +45,7 @@ public class TestItem extends Item {
     public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity entity, int p_77663_4_, boolean p_77663_5_) {
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) entity;
-            Main.packetInstance.send(PacketDistributor.PLAYER.with(() -> player), new PacketCapa(entity.getCapability(scolCapability.NeedVariables).map(capa -> capa.getNBT()).orElse(null)));
+//            Main.packetInstance.send(PacketDistributor.PLAYER.with(() -> player), new PacketCapa(entity.getCapability(scolCapability.NeedVariables).map(capa -> capa.getNBT()).orElse(null)));
             player.setHealth(player.getMaxHealth());
             player.addEffect(new EffectInstance(Effects.SATURATION, 1000, 1, true, false));
             player.addEffect(new EffectInstance(Effects.NIGHT_VISION, 1000, 1, true, false));
@@ -53,7 +55,11 @@ public class TestItem extends Item {
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-
+        if (player.isCrouching()) {
+            player.setHealth(0);
+        } else {
+            player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> capa.setCoolDownPhoenixRing(0));
+        }
         return super.use(world, player, hand);
     }
 

@@ -44,9 +44,9 @@ public class KeyBindHandler {
                 Main.packetInstance.send(PacketDistributor.SERVER.noArg(), new PacketWorldWing(true));
                 ItemStack stack = result.get().getStack();
                 if (WorldWing.getFlySpeedInt(stack) == 4) {
-                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("chat.send.wingspeed", 0), PacketWorldWing.uuidsend);
+                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("chat.send.wingspeed", 0), PacketWorldWing.uuidSend);
                 } else {
-                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("chat.send.wingspeed", WorldWing.getFlySpeedInt(stack)+1), PacketWorldWing.uuidsend);
+                    Minecraft.getInstance().player.sendMessage(new TranslationTextComponent("chat.send.wingspeed", WorldWing.getFlySpeedInt(stack)+1), PacketWorldWing.uuidSend);
                 }
             }
         }

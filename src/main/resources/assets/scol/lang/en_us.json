@@ -44,6 +44,8 @@
   "tooltip.scol.hold_ctrl": "§8§lHold CTRL for more details",
   "tooltip.scol.empty": "",
   "tooltip.scol.currentKeybind": "§6Current Key: §d%1$s",
+  "tooltip.scol.inactive": "§4In cooldown",
+  "tooltip.scol.active": "§aActive",
 
 
   "curios.identifier.scolwings": "Wings",

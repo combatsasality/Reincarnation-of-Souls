@@ -32,7 +32,7 @@ public class WorldWing extends Item implements ICurioItem {
     @Override
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag tooltip) {
-        list.add(new TranslationTextComponent("tooltip.scol.world_wing.2", stack.getOrCreateTag().getInt("scol.speed")).withStyle(TextFormatting.LIGHT_PURPLE));
+        list.add(new TranslationTextComponent("tooltip.scol.world_wing.2", stack.getOrCreateTag().getInt("scol.Speed")).withStyle(TextFormatting.LIGHT_PURPLE));
         list.add(new TranslationTextComponent("tooltip.scol.currentKeybind", KeyBinding.createNameSupplier("key.world_wing").get().getString().toUpperCase()).withStyle().withStyle(TextFormatting.LIGHT_PURPLE));
         list.add(new TranslationTextComponent("tooltip.scol.empty"));
 
@@ -63,13 +63,13 @@ public class WorldWing extends Item implements ICurioItem {
         return ICurio.DropRule.ALWAYS_KEEP;
     }
 
-    public static int getFlySpeedInt(ItemStack stack) {return stack.getOrCreateTag().getInt("scol.speed");}
+    public static int getFlySpeedInt(ItemStack stack) {return stack.getOrCreateTag().getInt("scol.Speed");}
 
     public static void setFlySpeed(ItemStack stack,int speed) {
-        stack.getOrCreateTag().putInt("scol.speed", speed);
+        stack.getOrCreateTag().putInt("scol.Speed", speed);
     }
     public static float getFlySpeed(ItemStack stack) {
-        return stack.getOrCreateTag().getInt("scol.speed")*0.1F+0.05F;
+        return stack.getOrCreateTag().getInt("scol.Speed")*0.1F+0.05F;
     }
     @Override
     public void curioTick(String identifier, int index, LivingEntity livingEntity, ItemStack stack) {

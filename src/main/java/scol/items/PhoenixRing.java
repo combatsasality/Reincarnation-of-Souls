@@ -1,17 +1,22 @@
 package scol.items;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.network.PacketDistributor;
 import scol.Main;
+import scol.packets.server.PacketGetCapability;
 import scol.scolCapability;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurio;
@@ -36,6 +41,10 @@ public class PhoenixRing extends Item implements ICurioItem {
     }
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag tooltip) {
+        if (world != null) {
+            Main.packetInstance.send(PacketDistributor.SERVER.noArg(), new PacketGetCapability(true));
+            list.add(Minecraft.getInstance().player.getCapability(scolCapability.NeedVariables).map(capa -> capa.canUsePhoenixRing()).orElse(true) ? new TranslationTextComponent("tooltip.scol.active") : new TranslationTextComponent("tooltip.scol.inactive"));
+        }
         list.add(new TranslationTextComponent("tooltip.scol.empty"));
         if (Screen.hasShiftDown()) {
             list.add(new TranslationTextComponent("tooltip.scol.phoenix_ring.0"));
@@ -64,6 +73,7 @@ public class PhoenixRing extends Item implements ICurioItem {
                 livingEntity.setHealth(livingEntity.getMaxHealth());
             }
             if (livingEntity.getHealth() <= 0.0F && capability.map(capa -> capa.canUsePhoenixRing()).orElse(true)) {
+                livingEntity.revive();
                 livingEntity.setHealth(livingEntity.getMaxHealth());
                 capability.ifPresent(capa -> capa.setCoolDownPhoenixRing(15600));
                 godModeActived(stack);
@@ -74,15 +84,15 @@ public class PhoenixRing extends Item implements ICurioItem {
     }
 
     public static boolean godModeIsActive(ItemStack stack) {
-        return stack.getOrCreateTag().getInt("scol.godmode") != 0;
+        return stack.getOrCreateTag().getInt("scol.GodMode") != 0;
     }
 
     public static void godModeActived(ItemStack stack) {
-        stack.getOrCreateTag().putInt("scol.godmode", 3600);
+        stack.getOrCreateTag().putInt("scol.GodMode", 3600);
     }
 
     public static void godModeConsume(ItemStack stack) {
-        stack.getOrCreateTag().putInt("scol.godmode", stack.getOrCreateTag().getInt("scol.godmode") - 1);
+        stack.getOrCreateTag().putInt("scol.GodMode", stack.getOrCreateTag().getInt("scol.GodMode") - 1);
     }
 
     @Nonnull
@@ -98,4 +108,6 @@ public class PhoenixRing extends Item implements ICurioItem {
     public boolean canUnequip(String identifier, LivingEntity livingEntity, ItemStack stack) {
         return !godModeIsActive(stack);
     }
+
+
 }

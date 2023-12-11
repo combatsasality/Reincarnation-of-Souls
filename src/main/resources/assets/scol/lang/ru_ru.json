@@ -44,6 +44,8 @@
     "tooltip.scol.hold_ctrl": "§8§lУдерживайте CTRL для подробностей",
     "tooltip.scol.empty": "",
     "tooltip.scol.currentKeybind": "§6Текущая клавиша: §d%1$s",
+    "tooltip.scol.inactive": "§4На перезарядке",
+    "tooltip.scol.active": "§aАктивно",
 
 
     "curios.identifier.scolwings": "Крылья",

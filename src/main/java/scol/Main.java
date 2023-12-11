@@ -1,12 +1,15 @@
 package scol;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.item.*;
+import net.minecraft.item.crafting.SmithingRecipe;
 import net.minecraft.potion.*;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextFormatting;
@@ -17,14 +20,17 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.event.lifecycle.*;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import scol.enchantment.AttackSpeedEnchant;
@@ -39,6 +45,7 @@ import scol.handlers.lootModifiers.StructureAdditionModifier;
 import scol.items.*;
 import scol.items.generic.ItemBase;
 import scol.packets.client.PacketCapa;
+import scol.packets.server.PacketGetCapability;
 import scol.packets.server.PacketWorldWing;
 import scol.proxy.ClientProxy;
 import scol.proxy.CommonProxy;
@@ -152,9 +159,11 @@ public class Main {
     private void setup(final FMLCommonSetupEvent event) {
         CapabilityManager.INSTANCE.register(scolCapability.DataCapability.class, new scolCapability.DataCapability.Storage(), scolCapability.DataCapability::new);
 
+
         packetInstance = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(modid, "main")).networkProtocolVersion(() -> PTC_VERSION).clientAcceptedVersions(PTC_VERSION::equals).serverAcceptedVersions(PTC_VERSION::equals).simpleChannel();
         packetInstance.registerMessage(0, PacketCapa.class, PacketCapa::encode, PacketCapa::decode, PacketCapa::handle);
         packetInstance.registerMessage(1, PacketWorldWing.class, PacketWorldWing::encode, PacketWorldWing::decode, PacketWorldWing::handle);
+        packetInstance.registerMessage(2, PacketGetCapability.class, PacketGetCapability::encode, PacketGetCapability::decode, PacketGetCapability::handle);
     }
 
     private void onLoadComplete(final FMLLoadCompleteEvent event) {
@@ -165,6 +174,8 @@ public class Main {
         keyBinds.registerKeybinds();
         proxy.initEntityRendering();
     }
+
+
 
     private void enqueueIMC(final InterModEnqueueEvent event) {
         InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> new SlotTypeMessage.Builder("scolwings").icon(new ResourceLocation("curios:slot/empty_wing_slot")).build());
@@ -178,6 +189,24 @@ public class Main {
         @OnlyIn(Dist.CLIENT)
         public ItemStack makeIcon() {return new ItemStack(Main.frostMourne);}
 
+        @Override
+        @OnlyIn(Dist.CLIENT)
+        public void fillItemList(NonNullList<ItemStack> itemStack) {
+            for(Item item : ForgeRegistries.ITEMS) {
+                if (Minecraft.getInstance().player != null && item.equals(Main.zangetsu)) {
+                    ItemStack stack = new ItemStack(Main.zangetsu);
+                    stack.getOrCreateTag().putString("scol.Owner", Minecraft.getInstance().player.getGameProfile().getName());
+                    itemStack.add(stack);
+                    continue;
+                }
+                item.fillItemCategory(this, itemStack);
+                if (item.equals(Main.frostMourne)) {
+                    ItemStack frostMourneWithSouls = new ItemStack(Main.frostMourne);
+                    frostMourneWithSouls.getOrCreateTag().putInt("scol.Souls", 100);
+                    itemStack.add(frostMourneWithSouls);
+                }
+            }
+        }
     };
 
 

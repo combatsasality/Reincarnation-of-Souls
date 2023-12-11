@@ -60,8 +60,8 @@ public class EventHandler {
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getEntity();
                 ItemStack stack = player.getMainHandItem();
                 CompoundNBT nbt = stack.getOrCreateTag();
-                if (stack.getItem().equals(Main.frostMourne) && nbt.getInt("scol.souls") < 100) {
-                    nbt.putInt("scol.souls", nbt.getInt("scol.souls") + 1);
+                if (stack.getItem().equals(Main.frostMourne) && nbt.getInt("scol.Souls") < 100) {
+                    nbt.putInt("scol.Souls", nbt.getInt("scol.Souls") + 1);
                 }   else if (event.getEntity() instanceof EnderDragonEntity) {
                     if (!player.addItem(new ItemStack(Main.dragonSoul))) player.drop(new ItemStack(Main.dragonSoul), true);
                 } else if (event.getEntity() instanceof WitherEntity && Math.random() > 0.75- EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MOB_LOOTING, stack)*0.1) {

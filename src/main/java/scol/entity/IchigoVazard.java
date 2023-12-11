@@ -18,17 +18,21 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.HandSide;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.BossInfo;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerBossInfo;
+import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.registries.ObjectHolder;
 import scol.Main;
 import scol.handlers.HelpHandler;
 import scol.items.Zangetsu;
 import scol.scolCapability;
+
+import java.util.List;
 
 public class IchigoVazard extends MonsterEntity {
     int cooldownSonido = 0;
@@ -95,8 +99,6 @@ public class IchigoVazard extends MonsterEntity {
     public HandSide getMainArm() {
         return HandSide.RIGHT;
     }
-
-
 
     @Override
     public void checkDespawn() {
@@ -191,8 +193,19 @@ public class IchigoVazard extends MonsterEntity {
                     }
                 }
             }
-            //Сделать отключалку полета епты )))
+            List<PlayerEntity> players = this.getPlayersAround(30);
+            if (!players.isEmpty()) {
+                for (PlayerEntity player : players) {
+                    player.abilities.flying &= player.isCreative();
+                    player.onUpdateAbilities();
+                }
+            }
         }
+    }
+
+    public List<PlayerEntity> getPlayersAround(double range)  {
+        AxisAlignedBB box = new AxisAlignedBB(this.getX() - range, this.getY() - range, this.getZ() - range, this.getX() + range, this.getY() + range, this.getZ() + range);
+        return this.level.getEntitiesOfClass(PlayerEntity.class, box, player -> !player.isSpectator() && !(player instanceof FakePlayer));
     }
 
     @Override
@@ -203,7 +216,7 @@ public class IchigoVazard extends MonsterEntity {
                 ItemStack stack = new ItemStack(Main.zangetsu);
                 Zangetsu.setDeathModel(stack, true);
                 Zangetsu.setDisableGravity(stack, true);
-                stack.getOrCreateTag().putString("scol.owner", player.getGameProfile().getName());
+                stack.getOrCreateTag().putString("scol.Owner", player.getGameProfile().getName());
                 CustomItemEntity dropped = new CustomItemEntity(this.level, this.getX(), this.getY(), this.getZ(), stack);
                 dropped.setPickupDelay(40);
                 this.level.addFreshEntity(dropped);

@@ -43,22 +43,22 @@ public class Zangetsu extends SwordItem {
         this.setRegistryName("zangetsu");
     }
     public static boolean isBankai(ItemStack stack) {
-        return stack.getOrCreateTag().getBoolean("scol.bankai");
+        return stack.getOrCreateTag().getBoolean("scol.Bankai");
     }
     public static void setBankai(ItemStack stack, boolean b) {
-        stack.getOrCreateTag().putBoolean("scol.bankai", b);
+        stack.getOrCreateTag().putBoolean("scol.Bankai", b);
     }
     public static boolean isDeathModel(ItemStack stack) {
-        return stack.getOrCreateTag().getBoolean("scol.death");
+        return stack.getOrCreateTag().getBoolean("scol.Death");
     }
     public static void setDeathModel(ItemStack stack, boolean b) {
-        stack.getOrCreateTag().putBoolean("scol.death", b);
+        stack.getOrCreateTag().putBoolean("scol.Death", b);
     }
     public static boolean isDisableGravity(ItemStack stack) {
-        return stack.getOrCreateTag().getBoolean("scol.disable_gravity");
+        return stack.getOrCreateTag().getBoolean("scol.DisableGravity");
     }
     public static void setDisableGravity(ItemStack stack, boolean b) {
-        stack.getOrCreateTag().putBoolean("scol.disable_gravity", b);
+        stack.getOrCreateTag().putBoolean("scol.DisableGravity", b);
     }
 
     @Override
@@ -125,7 +125,7 @@ public class Zangetsu extends SwordItem {
 
             if (activeBankai) {
                 if (!isBankai(stack)) {
-                    setBankai(stack, true);
+                    setBankai(stack, true); // bidlo code in the house :/
                 }
                 if (capability.map(capa -> capa.getActiveBankaiTime()).orElse(0) > 0) {
                     capability.ifPresent(capa -> capa.consumeActiveBankaiTime(1));
@@ -146,7 +146,7 @@ public class Zangetsu extends SwordItem {
     }
 
     public static String getOwner(ItemStack stack) {
-        return stack.getOrCreateTag().getString("scol.owner");
+        return stack.getOrCreateTag().getString("scol.Owner");
     }
 
     public static int getZangetsuModel(ItemStack stack) {

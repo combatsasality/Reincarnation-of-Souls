@@ -30,7 +30,6 @@ import javax.annotation.Nullable;
 import java.util.UUID;
 /**
  * Все это включая CustomItemEntityRenderer спизжено у Aizistral-Studios\Enigmatic-Legacy
- * Спасибо вам ребзя, шо бы я без вас делал
  */
 public class CustomItemEntity extends Entity {
     private static final DataParameter<ItemStack> ITEM = EntityDataManager.defineId(CustomItemEntity.class, DataSerializers.ITEM_STACK);
@@ -168,9 +167,6 @@ public class CustomItemEntity extends Entity {
 
     @Override
     public void remove() {
-        if (!this.level.isClientSide) {
-            //Main.logger.warning("[WARN] Removing Custom item Entity: " + this);
-        }
         super.remove();
     }
 
@@ -287,30 +283,14 @@ public class CustomItemEntity extends Entity {
         return this.owner;
     }
 
-    public void setOwnerId(@Nullable UUID ownerId) {
-        this.owner = ownerId;
-    }
-
     @Nullable
     public UUID getThrowerId() {
         return this.thrower;
     }
 
-    public void setThrowerId(@Nullable UUID throwerId) {
-        this.thrower = throwerId;
-    }
-
     @OnlyIn(Dist.CLIENT)
     public int getAge() {
         return this.age;
-    }
-
-    public void setDefaultPickupDelay() {
-        this.pickupDelay = 10;
-    }
-
-    public void setNoPickupDelay() {
-        this.pickupDelay = 0;
     }
 
     public void setInfinitePickupDelay() {
@@ -319,14 +299,6 @@ public class CustomItemEntity extends Entity {
 
     public void setPickupDelay(int ticks) {
         this.pickupDelay = ticks;
-    }
-
-    public boolean cannotPickup() {
-        return this.pickupDelay > 0;
-    }
-
-    public void makeFakeItem() {
-        this.setInfinitePickupDelay();
     }
 
     @Override
