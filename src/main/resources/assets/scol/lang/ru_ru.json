@@ -21,11 +21,14 @@
     "item.scol.part_mask_fourth": "Осколок маски",
     "item.scol.summon_mask": "Маска призыва",
     "item.scol.zangetsu_training_sword": "Зангецу?",
-    "item.scol.music_disc_scrrxll": "Пластинка",
-    "item.scol.music_disc_scrrxll.desc": "scrrxll - metal 3",
+    "item.scol.music_disc_metal_3": "Пластинка",
+    "item.scol.music_disc_metal_3.desc": "scrrxll - metal 3",
+    "item.scol.music_disc_silent_relapse": "Пластинка",
+    "item.scol.music_disc_silent_relapse.desc": "scrrxll - silent relapse",
     "item.scol.kimano_chest": "Кимано",
     "item.scol.kimano_leggings": "",
     "item.scol.ring_midas": "Кольцо Мидаса",
+    "item.scol.onryo_spawn_egg": "Яйцо призыва Онрё",
 
 
     "attribute.name.scol.magical_damage": "к магическому урону",
@@ -46,13 +49,15 @@
     "tooltip.scol.currentKeybind": "§6Текущая клавиша: §d%1$s",
     "tooltip.scol.inactive": "§4На перезарядке",
     "tooltip.scol.active": "§aАктивно",
+    "tooltip.scol.zangetsu.combatsasality": "§4§lТы думал если меня убить я возьму и покорно умру?",
 
 
     "curios.identifier.scolwings": "Крылья",
 
 
-    "entity.scol.ichigo_vazard": "Пустой Ичиго",
+    "entity.scol.ichigo_vizard": "Пустой Ичиго",
     "entity.scol.zangetsu_entity": "Старик Зангецу",
+    "entity.scol.onryo": "Онрё",
 
     "effect.scol.training_effect": "Тренировка!",
 
@@ -61,7 +66,9 @@
 
 
     "enchantment.scol.vampirism_enchant": "Вампиризм",
+    "enchantment.scol.vampirism_enchant.desc": "Крадет жизненную энергию у врага",
     "enchantment.scol.attack_speed_increase": "Скорость рук",
+    "enchantment.scol.attack_speed_increase.desc": "Увеличивает скорость атаки",
 
 
     "death.attack.frostmourne_hurt": "%1$s был убит Ледяной Скорбью игрока %2$s",

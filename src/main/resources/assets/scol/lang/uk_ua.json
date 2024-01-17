@@ -21,11 +21,14 @@
   "item.scol.part_mask_fourth": "Уламок маски",
   "item.scol.summon_mask": "Маска заклику",
   "item.scol.zangetsu_training_sword": "Зангецу?",
-  "item.scol.music_disc_scrrxll": "Платівка",
-  "item.scol.music_disc_scrrxll.desc": "scrrxll - metal 3",
+  "item.scol.music_disc_metal_3": "Платівка",
+  "item.scol.music_disc_metal_3.desc": "scrrxll - metal 3",
+  "item.scol.music_disc_silent_relapse": "Пластинка",
+  "item.scol.music_disc_silent_relapse.desc": "scrrxll - silent relapse",
   "item.scol.kimano_chest": "Кімано",
   "item.scol.kimano_leggings": "",
   "item.scol.ring_midas": "Кільце Мідаса",
+  "item.scol.onryo_spawn_egg": "Яйце виклику Онре",
 
 
   "attribute.name.scol.magical_damage": "до магічної сили атаки",
@@ -46,13 +49,15 @@
   "tooltip.scol.currentKeybind": "§6Поточна клавіша: §d%1$s",
   "tooltip.scol.inactive": "§4На перезарядці",
   "tooltip.scol.active": "§aАктивно",
+  "tooltip.scol.zangetsu.combatsasality": "§4§lТи думав якщо мене вбити я візьму і покірно помру?",
 
 
   "curios.identifier.scolwings": "Крила",
 
 
-  "entity.scol.ichigo_vazard": "Порожній Ічіґо",
+  "entity.scol.ichigo_vizard": "Порожній Ічіґо",
   "entity.scol.zangetsu_entity": "Дідусь Зангецу",
+  "entity.scol.onryo": "Онре",
 
   "effect.scol.training_effect": "Тренування!",
 
@@ -61,7 +66,9 @@
 
 
   "enchantment.scol.vampirism_enchant": "Вампіризм",
+  "enchantment.scol.vampirism_enchant.desc": "Краде життєву енергію у ворога",
   "enchantment.scol.attack_speed_increase": "Швидкість рук",
+  "enchantment.scol.attack_speed_increase.desc": "Підвищує швидкість атаки",
 
 
   "death.attack.frostmourne_hurt": "%1$s був убитий Крижаною Скорботою гравця %2$s",

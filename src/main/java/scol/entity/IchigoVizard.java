@@ -6,6 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.goal.HurtByTargetGoal;
 import net.minecraft.entity.ai.goal.LookRandomlyGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
@@ -13,6 +14,7 @@ import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
@@ -34,36 +36,36 @@ import scol.scolCapability;
 
 import java.util.List;
 
-public class IchigoVazard extends MonsterEntity {
+public class IchigoVizard extends MonsterEntity {
     int cooldownSonido = 0;
 
-    @ObjectHolder(Main.modid + ":ichigo_vazard")
-    public static EntityType<IchigoVazard> TYPE;
+    @ObjectHolder(Main.modid + ":ichigo_vizard")
+    public static EntityType<IchigoVizard> TYPE;
 
 
-    public IchigoVazard(EntityType<? extends MonsterEntity> type, World world) {
+    public IchigoVizard(EntityType<? extends MonsterEntity> type, World world) {
         super(type, world);
         ItemStack stack = new ItemStack(Main.zangetsu);
         Zangetsu.setBankai(stack, true);
         this.setItemInHand(Hand.MAIN_HAND, stack);
     }
 
-    public IchigoVazard(World worldIn, double x, double y, double z) {
-        this(IchigoVazard.TYPE, worldIn);
+    public IchigoVizard(World worldIn, double x, double y, double z) {
+        this(IchigoVizard.TYPE, worldIn);
         this.setPos(x, y, z);
         this.yRot = this.random.nextFloat() * 360.0F;
     }
-    public IchigoVazard(World worldIn, BlockPos pos) {
+    public IchigoVizard(World worldIn, BlockPos pos) {
         this(worldIn, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public IchigoVazard(World worldIn, Vector3d pos) {
+    public IchigoVizard(World worldIn, Vector3d pos) {
         this(worldIn, pos.x, pos.y, pos.z);
     }
 
     private final ServerBossInfo bossEvent = (ServerBossInfo)(new ServerBossInfo(this.getDisplayName(), BossInfo.Color.PURPLE, BossInfo.Overlay.PROGRESS)).setDarkenScreen(true);
 
-    public static AttributeModifierMap.MutableAttribute setCustomAttrbiutes() {
+    public static AttributeModifierMap.MutableAttribute setCustomAttributes() {
         return MobEntity.createMobAttributes()
                 .add(Attributes.FOLLOW_RANGE, 35.0D)
                 .add(Attributes.MAX_HEALTH, 1000.0d)
@@ -75,9 +77,9 @@ public class IchigoVazard extends MonsterEntity {
 
     @Override
     protected void registerGoals() {
-        super.registerGoals();
-        this.goalSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
-        this.goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, false));
+        this.targetSelector.addGoal(0, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+        this.targetSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, false));
         this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
     }
     @Override
@@ -119,7 +121,7 @@ public class IchigoVazard extends MonsterEntity {
     @Override
     public boolean doHurtTarget(Entity entity) {
         if (this.canAttack((LivingEntity) entity)) {
-            entity.hurt(DamageSource.mobAttack(this).bypassArmor(), HelpHandler.getRandomInRange(5,8) * 2);
+            entity.hurt(DamageSource.mobAttack(this).bypassArmor(), HelpHandler.getRandomInt(this.random, 5,8) * 2);
             return true;
         }
         return false;
@@ -127,7 +129,7 @@ public class IchigoVazard extends MonsterEntity {
 
     @Override
     public boolean hurt(DamageSource source, float damage) {
-        if (Math.random() > 0.66) {
+        if (this.random.nextFloat() > 0.66) {
             if (source.getEntity() instanceof LivingEntity) {
                 LivingEntity attacker = (LivingEntity) source.getEntity();
                 float returndamage = (float) (damage * 0.75);
@@ -174,21 +176,14 @@ public class IchigoVazard extends MonsterEntity {
         if (this.isAlive() && !this.level.isClientSide()) {
             if (this.cooldownSonido != 0) {
                 this.cooldownSonido--;
-            } else if (this.lastHurtByPlayer != null) {
-                PlayerEntity player = this.lastHurtByPlayer;
-                if (this.canAttack(player)) {
-                    Path path = this.getNavigation().createPath(player, 1);
-                    if (!this.canSee(player)) {
-                        this.setPos(player.getX(), player.getY(), player.getZ());
+            } else if (this.getTarget() != null) {
+                LivingEntity target = this.getTarget();
+                if (this.canAttack(target)) {
+                    Path path = this.getNavigation().createPath(target, 1);
+                    if (!this.canSee(target) || (path == null || !path.canReach()) || Math.abs(Math.abs(target.getY()) - Math.abs(this.getY())) > 1.5) {
+                        this.setPos(target.getX(), target.getY(), target.getZ());
                         this.cooldownSonido = 200;
-                        this.playSound(Main.sonidoSound, 50f, 1f);
-                    } else if (path == null || !path.canReach()) {
-                        this.setPos(player.getX(), player.getY(), player.getZ());
-                        this.cooldownSonido = 200;
-                        this.playSound(Main.sonidoSound, 50f, 1f);
-                    } else if (Math.abs(Math.abs(player.getY()) - Math.abs(this.getY())) > 1.5) {
-                        this.setPos(player.getX(), player.getY(), player.getZ());
-                        this.cooldownSonido = 200;
+                        this.doHurtTarget(target);
                         this.playSound(Main.sonidoSound, 50f, 1f);
                     }
                 }

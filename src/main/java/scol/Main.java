@@ -3,11 +3,11 @@ package scol;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.item.*;
-import net.minecraft.item.crafting.SmithingRecipe;
 import net.minecraft.potion.*;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
@@ -15,17 +15,16 @@ import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.event.lifecycle.*;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -36,7 +35,8 @@ import org.apache.logging.log4j.Logger;
 import scol.enchantment.AttackSpeedEnchant;
 import scol.enchantment.VampiricEnchant;
 import scol.entity.CustomItemEntity;
-import scol.entity.IchigoVazard;
+import scol.entity.IchigoVizard;
+import scol.entity.Onryo;
 import scol.entity.projectile.PowerWaveEntity;
 import scol.handlers.EventHandler;
 import scol.handlers.KeyBindHandler;
@@ -45,6 +45,7 @@ import scol.handlers.lootModifiers.StructureAdditionModifier;
 import scol.items.*;
 import scol.items.generic.ItemBase;
 import scol.packets.client.PacketCapa;
+import scol.packets.client.PacketSetModelType;
 import scol.packets.server.PacketGetCapability;
 import scol.packets.server.PacketWorldWing;
 import scol.proxy.ClientProxy;
@@ -52,15 +53,17 @@ import scol.proxy.CommonProxy;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 
 import javax.annotation.Nonnull;
+import java.awt.*;
+import java.util.Properties;
+import java.util.function.Supplier;
 
 @Mod(Main.modid)
 public class Main {
     public static final CommonProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
     public static final String modid = "scol";
     public static final Logger logger = LogManager.getLogger();
-    public static SimpleChannel packetInstance;
     private static final String PTC_VERSION = "1";
-
+    public static SimpleChannel packetInstance;
     public static Attribute MAGICAL_DAMAGE;
     public static KeyBindHandler keyBinds;
     public static TestItem testItem;
@@ -69,10 +72,36 @@ public class Main {
     public static ItemBase handleFrost;
     public static PhoenixRing phoenixRing;
     public static Zangetsu zangetsu;
+    public static ForgeSpawnEggItem onryoSpawnEgg;
+    public static final ItemGroup TAB = new ItemGroup("scolTab") {
+        @Override
+        @OnlyIn(Dist.CLIENT)
+        public ItemStack makeIcon() {
+            return new ItemStack(Main.frostMourne);
+        }
+
+        @Override
+        @OnlyIn(Dist.CLIENT)
+        public void fillItemList(NonNullList<ItemStack> itemStack) {
+            for (Item item : ForgeRegistries.ITEMS) {
+                if (Minecraft.getInstance().player != null && item.equals(Main.zangetsu)) {
+                    ItemStack stack = new ItemStack(Main.zangetsu);
+                    stack.getOrCreateTag().putString("scol.Owner", Minecraft.getInstance().player.getGameProfile().getName());
+                    itemStack.add(stack);
+                    continue;
+                }
+                item.fillItemCategory(this, itemStack);
+                if (item.equals(Main.frostMourne)) {
+                    ItemStack frostMourneWithSouls = new ItemStack(Main.frostMourne);
+                    frostMourneWithSouls.getOrCreateTag().putInt("scol.Souls", 100);
+                    itemStack.add(frostMourneWithSouls);
+                }
+            }
+        }
+    };
     public static InactivePhoenixRing inactivePhoenixRing;
     public static ItemBase dragonSoul;
     public static ItemBase witherSoul;
-
     public static ItemBase firstPartMask;
     public static ItemBase secondPartMask;
     public static ItemBase thirdPartMask;
@@ -80,36 +109,39 @@ public class Main {
     public static SummonMask summonMask;
     public static WorldWing worldWing;
     public static RingMidas ringMidas;
-
     public static SoundEvent sonidoSound;
-    public static SoundEvent bossMusicForFight;
-    public static SoundEvent bossMusicForDisc;
-    public static MusicDiscItem scrrxllDisc;
+    public static SoundEvent metalMusic;
+    public static SoundEvent silentRelapseMusic;
+    public static MusicDiscItem metalDisc;
+    public static MusicDiscItem silentRelapseDisc;
+
     public static VampiricEnchant vampiricEnchant;
     public static AttackSpeedEnchant attackSpeedEnchant;
     public static Potion potionHeroOfVillage;
     public static Potion potionStrongHeroOfVillage;
     public static Potion potionLongHeroOfVillage;
 
-
     public Main() {
-        //Attributes
+        // Attributes
         MAGICAL_DAMAGE = new RangedAttribute("attribute.name.scol.magical_damage", 0.0D, 0.0d, 100000000).setRegistryName("magical_damage").setSyncable(true);
 
-        //Key binds
+        // Key binds
         keyBinds = new KeyBindHandler();
 
-        //Sounds
+        // Sounds
         sonidoSound = new SoundEvent(new ResourceLocation("scol:sonido")).setRegistryName("sonido");
-        bossMusicForFight = new SoundEvent(new ResourceLocation("scol:music.boss_fight")).setRegistryName("music.boss_fight");
-        bossMusicForDisc = new SoundEvent(new ResourceLocation("scol:music.boss_music")).setRegistryName("music.boss_music");
+        metalMusic = new SoundEvent(new ResourceLocation("scol:music.metal_3")).setRegistryName("music.metal_3");
+        silentRelapseMusic = new SoundEvent(new ResourceLocation("scol:music.silent_relapse")).setRegistryName("music.silent_relapse");
 
         // Music disc
-        scrrxllDisc = new MusicDiscItem(1, bossMusicForDisc, new Item.Properties().rarity(Rarity.EPIC).stacksTo(1).tab(Main.TAB));
-        scrrxllDisc.setRegistryName("music_disc_scrrxll");
+        Item.Properties discProperties = new Item.Properties().rarity(Rarity.EPIC).stacksTo(1).tab(Main.TAB);
+        metalDisc = new MusicDiscItem(1, () -> metalMusic, discProperties);
+        metalDisc.setRegistryName("music_disc_metal_3");
+        silentRelapseDisc = new MusicDiscItem(1, () -> silentRelapseMusic, discProperties);
+        silentRelapseDisc.setRegistryName("music_disc_silent_relapse");
 
 
-        //Items
+        // Items
         testItem = new TestItem();
         frostMourne = new FrostMourne();
         bladeFrost = new ItemBase("frostmourne_handle", new Item.Properties().fireResistant());
@@ -127,7 +159,7 @@ public class Main {
         zangetsu = new Zangetsu();
         ringMidas = new RingMidas();
 
-        //Enchantments
+        // Enchantments
         vampiricEnchant = new VampiricEnchant();
         attackSpeedEnchant = new AttackSpeedEnchant();
 
@@ -139,13 +171,16 @@ public class Main {
         potionStrongHeroOfVillage = new Potion("hero_of_village", new EffectInstance(Effects.HERO_OF_THE_VILLAGE, 1800, 1));
         potionStrongHeroOfVillage.setRegistryName("potion_strong_hero_of_village");
 
-        //Potion brewing
+        // Potion brewing
         PotionBrewing.addMix(Potions.WATER, Items.EMERALD_BLOCK, potionHeroOfVillage);
         PotionBrewing.addMix(potionHeroOfVillage, Items.BROWN_MUSHROOM, potionStrongHeroOfVillage);
         PotionBrewing.addMix(potionHeroOfVillage, Items.GLISTERING_MELON_SLICE, potionLongHeroOfVillage);
 
-        //Regs
+        // Spawn Egg
+        onryoSpawnEgg = new ForgeSpawnEggItem(() -> Onryo.TYPE, 0xFFFFFF, 0x40E0D0, new Item.Properties().tab(ItemGroup.TAB_MISC));
+        onryoSpawnEgg.setRegistryName("onryo_spawn_egg");
 
+        // Regs
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onLoadComplete);
@@ -159,11 +194,11 @@ public class Main {
     private void setup(final FMLCommonSetupEvent event) {
         CapabilityManager.INSTANCE.register(scolCapability.DataCapability.class, new scolCapability.DataCapability.Storage(), scolCapability.DataCapability::new);
 
-
         packetInstance = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(modid, "main")).networkProtocolVersion(() -> PTC_VERSION).clientAcceptedVersions(PTC_VERSION::equals).serverAcceptedVersions(PTC_VERSION::equals).simpleChannel();
         packetInstance.registerMessage(0, PacketCapa.class, PacketCapa::encode, PacketCapa::decode, PacketCapa::handle);
         packetInstance.registerMessage(1, PacketWorldWing.class, PacketWorldWing::encode, PacketWorldWing::decode, PacketWorldWing::handle);
         packetInstance.registerMessage(2, PacketGetCapability.class, PacketGetCapability::encode, PacketGetCapability::decode, PacketGetCapability::handle);
+        packetInstance.registerMessage(3, PacketSetModelType.class, PacketSetModelType::encode, PacketSetModelType::decode, PacketSetModelType::handle);
     }
 
     private void onLoadComplete(final FMLLoadCompleteEvent event) {
@@ -175,43 +210,16 @@ public class Main {
         proxy.initEntityRendering();
     }
 
-
-
     private void enqueueIMC(final InterModEnqueueEvent event) {
         InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> new SlotTypeMessage.Builder("scolwings").icon(new ResourceLocation("curios:slot/empty_wing_slot")).build());
         InterModComms.sendTo("curios", SlotTypeMessage.REGISTER_TYPE, () -> new SlotTypeMessage.Builder("ring").size(2).build());
     }
 
-    private void processIMC(final InterModProcessEvent event) {}
+    private void processIMC(final InterModProcessEvent event) {
+    }
 
-    public static final ItemGroup TAB = new ItemGroup("scolTab") {
-        @Override
-        @OnlyIn(Dist.CLIENT)
-        public ItemStack makeIcon() {return new ItemStack(Main.frostMourne);}
-
-        @Override
-        @OnlyIn(Dist.CLIENT)
-        public void fillItemList(NonNullList<ItemStack> itemStack) {
-            for(Item item : ForgeRegistries.ITEMS) {
-                if (Minecraft.getInstance().player != null && item.equals(Main.zangetsu)) {
-                    ItemStack stack = new ItemStack(Main.zangetsu);
-                    stack.getOrCreateTag().putString("scol.Owner", Minecraft.getInstance().player.getGameProfile().getName());
-                    itemStack.add(stack);
-                    continue;
-                }
-                item.fillItemCategory(this, itemStack);
-                if (item.equals(Main.frostMourne)) {
-                    ItemStack frostMourneWithSouls = new ItemStack(Main.frostMourne);
-                    frostMourneWithSouls.getOrCreateTag().putInt("scol.Souls", 100);
-                    itemStack.add(frostMourneWithSouls);
-                }
-            }
-        }
-    };
-
-
-    @Mod.EventBusSubscriber(bus=Mod.EventBusSubscriber.Bus.MOD)
-    public static class RegistryEvents{
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class RegistryEvents {
         @SubscribeEvent
         public static void itemRegistry(final RegistryEvent.Register<Item> event) {
             event.getRegistry().registerAll(
@@ -231,9 +239,12 @@ public class Main {
                     summonMask,
                     zangetsu,
                     ringMidas,
-                    scrrxllDisc
+                    metalDisc,
+                    onryoSpawnEgg,
+                    silentRelapseDisc
             );
         }
+
         @SubscribeEvent
         public static void potionRegistry(final RegistryEvent.Register<Potion> event) {
             event.getRegistry().registerAll(
@@ -242,6 +253,7 @@ public class Main {
                     potionLongHeroOfVillage
             );
         }
+
         @SubscribeEvent
         public static void registerEnchants(final RegistryEvent.Register<Enchantment> event) {
             event.getRegistry().registerAll(
@@ -254,6 +266,7 @@ public class Main {
         public static void registerCustomAttribute(final RegistryEvent.Register<Attribute> event) {
             event.getRegistry().register(MAGICAL_DAMAGE);
         }
+
         @SubscribeEvent
         public static void registerModifierSerializers(@Nonnull final RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
             event.getRegistry().registerAll(
@@ -278,35 +291,38 @@ public class Main {
         public static void registerSounds(final RegistryEvent.Register<SoundEvent> event) {
             event.getRegistry().registerAll(
                     sonidoSound,
-                    bossMusicForFight,
-                    bossMusicForDisc
+                    metalMusic,
+                    silentRelapseMusic
             );
         }
 
         @SubscribeEvent
         public static void onEntitiesRegistry(final RegistryEvent.Register<EntityType<?>> event) {
-            event.getRegistry().register(EntityType.Builder.<CustomItemEntity>of(
-                    CustomItemEntity::new, EntityClassification.MISC).sized(0.25F, 2.0F)
-                    .setTrackingRange(64).setCustomClientFactory((spawnEntity, world) -> new CustomItemEntity(CustomItemEntity.TYPE, world))
-                    .setUpdateInterval(2).setShouldReceiveVelocityUpdates(true).build(modid+":custom_item_entity_ent").
-                    setRegistryName(new ResourceLocation(modid, "custom_item_entity_ent")));
-
-            event.getRegistry().register(EntityType.Builder.<IchigoVazard>of(
-                    IchigoVazard::new, EntityClassification.MISC).sized(0.75f, 1.85f)
-                    .setTrackingRange(64).setCustomClientFactory((spawnEntity, world) -> new IchigoVazard(IchigoVazard.TYPE, world))
-                    .build(Main.modid+":ichigo_vazard").setRegistryName("ichigo_vazard"));
-
-            event.getRegistry().register(EntityType.Builder.<PowerWaveEntity>of(
-                            PowerWaveEntity::new, EntityClassification.MISC).sized(4.0F, 0.1F)
+            event.getRegistry().registerAll(
+                    EntityType.Builder.<CustomItemEntity>of(CustomItemEntity::new, EntityClassification.MISC).sized(0.25F, 2.0F)
+                            .setTrackingRange(64).setCustomClientFactory((spawnEntity, world) -> new CustomItemEntity(CustomItemEntity.TYPE, world))
+                            .setUpdateInterval(2).setShouldReceiveVelocityUpdates(true).build(modid + ":custom_item_entity_ent").
+                            setRegistryName(new ResourceLocation(modid, "custom_item_entity_ent")),
+                    EntityType.Builder.<IchigoVizard>of(IchigoVizard::new, EntityClassification.MISC).sized(0.75f, 1.85f)
+                            .setTrackingRange(64).setCustomClientFactory((spawnEntity, world) -> new IchigoVizard(IchigoVizard.TYPE, world))
+                            .build(Main.modid + ":ichigo_vizard").setRegistryName("ichigo_vizard"),
+                    EntityType.Builder.<PowerWaveEntity>of(PowerWaveEntity::new, EntityClassification.MISC).sized(4.0F, 0.1F)
                             .noSave()
-                    .setCustomClientFactory((spawnEntity, world) -> new PowerWaveEntity(PowerWaveEntity.TYPE, world))
-                    .setTrackingRange(64).build(Main.modid+":power_wave").setRegistryName("power_wave"));
+                            .setCustomClientFactory((spawnEntity, world) -> new PowerWaveEntity(PowerWaveEntity.TYPE, world))
+                            .setTrackingRange(64).build(Main.modid + ":power_wave").setRegistryName("power_wave"),
+                    EntityType.Builder.<Onryo>of(Onryo::new, EntityClassification.MISC
+                            ).sized(0.6f, 1.95f)
+                            .setTrackingRange(64).setCustomClientFactory((spawnEntity, world) -> new Onryo(Onryo.TYPE, world))
+                            .build(Main.modid + ":onryo").setRegistryName("onryo")
+            );
+
 
         }
 
         @SubscribeEvent
         public static void addEntityAttributes(EntityAttributeCreationEvent event) {
-            event.put(IchigoVazard.TYPE, IchigoVazard.setCustomAttrbiutes().build());
+            event.put(IchigoVizard.TYPE, IchigoVizard.setCustomAttributes().build());
+            event.put(Onryo.TYPE, Onryo.setCustomAttributes().build());
         }
 
     }

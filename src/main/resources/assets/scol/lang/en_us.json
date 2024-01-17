@@ -15,17 +15,20 @@
   "item.scol.world_wing": "World Wings",
   "item.scol.zangetsu": "Zangetsu",
   "item.scol.tensa_zangetsu": "Tensa Zangetsu",
-  "item.scol.part_mask_first": "Mask fragment",
-  "item.scol.part_mask_second": "Mask fragment",
-  "item.scol.part_mask_third": "Mask fragment",
-  "item.scol.part_mask_fourth": "Mask fragment",
-  "item.scol.summon_mask": "Summon mask",
+  "item.scol.part_mask_first": "Mask Fragment",
+  "item.scol.part_mask_second": "Mask Fragment",
+  "item.scol.part_mask_third": "Mask Fragment",
+  "item.scol.part_mask_fourth": "Mask Fragment",
+  "item.scol.summon_mask": "Summon Mask",
   "item.scol.zangetsu_training_sword": "Zangetsu?",
-  "item.scol.music_disc_scrrxll": "Music Disc",
-  "item.scol.music_disc_scrrxll.desc": "scrrxll - metal 3",
+  "item.scol.music_disc_metal_3": "Music Disc",
+  "item.scol.music_disc_metal_3.desc": "scrrxll - metal 3",
+  "item.scol.music_disc_silent_relapse": "Music Disc",
+  "item.scol.music_disc_silent_relapse.desc": "scrrxll - silent relapse",
   "item.scol.kimano_chest": "Kimano",
   "item.scol.kimano_leggings": "",
   "item.scol.ring_midas": "Midas Ring",
+  "item.scol.onryo_spawn_egg": "Onryo Spawn Egg",
 
 
   "attribute.name.scol.magical_damage": "Magical Damage",
@@ -46,13 +49,15 @@
   "tooltip.scol.currentKeybind": "§6Current Key: §d%1$s",
   "tooltip.scol.inactive": "§4In cooldown",
   "tooltip.scol.active": "§aActive",
+  "tooltip.scol.zangetsu.combatsasality": "§4§lDid you think if you killed me, I'd just die meekly?",
 
 
   "curios.identifier.scolwings": "Wings",
 
 
-  "entity.scol.ichigo_vazard": "Vasto Lorde Ichigo",
+  "entity.scol.ichigo_vizard": "Vasto Lorde Ichigo",
   "entity.scol.zangetsu_entity": "Old man Zangetsu",
+  "entity.scol.onryo": "Onryo",
 
   "effect.scol.training_effect": "Training!",
 
@@ -61,7 +66,9 @@
 
 
   "enchantment.scol.vampirism_enchant": "Vampirism",
-  "enchantment.scol.attack_speed_increase": "Hand speed",
+  "enchantment.scol.vampirism_enchant.desc": "Steals life energy from the enemy",
+  "enchantment.scol.attack_speed_increase": "Hand Speed",
+  "enchantment.scol.attack_speed_increase.desc": "Increases attack speed",
 
 
   "death.attack.frostmourne_hurt": "%1$s was killed by the FrostMourne player %2$s",
@@ -71,8 +78,8 @@
   "key.categories.scol": "Soul Collector",
   "key.world_wing": "Switch the speed of the wings",
 
-  "item.minecraft.potion.effect.hero_of_village": "Potion of the village hero",
-  "item.minecraft.splash_potion.effect.hero_of_village": "Splash Potion of the village hero",
-  "item.minecraft.lingering_potion.effect.hero_of_village": "Lingering Potion of the village hero",
-  "item.minecraft.tipped_arrow.effect.hero_of_village": "Arrow of the village hero"
+  "item.minecraft.potion.effect.hero_of_village": "Potion Of The Village Hero",
+  "item.minecraft.splash_potion.effect.hero_of_village": "Splash Potion Of The Village Hero",
+  "item.minecraft.lingering_potion.effect.hero_of_village": "Lingering Potion Of The Village Hero",
+  "item.minecraft.tipped_arrow.effect.hero_of_village": "Arrow Of The Village Hero"
 }

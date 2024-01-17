@@ -1,7 +1,7 @@
 {
   "display": {
     "icon": {
-      "item": "scol:music_disc_scrrxll"
+      "item": "scol:music_disc_metal_3"
     },
     "title": {
       "translate": "advancement.scol_advancements"
@@ -16,14 +16,12 @@
   },
   "criteria": {
     "music_disc": {
-      "trigger": "minecraft:inventory_changed",
-      "conditions": {
-        "items": [
-          {
-            "item": "scol:music_disc_scrrxll"
-          }
-        ]
-      }
+      "trigger": "minecraft:tick"
     }
-  }
+  },
+  "requirements": [
+    [
+      "music_disc"
+    ]
+  ]
 }

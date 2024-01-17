@@ -4,7 +4,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemUseContext;
 import net.minecraft.util.ActionResultType;
 import scol.Main;
-import scol.entity.IchigoVazard;
+import scol.entity.IchigoVizard;
 
 public class SummonMask extends Item {
 
@@ -16,7 +16,7 @@ public class SummonMask extends Item {
 
     @Override
     public ActionResultType useOn(ItemUseContext context) {
-        boolean summoned = context.getLevel().addFreshEntity(new IchigoVazard(context.getLevel(), context.getClickLocation()));
+        boolean summoned = context.getLevel().addFreshEntity(new IchigoVizard(context.getLevel(), context.getClickLocation()));
         if (summoned) {
             context.getItemInHand().setCount(context.getItemInHand().getCount()-1);
         }

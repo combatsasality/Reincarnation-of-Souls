@@ -26,7 +26,6 @@ public class PacketCapa {
     public static void handle(PacketCapa msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ClientPlayerEntity player = Minecraft.getInstance().player;
-
             player.getCapability(scolCapability.NeedVariables).ifPresent(cap -> {
                 cap.setNBT(msg.nbt);
             });

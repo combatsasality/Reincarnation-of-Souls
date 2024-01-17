@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -27,6 +28,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.entity.PartEntity;
@@ -36,6 +39,9 @@ import scol.entity.projectile.PowerWaveEntity;
 import scol.handlers.HelpHandler;
 import scol.handlers.ItemTier;
 import scol.scolCapability;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class Zangetsu extends SwordItem {
     public Zangetsu() {
@@ -59,6 +65,14 @@ public class Zangetsu extends SwordItem {
     }
     public static void setDisableGravity(ItemStack stack, boolean b) {
         stack.getOrCreateTag().putBoolean("scol.DisableGravity", b);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> tooltip, ITooltipFlag tooltipFlag) {
+        if (stack.getHoverName().getString().equals("combatsasality")) {
+            tooltip.add(new TranslationTextComponent("tooltip.scol.zangetsu.combatsasality"));
+        }
+        super.appendHoverText(stack, world, tooltip, tooltipFlag);
     }
 
     @Override
@@ -130,11 +144,11 @@ public class Zangetsu extends SwordItem {
                 if (capability.map(capa -> capa.getActiveBankaiTime()).orElse(0) > 0) {
                     capability.ifPresent(capa -> capa.consumeActiveBankaiTime(1));
                 }
-                player.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 200, levelBankai-1, false, false, true, null));
-                player.addEffect(new EffectInstance(Effects.DIG_SPEED, 200, levelBankai-1, false, false, true, null));
-                player.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 200, levelBankai-1, false, false, true, null));
-                player.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 200, levelBankai-1, false, false, true, null));
-                player.addEffect(new EffectInstance(Effects.REGENERATION, 200, levelBankai-1, false, false, true, null));
+                player.addEffect(new EffectInstance(Effects.MOVEMENT_SPEED, 200, levelBankai-1, false, false, false, null));
+                player.addEffect(new EffectInstance(Effects.DIG_SPEED, 200, levelBankai-1, false, false, false, null));
+                player.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 200, levelBankai-1, false, false, false, null));
+                player.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 200, levelBankai-1, false, false, false, null));
+                player.addEffect(new EffectInstance(Effects.REGENERATION, 200, levelBankai-1, false, false, false, null));
                 player.getFoodData().eat(20, 1.0F);
                 return;
             }

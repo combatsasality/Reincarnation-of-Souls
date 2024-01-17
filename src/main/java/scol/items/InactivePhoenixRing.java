@@ -52,11 +52,6 @@ public class InactivePhoenixRing extends Item implements ICurioItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
-        return super.getAttributeModifiers(slot, stack);
-    }
-
-    @Override
     public boolean canEquipFromUse(SlotContext slotContext, ItemStack stack) {
         return false;
     }
@@ -64,15 +59,6 @@ public class InactivePhoenixRing extends Item implements ICurioItem {
     @Override
     public boolean canUnequip(String identifier, LivingEntity livingEntity, ItemStack stack) {
         return livingEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity) livingEntity).isCreative() || livingEntity instanceof ServerPlayerEntity && CuriosApi.getCuriosHelper().findFirstCurio(livingEntity, Main.phoenixRing).isPresent();
-    }
-
-    @Override
-    public void curioTick(String identifier, int index, LivingEntity livingEntity, ItemStack stack) {
-        if (livingEntity.getHealth() > livingEntity.getMaxHealth()) {
-            //livingEntity.hurt(new DamageSource("inactive_phoenix_ring_damage"), livingEntity.getHealth() - livingEntity.getMaxHealth());
-            //livingEntity.heal(1.0F);
-            //livingEntity.setHealth(livingEntity.getMaxHealth());
-        }
     }
 
     @Nonnull

@@ -52,7 +52,7 @@ public class CustomItemEntityRenderer extends EntityRenderer<CustomItemEntity> {
     @SuppressWarnings({ "deprecation", "unused" })
     @Override
     public void render(CustomItemEntity entityIn, float entityYaw, float partialTicks, MatrixStack matrixStackIn, IRenderTypeBuffer bufferIn, int packedLightIn) {
-        if (!Minecraft.getInstance().player.isAlive() && Math.sqrt(entityIn.distanceToSqr(Minecraft.getInstance().player.getX(), Minecraft.getInstance().player.getEyeY(), Minecraft.getInstance().player.getZ())) <= 1.0)
+        if (!Minecraft.getInstance().player.isAlive())
             return;
         if (Zangetsu.isDisableGravity(entityIn.getItem())) {
             matrixStackIn.pushPose();

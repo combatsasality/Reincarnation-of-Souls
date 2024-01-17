@@ -31,9 +31,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
@@ -43,11 +41,13 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import scol.Main;
 import scol.entity.CustomItemEntity;
+import scol.entity.Onryo;
 import scol.items.PhoenixRing;
 import scol.items.Zangetsu;
 import scol.scolCapability;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import java.util.Iterator;
 import java.util.Random;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -157,12 +157,12 @@ public class EventHandler {
                     int dragonSoul = player.inventory.findSlotMatchingItem(new ItemStack(Main.dragonSoul));
                     int witherSoul = player.inventory.findSlotMatchingItem(new ItemStack(Main.witherSoul));
                     if (dragonSoul != -1 && witherSoul != -1) {
+                        CuriosApi.getCuriosHelper().getCuriosHandler(player).map(capa -> capa.getCurios().get("ring")).get().getStacks().setStackInSlot(slotResult.getSlotContext().getIndex(), new ItemStack(Main.phoenixRing));
                         event.setCanceled(true);
-                        player.setHealth(player.getMaxHealth());
+                        player.setHealth(0.5F);
                         player.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 30, 0));
                         player.inventory.getItem(dragonSoul).shrink(1);
                         player.inventory.getItem(witherSoul).shrink(1);
-                        CuriosApi.getCuriosHelper().getCuriosHandler(player).map(capa -> capa.getCurios().get("ring")).get().getStacks().setStackInSlot(slotResult.getSlotContext().getIndex(), new ItemStack(Main.phoenixRing));
                     }
                 }
             });
@@ -193,10 +193,10 @@ public class EventHandler {
         if (event.getEntity() instanceof ItemEntity && ((ItemEntity) event.getEntity()).getItem().getItem().equals(Main.zangetsu)) {
             ItemEntity ent = (ItemEntity) event.getEntity();
             if (Zangetsu.getOwner(ent.getItem()).isEmpty()) {
-                ent.remove();
+                event.setCanceled(true);
                 return;
             }
-            ent.remove();
+            event.setCanceled(true);
             CustomItemEntity newEntity = new CustomItemEntity(ent.level, ent.getX(), ent.getY(), ent.getZ(), ent.getItem());
             newEntity.setPickupDelay(40);
             newEntity.setDeltaMovement(ent.getDeltaMovement());
@@ -208,17 +208,16 @@ public class EventHandler {
     @SubscribeEvent
     public void DropZangetsu(LivingDropsEvent event) {
         if (event.getEntity() instanceof ServerPlayerEntity) {
-            if (event.getDrops().stream().anyMatch(t -> t.getItem().getItem().getRegistryName().equals(new ResourceLocation("enigmaticlegacy:enigmatic_amulet")))) {
-                return;
-            }
             ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
             boolean check = false;
-
-            for (ItemEntity entity : event.getDrops()) {
+            Iterator<ItemEntity> iterator = event.getDrops().iterator();
+            while (iterator.hasNext()) {
+                ItemEntity entity = iterator.next();
                 if (entity.getItem().getItem().equals(Main.zangetsu)) {
                     if (check || Zangetsu.getOwner(entity.getItem()).isEmpty()) {
                         entity.remove();
                     } else {
+                        iterator.remove();
                         ItemStack stack = entity.getItem();
                         Zangetsu.setDeathModel(stack, true);
                         if (!stack.getHoverName().getString().equalsIgnoreCase("combatsasality")) {
@@ -238,7 +237,7 @@ public class EventHandler {
         if (event.getSource().getEntity() instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getEntity();
             if (CuriosApi.getCuriosHelper().findFirstCurio(player, Main.ringMidas).isPresent()) {
-                float random = EnchantmentHelper.getMobLooting(player) * 0.01F + new Random().nextFloat();
+                float random = EnchantmentHelper.getMobLooting(player) * 0.01F + player.getRandom().nextFloat();
                 if (random > 0.70) {
                     ItemEntity item = new ItemEntity(event.getEntity().level, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ());
                     if (random > 0.97) {
@@ -276,7 +275,7 @@ public class EventHandler {
         }
     }
     @SubscribeEvent
-    public void doSpeedEnchant (ItemAttributeModifierEvent event) {
+    public void doSpeedEnchant(ItemAttributeModifierEvent event) {
         int levelEnchant = EnchantmentHelper.getItemEnchantmentLevel(Main.attackSpeedEnchant, event.getItemStack());
         if (levelEnchant != 0) {
             if (event.getSlotType().equals(EquipmentSlotType.MAINHAND) && event.getItemStack().getItem() instanceof SwordItem) {
@@ -288,6 +287,26 @@ public class EventHandler {
                     event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", attack_damage, AttributeModifier.Operation.ADDITION));
                 }
                 event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", attack_speed+(levelEnchant*0.5), AttributeModifier.Operation.ADDITION));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void summonOnryo(LivingDeathEvent event) {
+        if (!event.getEntity().level.isClientSide && event.getEntity() instanceof LivingEntity) {
+            LivingEntity entity = (LivingEntity) event.getEntity();
+            if (entity.getRandom().nextDouble() > 0.99) {
+                entity.level.addFreshEntity(new Onryo(entity.level, entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void worldWingBreakSpeed(PlayerEvent.BreakSpeed event) {
+        PlayerEntity player = event.getPlayer();
+        if (CuriosApi.getCuriosHelper().findFirstCurio(player, predicate -> predicate.getItem().equals(Main.worldWing)).isPresent()) {
+            if (!player.isOnGround()) {
+                if (event.getOriginalSpeed() < event.getNewSpeed() * 5) event.setNewSpeed(event.getNewSpeed() * 5F);
             }
         }
     }

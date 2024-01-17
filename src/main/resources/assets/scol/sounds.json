@@ -5,18 +5,18 @@
       "scol:sonido"
     ]
   },
-  "music.boss_fight": {
+  "music.metal_3": {
     "sounds": [
       {
-        "name": "scol:music/boss_fight",
+        "name": "scol:music/scrrxll__metal_3",
         "stream": true
       }
     ]
   },
-  "music.boss_music": {
+  "music.silent_relapse": {
     "sounds": [
       {
-        "name": "scol:music/boss_music",
+        "name": "scol:music/scrrxll__silent_relapse",
         "stream": true
       }
     ]

@@ -6,9 +6,9 @@ import net.minecraft.client.renderer.entity.model.BipedModel;
 import net.minecraft.client.renderer.model.ModelRenderer;
 import net.minecraft.util.HandSide;
 import net.minecraft.util.math.MathHelper;
-import scol.entity.IchigoVazard;
+import scol.entity.IchigoVizard;
 
-public class IchigoVazardModel<T extends IchigoVazard> extends BipedModel<T>{
+public class IchigoVizardModel<T extends IchigoVizard> extends BipedModel<T>{
     private final ModelRenderer Head;
     private final ModelRenderer Body;
     private final ModelRenderer RightArm;
@@ -18,7 +18,7 @@ public class IchigoVazardModel<T extends IchigoVazard> extends BipedModel<T>{
 
 
 
-    public IchigoVazardModel() {
+    public IchigoVizardModel() {
         super(1.0f);
         texWidth = 64;
         texHeight = 64;

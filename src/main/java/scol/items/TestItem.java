@@ -8,6 +8,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.ActionResult;
@@ -42,24 +43,31 @@ public class TestItem extends Item {
     }
 
     @Override
-    public void inventoryTick(ItemStack p_77663_1_, World p_77663_2_, Entity entity, int p_77663_4_, boolean p_77663_5_) {
+    public void inventoryTick(ItemStack p_77663_1_, World world, Entity entity, int p_77663_4_, boolean p_77663_5_) {
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) entity;
 //            Main.packetInstance.send(PacketDistributor.PLAYER.with(() -> player), new PacketCapa(entity.getCapability(scolCapability.NeedVariables).map(capa -> capa.getNBT()).orElse(null)));
             player.setHealth(player.getMaxHealth());
             player.addEffect(new EffectInstance(Effects.SATURATION, 1000, 1, true, false));
             player.addEffect(new EffectInstance(Effects.NIGHT_VISION, 1000, 1, true, false));
+        } else {
+//            world.addParticle(ParticleTypes.ENCHANT, entity.getX(), entity.getY(), entity.getZ(), 0, 0, 0);
         }
-        super.inventoryTick(p_77663_1_, p_77663_2_, entity, p_77663_4_, p_77663_5_);
+
+        super.inventoryTick(p_77663_1_, world, entity, p_77663_4_, p_77663_5_);
     }
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        if (player.isCrouching()) {
-            player.setHealth(0);
-        } else {
-            player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> capa.setCoolDownPhoenixRing(0));
-        }
+        player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> {
+            capa.setCoolDownPhoenixRing(0);
+            capa.setActiveBankaiTime(0);
+            capa.raiseLevelBankai();
+            capa.raiseLevelBankai();
+            capa.raiseLevelBankai();
+            capa.raiseLevelBankai();
+            capa.setCooldownBankai(0);
+        });
         return super.use(world, player, hand);
     }
 

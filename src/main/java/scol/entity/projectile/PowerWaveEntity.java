@@ -67,9 +67,9 @@ public class PowerWaveEntity extends DamagingProjectileEntity {
     }
 
 
-    public void damageEntities(List<LivingEntity> listofEntities) {
+    public void damageEntities(List<LivingEntity> listOfEntities) {
         PlayerEntity owner = (PlayerEntity) this.getOwner();
-        for (LivingEntity entity : listofEntities) {
+        for (LivingEntity entity : listOfEntities) {
             if (entity != owner && entity.isAttackable()) {
                 entity.hurt(DamageSource.playerAttack(owner), (float) (owner.getAttribute(Attributes.ATTACK_DAMAGE).getValue() + 60.0F));
             }
