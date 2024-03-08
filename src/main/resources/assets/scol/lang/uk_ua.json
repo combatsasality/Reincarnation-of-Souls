@@ -4,6 +4,7 @@
   "advancement.scol:worldWing": "Де твої крила? Які так подобалися мені...",
   "advancement.scol:worldWing.desc": "Отримайте світові крила",
 
+
   "itemGroup.scolTab": "Soul Collector",
   "item.scol.frostmourne": "Крижана Скорбота",
   "item.scol.frostmourne_handle": "Рукоятка Крижаної Скорботи",
@@ -29,6 +30,14 @@
   "item.scol.kimano_leggings": "",
   "item.scol.ring_midas": "Кільце Мідаса",
   "item.scol.onryo_spawn_egg": "Яйце виклику Онре",
+  "item.scol.soul": "Душа",
+  "item.scol.friendly_soul": "Дружелюбна душа",
+  "item.scol.aggressive_soul": "Агресивна душа",
+
+
+  "block.scol.soul_glass": "Скло душ",
+  "block.scol.soul_block": "Блок душ",
+  "block.scol.aggressive_soul_block": "Блок душ",
 
 
   "attribute.name.scol.magical_damage": "до магічної сили атаки",
@@ -50,6 +59,7 @@
   "tooltip.scol.inactive": "§4На перезарядці",
   "tooltip.scol.active": "§aАктивно",
   "tooltip.scol.zangetsu.combatsasality": "§4§lТи думав якщо мене вбити я візьму і покірно помру?",
+  "tooltip.item.soul.0": "§7Душі добре горять! Хто б міг подумати?",
 
 
   "curios.identifier.scolwings": "Крила",
@@ -69,10 +79,13 @@
   "enchantment.scol.vampirism_enchant.desc": "Краде життєву енергію у ворога",
   "enchantment.scol.attack_speed_increase": "Швидкість рук",
   "enchantment.scol.attack_speed_increase.desc": "Підвищує швидкість атаки",
+  "enchantment.scol.soul_catcher": "Ловец душ",
+  "enchantment.scol.soul_catcher.desc": "Збільшує шанс випадіння душ",
 
 
   "death.attack.frostmourne_hurt": "%1$s був убитий Крижаною Скорботою гравця %2$s",
   "death.attack.ReturnDamageIchigo": "Я повинен визнати, що мене ніколи не перестає дивувати яким безмозглим %1$s може бути",
+  "death.attack.soul": "%1$s було вбито аггресивною душею",
 
 
   "key.categories.scol": "Soul Collector",

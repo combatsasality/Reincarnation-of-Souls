@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinAssemble {
 
     @Shadow @Final private ResourceLocation id;
-
     @Inject(method = "assemble", at = @At("RETURN"))
     public void onAssemble(CallbackInfoReturnable<ItemStack> cir) {
         if (this.id.equals(new ResourceLocation("scol:trident_improve"))) {

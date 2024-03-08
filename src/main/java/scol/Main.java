@@ -1,9 +1,9 @@
 package scol;
 
+import net.minecraft.block.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.EntityClassification;
-import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
@@ -13,6 +13,10 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.gen.feature.IFeatureConfig;
+import net.minecraft.world.gen.feature.NoFeatureConfig;
+import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -30,19 +34,24 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import scol.blocks.SoulBlock;
 import scol.enchantment.AttackSpeedEnchant;
+import scol.enchantment.SoulCatcherEnchant;
 import scol.enchantment.VampiricEnchant;
 import scol.entity.CustomItemEntity;
 import scol.entity.IchigoVizard;
 import scol.entity.Onryo;
 import scol.entity.projectile.PowerWaveEntity;
 import scol.handlers.EventHandler;
+import scol.handlers.HelpHandler;
 import scol.handlers.KeyBindHandler;
 import scol.handlers.lootModifiers.EntityAdditionModifier;
 import scol.handlers.lootModifiers.StructureAdditionModifier;
 import scol.items.*;
+import scol.items.generic.ISoulMaterial;
 import scol.items.generic.ItemBase;
 import scol.packets.client.PacketCapa;
 import scol.packets.client.PacketSetModelType;
@@ -50,12 +59,10 @@ import scol.packets.server.PacketGetCapability;
 import scol.packets.server.PacketWorldWing;
 import scol.proxy.ClientProxy;
 import scol.proxy.CommonProxy;
+import scol.world.structures.Graveyard;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 
 import javax.annotation.Nonnull;
-import java.awt.*;
-import java.util.Properties;
-import java.util.function.Supplier;
 
 @Mod(Main.modid)
 public class Main {
@@ -99,6 +106,10 @@ public class Main {
             }
         }
     };
+
+    public static AbstractGlassBlock soulGlass;
+    public static SoulBlock soulBlock;
+    public static SoulBlock soulAggressiveBlock;
     public static InactivePhoenixRing inactivePhoenixRing;
     public static ItemBase dragonSoul;
     public static ItemBase witherSoul;
@@ -109,6 +120,12 @@ public class Main {
     public static SummonMask summonMask;
     public static WorldWing worldWing;
     public static RingMidas ringMidas;
+    public static Soul soul;
+    public static Soul aggressiveSoul;
+    public static Soul friendlySoul;
+    public static BlockItem soulGlassItem;
+    public static BlockItem soulBlockItem;
+    public static BlockItem soulAggressiveBlockItem;
     public static SoundEvent sonidoSound;
     public static SoundEvent metalMusic;
     public static SoundEvent silentRelapseMusic;
@@ -117,9 +134,29 @@ public class Main {
 
     public static VampiricEnchant vampiricEnchant;
     public static AttackSpeedEnchant attackSpeedEnchant;
+    public static SoulCatcherEnchant soulCatcherEnchant;
     public static Potion potionHeroOfVillage;
     public static Potion potionStrongHeroOfVillage;
     public static Potion potionLongHeroOfVillage;
+
+    public static Structure<NoFeatureConfig> graveyardCombatsasality;
+    public static StructureFeature<?, ?> configuredGraveyardCombastsasality;
+
+    public static Structure<NoFeatureConfig> graveyardDesert;
+    public static StructureFeature<?, ?> configuredGraveyardDesert;
+
+    public static Structure<NoFeatureConfig> graveyardForest;
+    public static StructureFeature<?, ?> configuredGraveyardForest;
+
+    public static Structure<NoFeatureConfig> graveyardMountains;
+    public static StructureFeature<?, ?> configuredGraveyardMountains;
+
+    public static Structure<NoFeatureConfig> graveyardTaiga;
+    public static StructureFeature<?, ?> configuredGraveyardTaiga;
+
+    public static Structure<NoFeatureConfig> graveyardNether;
+    public  static StructureFeature<?, ?> configuredGraveyardNether;
+
 
     public Main() {
         // Attributes
@@ -140,6 +177,13 @@ public class Main {
         silentRelapseDisc = new MusicDiscItem(1, () -> silentRelapseMusic, discProperties);
         silentRelapseDisc.setRegistryName("music_disc_silent_relapse");
 
+        // Blocks
+        // TODO: Replace default glass sound
+        soulGlass = new GlassBlock(AbstractBlock.Properties.copy(Blocks.GLASS));
+        soulGlass.setRegistryName("soul_glass");
+        soulBlock = new SoulBlock("soul_block");
+        soulAggressiveBlock = new SoulBlock("aggressive_soul_block");
+
 
         // Items
         testItem = new TestItem();
@@ -158,10 +202,21 @@ public class Main {
         summonMask = new SummonMask();
         zangetsu = new Zangetsu();
         ringMidas = new RingMidas();
+        soul = new Soul("soul", 3100, ISoulMaterial.SoulType.NEGATIVE);
+        aggressiveSoul = new Soul("aggressive_soul", 6200, ISoulMaterial.SoulType.AGGRESSIVE);
+        friendlySoul = new Soul("friendly_soul", 1550, ISoulMaterial.SoulType.FRIENDLY);
+        soulGlassItem = new BlockItem(soulGlass, new Item.Properties().rarity(Rarity.RARE).tab(Main.TAB));
+        soulGlassItem.setRegistryName("soul_glass");
+        soulBlockItem = new BlockItem(soulBlock, new Item.Properties().tab(Main.TAB));
+        soulBlockItem.setRegistryName("soul_block");
+        soulAggressiveBlockItem = new BlockItem(soulAggressiveBlock, new Item.Properties().tab(Main.TAB));
+        soulAggressiveBlockItem.setRegistryName("aggressive_soul_block");
+
 
         // Enchantments
         vampiricEnchant = new VampiricEnchant();
         attackSpeedEnchant = new AttackSpeedEnchant();
+        soulCatcherEnchant = new SoulCatcherEnchant();
 
         // Potions
         potionHeroOfVillage = new Potion("hero_of_village", new EffectInstance(Effects.HERO_OF_THE_VILLAGE, 3600));
@@ -179,6 +234,20 @@ public class Main {
         // Spawn Egg
         onryoSpawnEgg = new ForgeSpawnEggItem(() -> Onryo.TYPE, 0xFFFFFF, 0x40E0D0, new Item.Properties().tab(ItemGroup.TAB_MISC));
         onryoSpawnEgg.setRegistryName("onryo_spawn_egg");
+
+        //Structure
+        graveyardCombatsasality = new Graveyard(NoFeatureConfig.CODEC, "graveyard_combatsasality");
+        configuredGraveyardCombastsasality = graveyardCombatsasality.configured(IFeatureConfig.NONE);
+        graveyardDesert = new Graveyard(NoFeatureConfig.CODEC, "graveyard_desert");
+        configuredGraveyardDesert = graveyardDesert.configured(IFeatureConfig.NONE);
+        graveyardForest = new Graveyard(NoFeatureConfig.CODEC, "graveyard_forest");
+        configuredGraveyardForest = graveyardForest.configured(IFeatureConfig.NONE);
+        graveyardMountains = new Graveyard(NoFeatureConfig.CODEC, "graveyard_mountains");
+        configuredGraveyardMountains = graveyardMountains.configured(IFeatureConfig.NONE);
+        graveyardTaiga = new Graveyard(NoFeatureConfig.CODEC, "graveyard_taiga");
+        configuredGraveyardTaiga = graveyardTaiga.configured(IFeatureConfig.NONE);
+        graveyardNether = new Graveyard(NoFeatureConfig.CODEC, "graveyard_nether", true);
+        configuredGraveyardNether = graveyardNether.configured(IFeatureConfig.NONE);
 
         // Regs
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
@@ -199,8 +268,8 @@ public class Main {
         packetInstance.registerMessage(1, PacketWorldWing.class, PacketWorldWing::encode, PacketWorldWing::decode, PacketWorldWing::handle);
         packetInstance.registerMessage(2, PacketGetCapability.class, PacketGetCapability::encode, PacketGetCapability::decode, PacketGetCapability::handle);
         packetInstance.registerMessage(3, PacketSetModelType.class, PacketSetModelType::encode, PacketSetModelType::decode, PacketSetModelType::handle);
+        proxy.setupClient(event);
     }
-
     private void onLoadComplete(final FMLLoadCompleteEvent event) {
         proxy.loadComplete(event);
     }
@@ -220,6 +289,14 @@ public class Main {
 
     @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
     public static class RegistryEvents {
+        @SubscribeEvent
+        public static void blockRegistry(final RegistryEvent.Register<Block> event) {
+            event.getRegistry().registerAll(
+                    soulGlass,
+                    soulBlock,
+                    soulAggressiveBlock
+            );
+        }
         @SubscribeEvent
         public static void itemRegistry(final RegistryEvent.Register<Item> event) {
             event.getRegistry().registerAll(
@@ -241,7 +318,13 @@ public class Main {
                     ringMidas,
                     metalDisc,
                     onryoSpawnEgg,
-                    silentRelapseDisc
+                    silentRelapseDisc,
+                    soul,
+                    aggressiveSoul,
+                    friendlySoul,
+                    soulGlassItem,
+                    soulBlockItem,
+                    soulAggressiveBlockItem
             );
         }
 
@@ -258,7 +341,8 @@ public class Main {
         public static void registerEnchants(final RegistryEvent.Register<Enchantment> event) {
             event.getRegistry().registerAll(
                     vampiricEnchant,
-                    attackSpeedEnchant
+                    attackSpeedEnchant,
+                    soulCatcherEnchant
             );
         }
 
@@ -323,6 +407,31 @@ public class Main {
         public static void addEntityAttributes(EntityAttributeCreationEvent event) {
             event.put(IchigoVizard.TYPE, IchigoVizard.setCustomAttributes().build());
             event.put(Onryo.TYPE, Onryo.setCustomAttributes().build());
+        }
+
+        @SubscribeEvent
+        public static void registerStructure(final RegistryEvent.Register<Structure<?>> event) {
+//            HelpHandler.registerStructure(event.getRegistry(), graveyard, "graveyard");
+//            HelpHandler.setupMapSpacingAndLand(
+//                    graveyard,
+//                    new StructureSeparationSettings(
+//                            10,
+//                            5,
+//                            123456890
+//                    ),
+//                    true
+//            );
+//
+//            Registry<StructureFeature<?, ?>> registry = WorldGenRegistries.CONFIGURED_STRUCTURE_FEATURE;
+//            Registry.register(registry, new ResourceLocation(Main.modid, "configured_graveyard"), configuredGraveyard);
+//            FlatGenerationSettings.STRUCTURE_FEATURES.put(graveyard, configuredGraveyard);
+            IForgeRegistry<Structure<?>> registry = event.getRegistry();
+            HelpHandler.registerStructure(registry, "graveyard_combatsasality", graveyardCombatsasality, configuredGraveyardCombastsasality, 150, 100);
+            HelpHandler.registerStructure(registry, "graveyard_desert", graveyardDesert, configuredGraveyardDesert, 25, 20);
+            HelpHandler.registerStructure(registry, "graveyard_forest", graveyardForest, configuredGraveyardForest, 25, 20);
+            HelpHandler.registerStructure(registry, "graveyard_mountains", graveyardMountains, configuredGraveyardMountains, 25, 20);
+            HelpHandler.registerStructure(registry, "graveyard_taiga", graveyardTaiga, configuredGraveyardTaiga, 25, 20);
+            HelpHandler.registerStructure(registry, "graveyard_nether", graveyardNether, configuredGraveyardNether, 13, 10);
         }
 
     }

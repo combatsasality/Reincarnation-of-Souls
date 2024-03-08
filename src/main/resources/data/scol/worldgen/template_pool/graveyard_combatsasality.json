@@ -1,0 +1,15 @@
+{
+  "name": "scol:graveyard_combatsasality",
+  "fallback": "minecraft:empty",
+  "elements": [
+    {
+      "weight": 1,
+      "element": {
+        "location": "scol:graveyard/combatsasality_cross",
+        "processors": "minecraft:empty",
+        "projection": "rigid",
+        "element_type": "minecraft:single_pool_element"
+      }
+    }
+  ]
+}

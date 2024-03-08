@@ -4,6 +4,7 @@
   "advancement.scol:worldWing": "Where are your wings? That I loved so much...",
   "advancement.scol:worldWing.desc": "Get the world's wings",
 
+
   "itemGroup.scolTab": "Soul Collector",
   "item.scol.frostmourne": "FrostMourne",
   "item.scol.frostmourne_handle": "Handle FrostMourne",
@@ -29,6 +30,14 @@
   "item.scol.kimano_leggings": "",
   "item.scol.ring_midas": "Midas Ring",
   "item.scol.onryo_spawn_egg": "Onryo Spawn Egg",
+  "item.scol.soul": "Soul",
+  "item.scol.friendly_soul": "Friendly Soul",
+  "item.scol.aggressive_soul": "Aggressive Soul",
+
+
+  "block.scol.soul_glass": "Soul Glass",
+  "block.scol.soul_block": "Soul Block",
+  "block.scol.aggressive_soul_block": "Soul Block",
 
 
   "attribute.name.scol.magical_damage": "Magical Damage",
@@ -50,6 +59,7 @@
   "tooltip.scol.inactive": "§4In cooldown",
   "tooltip.scol.active": "§aActive",
   "tooltip.scol.zangetsu.combatsasality": "§4§lDid you think if you killed me, I'd just die meekly?",
+  "tooltip.item.soul.0": "§7Souls burn brightly! Who would have thought?",
 
 
   "curios.identifier.scolwings": "Wings",
@@ -69,10 +79,13 @@
   "enchantment.scol.vampirism_enchant.desc": "Steals life energy from the enemy",
   "enchantment.scol.attack_speed_increase": "Hand Speed",
   "enchantment.scol.attack_speed_increase.desc": "Increases attack speed",
+  "enchantment.scol.soul_catcher": "Soul Catcher",
+  "enchantment.scol.soul_catcher.desc": "Increases the chance of getting a soul",
 
 
   "death.attack.frostmourne_hurt": "%1$s was killed by the FrostMourne player %2$s",
   "death.attack.ReturnDamageIchigo": "I must admit, it never ceases to amaze me how brainless %1$s can be",
+  "death.attack.soul": "%1$s was killed by an aggressive soul",
 
 
   "key.categories.scol": "Soul Collector",

@@ -1,5 +1,6 @@
 package scol.proxy;
 
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 
 public class CommonProxy {
@@ -13,5 +14,8 @@ public class CommonProxy {
     }
     public void initAuxiliaryRender() {
         // Insert existential void here
+    }
+
+    public void setupClient(FMLCommonSetupEvent event) {
     }
 }

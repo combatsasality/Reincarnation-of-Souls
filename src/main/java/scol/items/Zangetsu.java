@@ -5,7 +5,9 @@ import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -26,7 +28,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -36,12 +37,13 @@ import net.minecraftforge.entity.PartEntity;
 import scol.Main;
 import scol.entity.CustomItemEntity;
 import scol.entity.projectile.PowerWaveEntity;
-import scol.handlers.HelpHandler;
 import scol.handlers.ItemTier;
 import scol.scolCapability;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Zangetsu extends SwordItem {
     public Zangetsu() {
@@ -129,7 +131,12 @@ public class Zangetsu extends SwordItem {
                 entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ANVIL_PLACE, entity.getSoundSource(), 1.0F, 1.0F);
                 return;
             }
-
+            if (EnchantmentHelper.hasVanishingCurse(stack)) {
+                Map map = EnchantmentHelper.getEnchantments(stack).entrySet().stream().filter((p_217012_0_) -> {
+                    return !((Enchantment)p_217012_0_.getKey()).equals(Enchantments.VANISHING_CURSE);
+                }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                EnchantmentHelper.setEnchantments(map, stack);
+            }
             LazyOptional<scolCapability.DataCapability> capability = entity.getCapability(scolCapability.NeedVariables);
             if (capability.map(capa -> capa.getCooldownBankai()).orElse(0) > 0) {
                 capability.ifPresent(capa -> capa.consumeCooldownBankai(1));

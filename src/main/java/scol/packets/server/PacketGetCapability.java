@@ -1,18 +1,13 @@
 package scol.packets.server;
 
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import scol.Main;
-import scol.items.WorldWing;
 import scol.packets.client.PacketCapa;
 import scol.scolCapability;
-import top.theillusivec4.curios.api.CuriosApi;
-import top.theillusivec4.curios.api.SlotResult;
 
-import java.util.Optional;
 import java.util.function.Supplier;
 
 public class PacketGetCapability {

@@ -1,5 +1,6 @@
 package scol.handlers;
 
+import com.mojang.serialization.Codec;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -11,7 +12,12 @@ import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.merchant.villager.VillagerProfession;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.passive.AmbientEntity;
+import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -21,37 +27,57 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.*;
+import net.minecraft.world.World;
+import net.minecraft.world.biome.Biome;
+import net.minecraft.world.gen.ChunkGenerator;
+import net.minecraft.world.gen.FlatChunkGenerator;
+import net.minecraft.world.gen.feature.structure.Structure;
+import net.minecraft.world.gen.settings.DimensionStructuresSettings;
+import net.minecraft.world.gen.settings.StructureSeparationSettings;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.BasicTrade;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.*;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
+import net.minecraftforge.event.world.BiomeLoadingEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import scol.Main;
 import scol.entity.CustomItemEntity;
 import scol.entity.Onryo;
 import scol.items.PhoenixRing;
 import scol.items.Zangetsu;
+import scol.items.generic.ISoulMaterial;
 import scol.scolCapability;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Random;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EventHandler {
+    private static Method GETCODEC_METHOD;
 
     @SubscribeEvent
     public void DeathEvent(LivingDeathEvent event) {
@@ -93,6 +119,7 @@ public class EventHandler {
             index++;
         }
     }
+
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void toolTipForShiftNBT(ItemTooltipEvent event) { // Delete when create gradlew build
@@ -264,6 +291,34 @@ public class EventHandler {
         }
     }
 
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public void soulDrop(LivingDropsEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayerEntity) {
+            System.out.println(event.getEntity().getClassification(false));
+            ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getEntity();
+            ItemStack stack = player.getMainHandItem();
+            int levelCatcher = EnchantmentHelper.getItemEnchantmentLevel(Main.soulCatcherEnchant, stack);
+            if (levelCatcher != 0) {
+                float random = levelCatcher * 0.01F + player.getRandom().nextFloat();
+                if (random > 0.85) {
+                    ItemEntity item = new ItemEntity(event.getEntity().level, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ());
+                    Entity entity = event.getEntity();
+                    if (random > 0.99999 && entity instanceof MonsterEntity && !(entity instanceof WitherEntity) && !(entity instanceof Onryo)) {
+                        ItemStack soul = new ItemStack(Main.aggressiveSoul);
+                        item.setItem(soul);
+                    } else if (random > 0.93) {
+                        ItemStack soul = new ItemStack(Main.soul);
+                        item.setItem(soul);
+                    } else if (entity instanceof AmbientEntity || entity instanceof AnimalEntity || entity instanceof GolemEntity || entity instanceof VillagerEntity) {
+                        ItemStack soul = new ItemStack(Main.friendlySoul);
+                        item.setItem(soul);
+                    }
+                    event.getDrops().add(item);
+                }
+            }
+        }
+    }
+
     @SubscribeEvent
     public void doVampiric(LivingHurtEvent event) {
         if (event.getSource().getEntity() instanceof LivingEntity && !event.getEntity().level.isClientSide() && event.getSource().getEntity().isAlive()) {
@@ -291,15 +346,18 @@ public class EventHandler {
         }
     }
 
-    @SubscribeEvent
-    public void summonOnryo(LivingDeathEvent event) {
-        if (!event.getEntity().level.isClientSide && event.getEntity() instanceof LivingEntity) {
-            LivingEntity entity = (LivingEntity) event.getEntity();
-            if (entity.getRandom().nextDouble() > 0.99) {
-                entity.level.addFreshEntity(new Onryo(entity.level, entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot));
-            }
-        }
-    }
+//    @SubscribeEvent
+//    public void summonOnryo(LivingDeathEvent event) {
+//        if (!event.getEntity().level.isClientSide && event.getEntity() instanceof LivingEntity) {
+//            LivingEntity entity = (LivingEntity) event.getEntity();
+//            if (entity.getType().equals(Onryo.TYPE)) {
+//                return;
+//            }
+//            if (entity.getRandom().nextDouble() > 0.99) {
+//                entity.level.addFreshEntity(new Onryo(entity.level, entity.getX(), entity.getY(), entity.getZ(), entity.yRot, entity.xRot));
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public void worldWingBreakSpeed(PlayerEvent.BreakSpeed event) {
@@ -308,6 +366,97 @@ public class EventHandler {
             if (!player.isOnGround()) {
                 if (event.getOriginalSpeed() < event.getNewSpeed() * 5) event.setNewSpeed(event.getNewSpeed() * 5F);
             }
+        }
+    }
+
+    // ** STRUCTURES **
+    @SubscribeEvent(priority = EventPriority.NORMAL)
+    public void addDimensionalSpacing(final WorldEvent.Load event) {
+        if (event.getWorld() instanceof ServerWorld) {
+            ServerWorld serverWorld = (ServerWorld) event.getWorld();
+
+            try {
+                if(GETCODEC_METHOD == null) GETCODEC_METHOD = ObfuscationReflectionHelper.findMethod(ChunkGenerator.class, "func_230347_a_");
+                ResourceLocation cgRL = Registry.CHUNK_GENERATOR.getKey((Codec<? extends ChunkGenerator>) GETCODEC_METHOD.invoke(serverWorld.getChunkSource().generator));
+                if(cgRL != null && cgRL.getNamespace().equals("terraforged")) return;
+            }
+            catch(Exception e){
+                Main.logger.error("Was unable to check if " + serverWorld.dimension().location() + " is using Terraforged's ChunkGenerator.");
+            }
+
+            if (serverWorld.getChunkSource().getGenerator() instanceof FlatChunkGenerator &&
+                    serverWorld.dimension().equals(World.OVERWORLD)) {
+                return;
+            }
+
+
+            Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(serverWorld.getChunkSource().generator.getSettings().structureConfig());
+            tempMap.putIfAbsent(Main.graveyardCombatsasality, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardCombatsasality));
+            tempMap.putIfAbsent(Main.graveyardNether, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardNether));
+            tempMap.putIfAbsent(Main.graveyardDesert, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardDesert));
+            tempMap.putIfAbsent(Main.graveyardForest, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardForest));
+            tempMap.putIfAbsent(Main.graveyardMountains, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardMountains));
+            tempMap.putIfAbsent(Main.graveyardTaiga, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardTaiga));
+            serverWorld.getChunkSource().generator.getSettings().structureConfig = tempMap;
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGH)
+    public void biomeModification(final BiomeLoadingEvent event) {
+        if (!event.getCategory().equals(Biome.Category.NETHER)) {
+            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardCombastsasality);
+        }
+        if (event.getCategory().equals(Biome.Category.NETHER)) {
+            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardNether);
+        }
+        if (event.getCategory().equals(Biome.Category.DESERT)) {
+            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardDesert);
+        }
+        if (event.getCategory().equals(Biome.Category.FOREST)) {
+            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardForest);
+        }
+        if (event.getCategory().equals(Biome.Category.EXTREME_HILLS)) {
+            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardMountains);
+        }
+        if (event.getCategory().equals(Biome.Category.TAIGA)) {
+            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardTaiga);
+        }
+    }
+
+    @SubscribeEvent
+    public void anvilRecipes(AnvilUpdateEvent event) {
+        ItemStack left = event.getLeft();
+        ItemStack right = event.getRight();
+        if (left.getItem() instanceof SwordItem && right.getItem() instanceof ISoulMaterial) {
+            int soulCatcherLevel = EnchantmentHelper.getItemEnchantmentLevel(Main.soulCatcherEnchant, left);
+            ItemStack result = left.copy();
+            event.setMaterialCost(1);
+            Map map = EnchantmentHelper.getEnchantments(left).entrySet().stream().filter((entry) -> {
+                return !entry.getKey().equals(Main.soulCatcherEnchant);
+            }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            switch (((ISoulMaterial) right.getItem()).getSoulType()) {
+                case FRIENDLY:
+                    if (soulCatcherLevel >= 1) {
+                        event.setCanceled(true);
+                    }
+                    map.put(Main.soulCatcherEnchant, 1);
+                    break;
+                case NEGATIVE:
+                    if (soulCatcherLevel >= 2) {
+                        event.setCanceled(true);
+                    }
+                    map.put(Main.soulCatcherEnchant, 2);
+                    break;
+                case AGGRESSIVE:
+                    if (soulCatcherLevel >= 3) {
+                        event.setCanceled(true);
+                    }
+                    map.put(Main.soulCatcherEnchant, 3);
+                    break;
+            }
+            EnchantmentHelper.setEnchantments(map, result);
+            event.setOutput(result);
+            event.setCost(5);
         }
     }
 }

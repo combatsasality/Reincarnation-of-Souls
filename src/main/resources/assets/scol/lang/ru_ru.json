@@ -4,6 +4,7 @@
     "advancement.scol:worldWing": "Где твои крылья? Которые так нравились мне...",
     "advancement.scol:worldWing.desc": "Получите мировые крылья",
 
+
     "itemGroup.scolTab": "Soul Collector",
     "item.scol.frostmourne": "Ледяная Скорбь",
     "item.scol.frostmourne_handle": "Рукоятка Ледяной Скорби",
@@ -29,6 +30,14 @@
     "item.scol.kimano_leggings": "",
     "item.scol.ring_midas": "Кольцо Мидаса",
     "item.scol.onryo_spawn_egg": "Яйцо призыва Онрё",
+    "item.scol.soul": "Душа",
+    "item.scol.friendly_soul": "Дружелюбная душа",
+    "item.scol.aggressive_soul": "Агрессивная душа",
+
+
+    "block.scol.soul_glass": "Стекло душ",
+    "block.scol.soul_block": "Блок душ",
+    "block.scol.aggressive_soul_block": "Блок душ",
 
 
     "attribute.name.scol.magical_damage": "к магическому урону",
@@ -50,6 +59,7 @@
     "tooltip.scol.inactive": "§4На перезарядке",
     "tooltip.scol.active": "§aАктивно",
     "tooltip.scol.zangetsu.combatsasality": "§4§lТы думал если меня убить я возьму и покорно умру?",
+    "tooltip.item.soul.0": "§7Души хорошо горят! Кто бы мог подумать?",
 
 
     "curios.identifier.scolwings": "Крылья",
@@ -69,10 +79,13 @@
     "enchantment.scol.vampirism_enchant.desc": "Крадет жизненную энергию у врага",
     "enchantment.scol.attack_speed_increase": "Скорость рук",
     "enchantment.scol.attack_speed_increase.desc": "Увеличивает скорость атаки",
+    "enchantment.scol.soul_catcher": "Ловец душ",
+    "enchantment.scol.soul_catcher.desc": "Увеличивает шанс выпадения души",
 
 
     "death.attack.frostmourne_hurt": "%1$s был убит Ледяной Скорбью игрока %2$s",
     "death.attack.ReturnDamageIchigo": "Я должен признать, что меня никогда не перестаёт удивлять каким безмозглым %1$s может быть",
+    "death.attack.soul": "%1$s был убит аггресивной душой",
 
 
     "key.categories.scol": "Soul Collector",

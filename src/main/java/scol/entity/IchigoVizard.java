@@ -14,7 +14,6 @@ import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EntityDamageSource;
@@ -74,6 +73,7 @@ public class IchigoVizard extends MonsterEntity {
                 .add(Attributes.ARMOR, 15.0d)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 100.0d);
     }
+
 
     @Override
     protected void registerGoals() {
