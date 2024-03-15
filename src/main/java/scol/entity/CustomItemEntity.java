@@ -22,9 +22,9 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.ITeleporter;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.registries.ObjectHolder;
-import scol.Main;
 import scol.items.Zangetsu;
+import scol.registries.ScolEntities;
+import scol.registries.ScolItems;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
@@ -39,8 +39,8 @@ public class CustomItemEntity extends Entity {
     private UUID thrower;
     private UUID owner;
 
-    @ObjectHolder(Main.modid + ":custom_item_entity_ent")
-    public static EntityType<CustomItemEntity> TYPE;
+//    @ObjectHolder(Main.MODID + ":custom_item_entity_ent")
+//    public static EntityType<CustomItemEntity> TYPE;
 
     public float hoverStart = (float) (Math.random() * Math.PI * 2.0D);
 
@@ -49,7 +49,7 @@ public class CustomItemEntity extends Entity {
     }
 
     public CustomItemEntity(World worldIn, double x, double y, double z) {
-        this(CustomItemEntity.TYPE, worldIn);
+        this(ScolEntities.CUSTOM_ITEM_ENTITY_ENT, worldIn);
         this.setPos(x, y <= 0 ? 1 : y, z);
         this.yRot = this.random.nextFloat() * 360.0F;
         this.setInvulnerable(true);
@@ -219,7 +219,7 @@ public class CustomItemEntity extends Entity {
         if (!this.level.isClientSide) {
             if (this.pickupDelay > 0) return;
             ItemStack item = this.getItem();
-            if (item.getItem().equals(Main.zangetsu)) {
+            if (item.getItem().equals(ScolItems.ZANGETSU)) {
                 if (Zangetsu.getOwner(item).equals(player.getGameProfile().getName())) {
                     if (player.inventory.getFreeSlot() != -1) {
                         Zangetsu.setDeathModel(item, false);

@@ -4,8 +4,8 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import scol.Main;
 import scol.items.WorldWing;
+import scol.registries.ScolItems;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 
@@ -33,7 +33,7 @@ public class PacketWorldWing {
 
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity playerServ = ctx.get().getSender();
-            Optional<SlotResult> slot = CuriosApi.getCuriosHelper().findFirstCurio(playerServ, Main.worldWing);
+            Optional<SlotResult> slot = CuriosApi.getCuriosHelper().findFirstCurio(playerServ, ScolItems.WORLD_WING);
             if (slot.isPresent()) {
                 ItemStack stack = slot.get().getStack();
                 if (WorldWing.getFlySpeedInt(stack) == 4) {

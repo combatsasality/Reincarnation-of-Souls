@@ -15,8 +15,8 @@ import scol.entity.Onryo;
 
 @OnlyIn(Dist.CLIENT)
 public class OnryoRenderer extends EntityRenderer<Onryo> {
-    protected static final ResourceLocation TEXTURE_DEFAULT = new ResourceLocation(Main.modid, "textures/entity/onryo_default.png");
-    protected static final ResourceLocation TEXTURE_FLY = new ResourceLocation(Main.modid, "textures/entity/onryo_fly.png");
+    protected static final ResourceLocation TEXTURE_DEFAULT = new ResourceLocation(Main.MODID, "textures/entity/onryo_default.png");
+    protected static final ResourceLocation TEXTURE_FLY = new ResourceLocation(Main.MODID, "textures/entity/onryo_fly.png");
 
     public OnryoRenderer(EntityRendererManager rendermanager) {
         super(rendermanager);

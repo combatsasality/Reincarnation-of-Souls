@@ -12,7 +12,7 @@ import scol.client.model.PowerWaveModel;
 import scol.entity.projectile.PowerWaveEntity;
 
 public class PowerWaveRenderer extends EntityRenderer<PowerWaveEntity> {
-        protected static final ResourceLocation TEXTURE = new ResourceLocation(Main.modid, "textures/entity/power_wave.png");
+        protected static final ResourceLocation TEXTURE = new ResourceLocation(Main.MODID, "textures/entity/power_wave.png");
 
     public PowerWaveRenderer(EntityRendererManager rendererManager) {
         super(rendererManager);

@@ -21,7 +21,10 @@ import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.*;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
@@ -45,6 +48,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AnvilUpdateEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -59,14 +63,15 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import scol.Main;
+import scol.ScolCapabality;
 import scol.entity.CustomItemEntity;
+import scol.entity.IchigoVizard;
 import scol.entity.Onryo;
 import scol.items.PhoenixRing;
 import scol.items.Zangetsu;
 import scol.items.generic.ISoulMaterial;
-import scol.scolCapability;
+import scol.registries.*;
 import top.theillusivec4.curios.api.CuriosApi;
 
 import java.lang.reflect.Method;
@@ -86,12 +91,12 @@ public class EventHandler {
                 ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getEntity();
                 ItemStack stack = player.getMainHandItem();
                 CompoundNBT nbt = stack.getOrCreateTag();
-                if (stack.getItem().equals(Main.frostMourne) && nbt.getInt("scol.Souls") < 100) {
+                if (stack.getItem().equals(ScolItems.FROSTMOURNE) && nbt.getInt("scol.Souls") < 100) {
                     nbt.putInt("scol.Souls", nbt.getInt("scol.Souls") + 1);
                 }   else if (event.getEntity() instanceof EnderDragonEntity) {
-                    if (!player.addItem(new ItemStack(Main.dragonSoul))) player.drop(new ItemStack(Main.dragonSoul), true);
+                    if (!player.addItem(new ItemStack(ScolItems.DRAGON_SOUL))) player.drop(new ItemStack(ScolItems.DRAGON_SOUL), true);
                 } else if (event.getEntity() instanceof WitherEntity && Math.random() > 0.75- EnchantmentHelper.getItemEnchantmentLevel(Enchantments.MOB_LOOTING, stack)*0.1) {
-                    if (!player.addItem(new ItemStack(Main.witherSoul))) player.drop(new ItemStack(Main.witherSoul), true);
+                    if (!player.addItem(new ItemStack(ScolItems.WITHER_SOUL))) player.drop(new ItemStack(ScolItems.WITHER_SOUL), true);
                 }
             }
         }
@@ -130,38 +135,35 @@ public class EventHandler {
 
     @SubscribeEvent
     public static void addAttribute(final EntityAttributeModificationEvent event) {
-        event.add(EntityType.PLAYER, Main.MAGICAL_DAMAGE);
+        event.add(EntityType.PLAYER, ScolAttributes.MAGICAL_DAMAGE);
     }
 
     @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public static void propertyOverrideRegistry(FMLClientSetupEvent event) {
-        event.enqueueWork(() -> {
-            ItemModelsProperties.register(Main.phoenixRing.getItem(), new ResourceLocation("scol:chick"), (itemStack, clientWorld, livingEntity) -> PhoenixRing.getFloatForChickRing(itemStack));
-            ItemModelsProperties.register(Main.zangetsu.getItem(), new ResourceLocation("scol:zangetsu_model"), (itemStack, clientWorld, livingEntity) -> Zangetsu.getZangetsuModel(itemStack));
-        });
+    public static void addEntityAttributes(EntityAttributeCreationEvent event) {
+        event.put(ScolEntities.ICHIGO_VIZARD, IchigoVizard.setCustomAttributes().build());
+        event.put(ScolEntities.ONRYO, Onryo.setCustomAttributes().build());
     }
 
     @SubscribeEvent
     public void giveCapabilityPlayer(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof PlayerEntity && !(event.getObject() instanceof FakePlayer)) {
-            event.addCapability(new ResourceLocation("scol:capability"), new scolCapability.DataCapability.Provider());
+            event.addCapability(new ResourceLocation("scol:capability"), new ScolCapabality.DataCapability.Provider());
         }
     }
 
     @SubscribeEvent
     public void cloneCapabilityPlayer(PlayerEvent.Clone event) {
-        CompoundNBT oldNBT = event.getOriginal().getCapability(scolCapability.NeedVariables).map(oldCap -> oldCap.getNBT()).orElse(new CompoundNBT());
-        event.getPlayer().getCapability(scolCapability.NeedVariables).ifPresent(newCap -> newCap.setNBT(oldNBT));
+        CompoundNBT oldNBT = event.getOriginal().getCapability(ScolCapabality.NeedVariables).map(oldCap -> oldCap.getNBT()).orElse(new CompoundNBT());
+        event.getPlayer().getCapability(ScolCapabality.NeedVariables).ifPresent(newCap -> newCap.setNBT(oldNBT));
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onKillPhoenixRing(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
-            CuriosApi.getCuriosHelper().findFirstCurio(player, Main.phoenixRing).ifPresent(slotResult -> {
+            CuriosApi.getCuriosHelper().findFirstCurio(player, ScolItems.PHOENIX_RING).ifPresent(slotResult -> {
                 ItemStack phoenixRing = slotResult.getStack();
-                LazyOptional<scolCapability.DataCapability> capability = player.getCapability(scolCapability.NeedVariables);
+                LazyOptional<ScolCapabality.DataCapability> capability = player.getCapability(ScolCapabality.NeedVariables);
                 if (capability.map(capa -> capa.canUsePhoenixRing()).orElse(true)) {
                     capability.ifPresent(capa -> capa.setCoolDownPhoenixRing(15600));
                     event.setCanceled(true);
@@ -179,12 +181,12 @@ public class EventHandler {
     public void onKillInActivePhoenix(LivingDeathEvent event) {
         if (event.getEntity() instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
-            CuriosApi.getCuriosHelper().findFirstCurio(player, Main.inactivePhoenixRing).ifPresent(slotResult -> {
+            CuriosApi.getCuriosHelper().findFirstCurio(player, ScolItems.INACTIVE_PHOENIX_RING).ifPresent(slotResult -> {
                 if (event.getSource().equals(DamageSource.LAVA)) {
-                    int dragonSoul = player.inventory.findSlotMatchingItem(new ItemStack(Main.dragonSoul));
-                    int witherSoul = player.inventory.findSlotMatchingItem(new ItemStack(Main.witherSoul));
+                    int dragonSoul = player.inventory.findSlotMatchingItem(new ItemStack(ScolItems.DRAGON_SOUL));
+                    int witherSoul = player.inventory.findSlotMatchingItem(new ItemStack(ScolItems.WITHER_SOUL));
                     if (dragonSoul != -1 && witherSoul != -1) {
-                        CuriosApi.getCuriosHelper().getCuriosHandler(player).map(capa -> capa.getCurios().get("ring")).get().getStacks().setStackInSlot(slotResult.getSlotContext().getIndex(), new ItemStack(Main.phoenixRing));
+                        CuriosApi.getCuriosHelper().getCuriosHandler(player).map(capa -> capa.getCurios().get("ring")).get().getStacks().setStackInSlot(slotResult.getSlotContext().getIndex(), new ItemStack(ScolItems.PHOENIX_RING));
                         event.setCanceled(true);
                         player.setHealth(0.5F);
                         player.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 30, 0));
@@ -203,13 +205,13 @@ public class EventHandler {
             emerald.setCount(64);
             ItemStack nether = new ItemStack(Items.NETHERITE_INGOT);
             nether.setCount(5);
-            event.getTrades().get(5).add(new BasicTrade(emerald, nether, new ItemStack(Main.firstPartMask), 2, 0, 0));
+            event.getTrades().get(5).add(new BasicTrade(emerald, nether, new ItemStack(ScolItems.PART_MASK_FIRST), 2, 0, 0));
         } else if (event.getType().equals(VillagerProfession.CLERIC)) {
             ItemStack flesh = new ItemStack(Items.ROTTEN_FLESH);
             flesh.setCount(64);
             ItemStack bone = new ItemStack(Items.BONE);
             bone.setCount(64);
-            event.getTrades().get(5).add(new BasicTrade(flesh, bone, new ItemStack(Main.thirdPartMask), 2, 0, 0));
+            event.getTrades().get(5).add(new BasicTrade(flesh, bone, new ItemStack(ScolItems.PART_MASK_THIRD), 2, 0, 0));
 
         }
     }
@@ -217,7 +219,7 @@ public class EventHandler {
     @SubscribeEvent
     public void EntityDroppingZang(EntityJoinWorldEvent event) {
         if (event.getWorld().isClientSide) return;
-        if (event.getEntity() instanceof ItemEntity && ((ItemEntity) event.getEntity()).getItem().getItem().equals(Main.zangetsu)) {
+        if (event.getEntity() instanceof ItemEntity && ((ItemEntity) event.getEntity()).getItem().getItem().equals(ScolItems.ZANGETSU)) {
             ItemEntity ent = (ItemEntity) event.getEntity();
             if (Zangetsu.getOwner(ent.getItem()).isEmpty()) {
                 event.setCanceled(true);
@@ -240,7 +242,7 @@ public class EventHandler {
             Iterator<ItemEntity> iterator = event.getDrops().iterator();
             while (iterator.hasNext()) {
                 ItemEntity entity = iterator.next();
-                if (entity.getItem().getItem().equals(Main.zangetsu)) {
+                if (entity.getItem().getItem().equals(ScolItems.ZANGETSU)) {
                     if (check || Zangetsu.getOwner(entity.getItem()).isEmpty()) {
                         entity.remove();
                     } else {
@@ -263,7 +265,7 @@ public class EventHandler {
     public void ringMidasDrop(LivingDropsEvent event) {
         if (event.getSource().getEntity() instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getEntity();
-            if (CuriosApi.getCuriosHelper().findFirstCurio(player, Main.ringMidas).isPresent()) {
+            if (CuriosApi.getCuriosHelper().findFirstCurio(player, ScolItems.RING_MIDAS).isPresent()) {
                 float random = EnchantmentHelper.getMobLooting(player) * 0.01F + player.getRandom().nextFloat();
                 if (random > 0.70) {
                     ItemEntity item = new ItemEntity(event.getEntity().level, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ());
@@ -294,23 +296,22 @@ public class EventHandler {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void soulDrop(LivingDropsEvent event) {
         if (event.getSource().getEntity() instanceof ServerPlayerEntity) {
-            System.out.println(event.getEntity().getClassification(false));
             ServerPlayerEntity player = (ServerPlayerEntity) event.getSource().getEntity();
             ItemStack stack = player.getMainHandItem();
-            int levelCatcher = EnchantmentHelper.getItemEnchantmentLevel(Main.soulCatcherEnchant, stack);
+            int levelCatcher = EnchantmentHelper.getItemEnchantmentLevel(ScolEnchantments.SOUL_CATCHER, stack);
             if (levelCatcher != 0) {
                 float random = levelCatcher * 0.01F + player.getRandom().nextFloat();
                 if (random > 0.85) {
                     ItemEntity item = new ItemEntity(event.getEntity().level, event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ());
                     Entity entity = event.getEntity();
                     if (random > 0.99999 && entity instanceof MonsterEntity && !(entity instanceof WitherEntity) && !(entity instanceof Onryo)) {
-                        ItemStack soul = new ItemStack(Main.aggressiveSoul);
+                        ItemStack soul = new ItemStack(ScolItems.AGGRESSIVE_SOUL);
                         item.setItem(soul);
                     } else if (random > 0.93) {
-                        ItemStack soul = new ItemStack(Main.soul);
+                        ItemStack soul = new ItemStack(ScolItems.SOUL);
                         item.setItem(soul);
                     } else if (entity instanceof AmbientEntity || entity instanceof AnimalEntity || entity instanceof GolemEntity || entity instanceof VillagerEntity) {
-                        ItemStack soul = new ItemStack(Main.friendlySoul);
+                        ItemStack soul = new ItemStack(ScolItems.FRIENDLY_SOUL);
                         item.setItem(soul);
                     }
                     event.getDrops().add(item);
@@ -322,7 +323,7 @@ public class EventHandler {
     @SubscribeEvent
     public void doVampiric(LivingHurtEvent event) {
         if (event.getSource().getEntity() instanceof LivingEntity && !event.getEntity().level.isClientSide() && event.getSource().getEntity().isAlive()) {
-            int enchantLevel = EnchantmentHelper.getEnchantmentLevel(Main.vampiricEnchant, (LivingEntity) event.getSource().getEntity());
+            int enchantLevel = EnchantmentHelper.getEnchantmentLevel(ScolEnchantments.VAMPIRISM_ENCHANT, (LivingEntity) event.getSource().getEntity());
             LivingEntity entity = (LivingEntity) event.getSource().getEntity();
             if (enchantLevel != 0) {
                 entity.heal((float) (event.getAmount() * (enchantLevel * 0.1 * 2)));
@@ -331,7 +332,7 @@ public class EventHandler {
     }
     @SubscribeEvent
     public void doSpeedEnchant(ItemAttributeModifierEvent event) {
-        int levelEnchant = EnchantmentHelper.getItemEnchantmentLevel(Main.attackSpeedEnchant, event.getItemStack());
+        int levelEnchant = EnchantmentHelper.getItemEnchantmentLevel(ScolEnchantments.ATTACK_SPEED_INCREASE, event.getItemStack());
         if (levelEnchant != 0) {
             if (event.getSlotType().equals(EquipmentSlotType.MAINHAND) && event.getItemStack().getItem() instanceof SwordItem) {
                 double attack_speed = event.getModifiers().get(Attributes.ATTACK_SPEED).stream().mapToDouble(AttributeModifier::getAmount).sum();
@@ -362,7 +363,7 @@ public class EventHandler {
     @SubscribeEvent
     public void worldWingBreakSpeed(PlayerEvent.BreakSpeed event) {
         PlayerEntity player = event.getPlayer();
-        if (CuriosApi.getCuriosHelper().findFirstCurio(player, predicate -> predicate.getItem().equals(Main.worldWing)).isPresent()) {
+        if (CuriosApi.getCuriosHelper().findFirstCurio(player, predicate -> predicate.getItem().equals(ScolItems.WORLD_WING)).isPresent()) {
             if (!player.isOnGround()) {
                 if (event.getOriginalSpeed() < event.getNewSpeed() * 5) event.setNewSpeed(event.getNewSpeed() * 5F);
             }
@@ -391,12 +392,12 @@ public class EventHandler {
 
 
             Map<Structure<?>, StructureSeparationSettings> tempMap = new HashMap<>(serverWorld.getChunkSource().generator.getSettings().structureConfig());
-            tempMap.putIfAbsent(Main.graveyardCombatsasality, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardCombatsasality));
-            tempMap.putIfAbsent(Main.graveyardNether, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardNether));
-            tempMap.putIfAbsent(Main.graveyardDesert, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardDesert));
-            tempMap.putIfAbsent(Main.graveyardForest, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardForest));
-            tempMap.putIfAbsent(Main.graveyardMountains, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardMountains));
-            tempMap.putIfAbsent(Main.graveyardTaiga, DimensionStructuresSettings.DEFAULTS.get(Main.graveyardTaiga));
+            tempMap.putIfAbsent(ScolStructures.GRAVEYARD_COMBATSASALITY, DimensionStructuresSettings.DEFAULTS.get(ScolStructures.GRAVEYARD_COMBATSASALITY));
+            tempMap.putIfAbsent(ScolStructures.GRAVEYARD_NETHER, DimensionStructuresSettings.DEFAULTS.get(ScolStructures.GRAVEYARD_NETHER));
+            tempMap.putIfAbsent(ScolStructures.GRAVEYARD_DESERT, DimensionStructuresSettings.DEFAULTS.get(ScolStructures.GRAVEYARD_DESERT));
+            tempMap.putIfAbsent(ScolStructures.GRAVEYARD_FOREST, DimensionStructuresSettings.DEFAULTS.get(ScolStructures.GRAVEYARD_FOREST));
+            tempMap.putIfAbsent(ScolStructures.GRAVEYARD_MOUNTAINS, DimensionStructuresSettings.DEFAULTS.get(ScolStructures.GRAVEYARD_MOUNTAINS));
+            tempMap.putIfAbsent(ScolStructures.GRAVEYARD_TAIGA, DimensionStructuresSettings.DEFAULTS.get(ScolStructures.GRAVEYARD_TAIGA));
             serverWorld.getChunkSource().generator.getSettings().structureConfig = tempMap;
         }
     }
@@ -404,22 +405,22 @@ public class EventHandler {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public void biomeModification(final BiomeLoadingEvent event) {
         if (!event.getCategory().equals(Biome.Category.NETHER)) {
-            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardCombastsasality);
+            event.getGeneration().getStructures().add(() -> ScolStructures.CONFIGURED_GRAVEYARD_COMBATSASALITY);
         }
         if (event.getCategory().equals(Biome.Category.NETHER)) {
-            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardNether);
+            event.getGeneration().getStructures().add(() -> ScolStructures.CONFIGURED_GRAVEYARD_NETHER);
         }
         if (event.getCategory().equals(Biome.Category.DESERT)) {
-            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardDesert);
+            event.getGeneration().getStructures().add(() -> ScolStructures.CONFIGURED_GRAVEYARD_DESERT);
         }
         if (event.getCategory().equals(Biome.Category.FOREST)) {
-            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardForest);
+            event.getGeneration().getStructures().add(() -> ScolStructures.CONFIGURED_GRAVEYARD_FOREST);
         }
         if (event.getCategory().equals(Biome.Category.EXTREME_HILLS)) {
-            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardMountains);
+            event.getGeneration().getStructures().add(() -> ScolStructures.CONFIGURED_GRAVEYARD_MOUNTAINS);
         }
         if (event.getCategory().equals(Biome.Category.TAIGA)) {
-            event.getGeneration().getStructures().add(() -> Main.configuredGraveyardTaiga);
+            event.getGeneration().getStructures().add(() -> ScolStructures.CONFIGURED_GRAVEYARD_TAIGA);
         }
     }
 
@@ -428,30 +429,30 @@ public class EventHandler {
         ItemStack left = event.getLeft();
         ItemStack right = event.getRight();
         if (left.getItem() instanceof SwordItem && right.getItem() instanceof ISoulMaterial) {
-            int soulCatcherLevel = EnchantmentHelper.getItemEnchantmentLevel(Main.soulCatcherEnchant, left);
+            int soulCatcherLevel = EnchantmentHelper.getItemEnchantmentLevel(ScolEnchantments.SOUL_CATCHER, left);
             ItemStack result = left.copy();
             event.setMaterialCost(1);
             Map map = EnchantmentHelper.getEnchantments(left).entrySet().stream().filter((entry) -> {
-                return !entry.getKey().equals(Main.soulCatcherEnchant);
+                return !entry.getKey().equals(ScolEnchantments.SOUL_CATCHER);
             }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             switch (((ISoulMaterial) right.getItem()).getSoulType()) {
                 case FRIENDLY:
                     if (soulCatcherLevel >= 1) {
                         event.setCanceled(true);
                     }
-                    map.put(Main.soulCatcherEnchant, 1);
+                    map.put(ScolEnchantments.SOUL_CATCHER, 1);
                     break;
                 case NEGATIVE:
                     if (soulCatcherLevel >= 2) {
                         event.setCanceled(true);
                     }
-                    map.put(Main.soulCatcherEnchant, 2);
+                    map.put(ScolEnchantments.SOUL_CATCHER, 2);
                     break;
                 case AGGRESSIVE:
                     if (soulCatcherLevel >= 3) {
                         event.setCanceled(true);
                     }
-                    map.put(Main.soulCatcherEnchant, 3);
+                    map.put(ScolEnchantments.SOUL_CATCHER, 3);
                     break;
             }
             EnchantmentHelper.setEnchantments(map, result);

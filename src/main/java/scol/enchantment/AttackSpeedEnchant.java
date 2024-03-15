@@ -7,7 +7,6 @@ import net.minecraft.inventory.EquipmentSlotType;
 public class AttackSpeedEnchant extends Enchantment {
     public AttackSpeedEnchant() {
         super(Rarity.VERY_RARE, EnchantmentType.WEAPON, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
-        this.setRegistryName("attack_speed_increase");
     }
 
     @Override

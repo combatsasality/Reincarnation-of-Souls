@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 public class SoulCatcherEnchant extends Enchantment {
     public SoulCatcherEnchant() {
         super(Rarity.VERY_RARE, EnchantmentType.WEAPON, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
-        this.setRegistryName("soul_catcher");
     }
 
     @Override

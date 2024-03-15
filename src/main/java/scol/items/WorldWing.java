@@ -26,7 +26,6 @@ import java.util.List;
 public class WorldWing extends Item implements ICurioItem {
     public WorldWing() {
         super(new Properties().tab(Main.TAB).stacksTo(1));
-        this.setRegistryName("world_wing");
     }
 
     @Override

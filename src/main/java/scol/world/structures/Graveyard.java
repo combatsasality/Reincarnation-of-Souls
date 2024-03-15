@@ -64,7 +64,7 @@ public class Graveyard extends Structure<NoFeatureConfig> {
 
             JigsawManager.addPieces(
                     dynamicRegistryManager,
-                    new VillageConfig(() -> dynamicRegistryManager.registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY).get(new ResourceLocation(Main.modid, Graveyard.this.resourceLocationPool)), 10),
+                    new VillageConfig(() -> dynamicRegistryManager.registryOrThrow(Registry.TEMPLATE_POOL_REGISTRY).get(new ResourceLocation(Main.MODID, Graveyard.this.resourceLocationPool)), 10),
                     AbstractVillagePiece::new,
                     chunkGenerator,
                     templateManagerIn,

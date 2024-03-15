@@ -11,8 +11,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.ResourceLocation;
-import scol.Main;
 import scol.items.generic.ISoulMaterial;
+import scol.registries.ScolEnchantments;
+import scol.registries.ScolItems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class JeiIntegration implements IModPlugin {
         IVanillaRecipeFactory factory = registration.getVanillaRecipeFactory();
         IIngredientManager manager = registration.getIngredientManager();
         Collection<ItemStack> ingredients = manager.getAllIngredients(VanillaTypes.ITEM);
-        Collection<ISoulMaterial> souls = new ArrayList<>(Arrays.asList(Main.soul, Main.aggressiveSoul, Main.friendlySoul));
+        Collection<ISoulMaterial> souls = new ArrayList<>(Arrays.asList(ScolItems.SOUL, ScolItems.AGGRESSIVE_SOUL, ScolItems.FRIENDLY_SOUL));
         Collection<Object> recipes = new ArrayList<>();
         for (ItemStack ingredient : ingredients) {
             if (ingredient.getItem() instanceof SwordItem) {
@@ -42,13 +43,13 @@ public class JeiIntegration implements IModPlugin {
                     ItemStack addResult = ingredient.copy();
                     switch (soul.getSoulType()) {
                         case AGGRESSIVE:
-                            addResult.enchant(Main.soulCatcherEnchant, 3);
+                            addResult.enchant(ScolEnchantments.SOUL_CATCHER, 3);
                             break;
                         case FRIENDLY:
-                            addResult.enchant(Main.soulCatcherEnchant, 2);
+                            addResult.enchant(ScolEnchantments.SOUL_CATCHER, 2);
                             break;
                         case NEGATIVE:
-                            addResult.enchant(Main.soulCatcherEnchant, 1);
+                            addResult.enchant(ScolEnchantments.SOUL_CATCHER, 1);
                             break;
                     }
                     right.add(new ItemStack((IItemProvider) soul));

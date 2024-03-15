@@ -11,7 +11,6 @@ public class SummonMask extends Item {
 
     public SummonMask() {
         super(new Properties().tab(Main.TAB));
-        this.setRegistryName("summon_mask");
     }
 
     @Override

@@ -15,6 +15,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import scol.Main;
+import scol.registries.ScolItems;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurio;
@@ -28,7 +29,6 @@ import java.util.UUID;
 public class InactivePhoenixRing extends Item implements ICurioItem {
     public InactivePhoenixRing() {
         super(new Properties().tab(Main.TAB).stacksTo(1));
-        this.setRegistryName("phoenix_ring_inactive");
     }
 
     @Override
@@ -57,7 +57,7 @@ public class InactivePhoenixRing extends Item implements ICurioItem {
 
     @Override
     public boolean canUnequip(String identifier, LivingEntity livingEntity, ItemStack stack) {
-        return livingEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity) livingEntity).isCreative() || livingEntity instanceof ServerPlayerEntity && CuriosApi.getCuriosHelper().findFirstCurio(livingEntity, Main.phoenixRing).isPresent();
+        return livingEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity) livingEntity).isCreative() || livingEntity instanceof ServerPlayerEntity && CuriosApi.getCuriosHelper().findFirstCurio(livingEntity, ScolItems.PHOENIX_RING).isPresent();
     }
 
     @Nonnull

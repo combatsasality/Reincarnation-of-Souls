@@ -11,23 +11,17 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.registries.ObjectHolder;
-import scol.Main;
+import scol.registries.ScolEntities;
 
 import java.util.List;
 
 public class PowerWaveEntity extends DamagingProjectileEntity {
-
-
-
-    @ObjectHolder(Main.modid + ":power_wave")
-    public static EntityType<PowerWaveEntity> TYPE;
     public PowerWaveEntity(EntityType<? extends DamagingProjectileEntity> type, World world) {
         super(type, world);
     }
 
     public PowerWaveEntity(World worldIn, LivingEntity throwerIn) {
-        super(PowerWaveEntity.TYPE, worldIn);
+        super(ScolEntities.POWER_WAVE, worldIn);
         this.setOwner(throwerIn);
         this.setPos(throwerIn.getX(), throwerIn.getY() + throwerIn.getEyeHeight(), throwerIn.getZ());
         this.xRot = throwerIn.xRot;

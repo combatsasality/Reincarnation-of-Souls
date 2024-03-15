@@ -14,6 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import scol.Main;
 import scol.client.model.PhoenixShield;
 import scol.items.PhoenixRing;
+import scol.registries.ScolItems;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.type.capability.ICurio;
 
@@ -25,14 +26,14 @@ public class ShieldLayer<T extends LivingEntity, M extends BipedModel<T>> extend
 
     @Override
     public void render(MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int light, LivingEntity livingEntity, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        CuriosApi.getCuriosHelper().findFirstCurio(livingEntity, Main.phoenixRing.getItem()).ifPresent(slot -> {
+        CuriosApi.getCuriosHelper().findFirstCurio(livingEntity, ScolItems.PHOENIX_RING.getItem()).ifPresent(slot -> {
             if (PhoenixRing.godModeIsActive(slot.getStack())) {
                 matrixStack.pushPose();
                 BipedModel<LivingEntity> model = new PhoenixShield();
                 model.setupAnim(livingEntity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
                 model.prepareMobModel(livingEntity, limbSwing, limbSwingAmount, partialTicks);
                 ICurio.RenderHelper.followBodyRotations(livingEntity, model);
-                model.renderToBuffer(matrixStack, renderTypeBuffer.getBuffer(RenderType.entityTranslucent(new ResourceLocation(Main.modid, "textures/items/models/shieldtexture.png"))),
+                model.renderToBuffer(matrixStack, renderTypeBuffer.getBuffer(RenderType.entityTranslucent(new ResourceLocation(Main.MODID, "textures/items/models/shieldtexture.png"))),
                         light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
                 matrixStack.popPose();
             }

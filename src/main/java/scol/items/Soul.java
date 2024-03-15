@@ -19,9 +19,8 @@ import java.util.List;
 public class Soul extends Item implements ISoulMaterial {
     private final int burnTime;
     private final ISoulMaterial.SoulType soulType;
-    public Soul(String registryName, int burnTime, ISoulMaterial.SoulType soulType) {
+    public Soul(int burnTime, ISoulMaterial.SoulType soulType) {
         super(new Properties().stacksTo(64).tab(Main.TAB));
-        this.setRegistryName(registryName);
         this.burnTime = burnTime;
         this.soulType = soulType;
     }

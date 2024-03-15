@@ -14,4 +14,12 @@ public class ItemBase extends Item {
         this.setRegistryName(regItem);
     }
 
+    public ItemBase(Properties properties) {
+        super(properties.tab(Main.TAB));
+    }
+
+    public ItemBase() {
+        super(new Properties().tab(Main.TAB));
+    }
+
 }

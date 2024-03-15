@@ -5,8 +5,8 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.PacketDistributor;
 import scol.Main;
+import scol.ScolCapabality;
 import scol.packets.client.PacketCapa;
-import scol.scolCapability;
 
 import java.util.function.Supplier;
 
@@ -24,7 +24,7 @@ public class PacketGetCapability {
 
         ctx.get().enqueueWork(() -> {
             ServerPlayerEntity playerServ = ctx.get().getSender();
-            Main.packetInstance.send(PacketDistributor.PLAYER.with(() -> playerServ), new PacketCapa(playerServ.getCapability(scolCapability.NeedVariables).map(capa -> capa.getNBT()).orElse(null)));
+            Main.packetInstance.send(PacketDistributor.PLAYER.with(() -> playerServ), new PacketCapa(playerServ.getCapability(ScolCapabality.NeedVariables).map(capa -> capa.getNBT()).orElse(null)));
         });
         ctx.get().setPacketHandled(true);
     }

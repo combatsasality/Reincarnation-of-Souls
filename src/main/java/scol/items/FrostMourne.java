@@ -22,6 +22,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import scol.Main;
 import scol.handlers.ItemTier;
+import scol.registries.ScolAttributes;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,7 +31,6 @@ import java.util.UUID;
 public class FrostMourne extends SwordItem {
     public FrostMourne() {
         super(ItemTier.FOR_ALL, 0, 0, new Properties().fireResistant().tab(Main.TAB).rarity(Rarity.EPIC));
-        this.setRegistryName("frostmourne");
     }
 
     public static UUID MAGICAL_DAMAGE_UUID = UUID.fromString("0ba7ecc3-67c9-42d1-8cbf-09eda475b958");
@@ -44,7 +44,7 @@ public class FrostMourne extends SwordItem {
     @Override
     public boolean onLeftClickEntity(ItemStack stack, PlayerEntity player, Entity entity) {
         if (entity instanceof MobEntity || entity instanceof EnderDragonPartEntity) {
-            entity.hurt(new EntityDamageSource("frostmourne_hurt", player).setMagic(), (float) (player.getAttribute(Main.MAGICAL_DAMAGE).getValue() * player.getAttackStrengthScale(1.0f)));
+            entity.hurt(new EntityDamageSource("frostmourne_hurt", player).setMagic(), (float) (player.getAttribute(ScolAttributes.MAGICAL_DAMAGE).getValue() * player.getAttackStrengthScale(1.0f)));
             EnchantmentHelper.doPostDamageEffects(player, entity);
             return true;
         } else {
@@ -56,16 +56,13 @@ public class FrostMourne extends SwordItem {
     public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlotType slot, ItemStack stack) {
         ImmutableMultimap.Builder<Attribute, AttributeModifier> map = ImmutableMultimap.builder();
         if (slot == EquipmentSlotType.MAINHAND) {
-            map.put(Main.MAGICAL_DAMAGE, new AttributeModifier(MAGICAL_DAMAGE_UUID, "Weapon modifier", stack.getOrCreateTag().getInt("scol.Souls")+10, AttributeModifier.Operation.ADDITION));
+            map.put(ScolAttributes.MAGICAL_DAMAGE, new AttributeModifier(MAGICAL_DAMAGE_UUID, "Weapon modifier", stack.getOrCreateTag().getInt("scol.Souls")+10, AttributeModifier.Operation.ADDITION));
             map.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -3.2F, AttributeModifier.Operation.ADDITION));
         }
         return map.build();
     }
     @Override
-    public void onCraftedBy(ItemStack stack, World world, PlayerEntity player) {
-        System.out.println(stack);
-        System.out.println(world);
-        System.out.println(player);
-        super.onCraftedBy(stack, world, player);
+    public boolean isEnchantable(ItemStack stack) {
+        return !stack.isEnchanted();
     }
 }

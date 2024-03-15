@@ -5,9 +5,7 @@ import com.google.common.collect.Multimap;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
@@ -35,10 +33,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.entity.PartEntity;
 import scol.Main;
+import scol.ScolCapabality;
 import scol.entity.CustomItemEntity;
 import scol.entity.projectile.PowerWaveEntity;
 import scol.handlers.ItemTier;
-import scol.scolCapability;
+import scol.registries.ScolSounds;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -48,7 +47,6 @@ import java.util.stream.Collectors;
 public class Zangetsu extends SwordItem {
     public Zangetsu() {
         super(ItemTier.FOR_ALL, 39, 0, new Properties().tab(Main.TAB).fireResistant().rarity(Rarity.EPIC));
-        this.setRegistryName("zangetsu");
     }
     public static boolean isBankai(ItemStack stack) {
         return stack.getOrCreateTag().getBoolean("scol.Bankai");
@@ -80,7 +78,7 @@ public class Zangetsu extends SwordItem {
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
         if (!world.isClientSide()) {
-            LazyOptional<scolCapability.DataCapability> capability = player.getCapability(scolCapability.NeedVariables);
+            LazyOptional<ScolCapabality.DataCapability> capability = player.getCapability(ScolCapabality.NeedVariables);
             if (player.isCrouching()) {
                 if (capability.map(capa -> capa.canUseBankai()).orElse(false) && capability.isPresent()) {
                     int levelBankai = capability.map(capa -> capa.getLevelBankai()).orElse(0);
@@ -97,16 +95,17 @@ public class Zangetsu extends SwordItem {
                 }
             } else if (isBankai(player.getItemInHand(hand))) {
                 Vector3d viewPos = player.pick(20.0D, 0.0F, false).getLocation();
+
                 BlockState viewBlockOneUp = world.getBlockState(new BlockPos(viewPos.x,viewPos.y+1,viewPos.z));
 
                 if (viewBlockOneUp.getBlock().equals(Blocks.AIR) || viewBlockOneUp.getBlock().equals(Blocks.WATER)) {
-                    player.getCooldowns().addCooldown(this, 60 / player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(1));
+                    player.getCooldowns().addCooldown(this, 60 / player.getCapability(ScolCapabality.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(1));
                     player.teleportTo(viewPos.x, viewPos.y, viewPos.z);
-                    player.level.playSound(null, viewPos.x, viewPos.y, viewPos.z, Main.sonidoSound, player.getSoundSource(), 1.0F, 1.0F);
+                    player.level.playSound(null, viewPos.x, viewPos.y, viewPos.z, ScolSounds.SONIDO, player.getSoundSource(), 1.0F, 1.0F);
                 }
             } else {
                 if (capability.map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
-                    player.getCooldowns().addCooldown(this, 150 / player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(1));
+                    player.getCooldowns().addCooldown(this, 150 / player.getCapability(ScolCapabality.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(1));
                     PowerWaveEntity powerWaveEntity = new PowerWaveEntity(world, player);
                     powerWaveEntity.shootFromRotation();
                     world.addFreshEntity(powerWaveEntity);
@@ -133,11 +132,11 @@ public class Zangetsu extends SwordItem {
             }
             if (EnchantmentHelper.hasVanishingCurse(stack)) {
                 Map map = EnchantmentHelper.getEnchantments(stack).entrySet().stream().filter((p_217012_0_) -> {
-                    return !((Enchantment)p_217012_0_.getKey()).equals(Enchantments.VANISHING_CURSE);
+                    return !p_217012_0_.getKey().isCurse();
                 }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
                 EnchantmentHelper.setEnchantments(map, stack);
             }
-            LazyOptional<scolCapability.DataCapability> capability = entity.getCapability(scolCapability.NeedVariables);
+            LazyOptional<ScolCapabality.DataCapability> capability = entity.getCapability(ScolCapabality.NeedVariables);
             if (capability.map(capa -> capa.getCooldownBankai()).orElse(0) > 0) {
                 capability.ifPresent(capa -> capa.consumeCooldownBankai(1));
             }
@@ -241,7 +240,7 @@ public class Zangetsu extends SwordItem {
                 player.sweepAttack();
                 return true;
             }
-            if (entity.isAttackable() && isBankai(stack) && player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
+            if (entity.isAttackable() && isBankai(stack) && player.getCapability(ScolCapabality.NeedVariables).map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
                 entity.invulnerableTime = 0;
             }
         }

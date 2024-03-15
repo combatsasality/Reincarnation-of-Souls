@@ -8,7 +8,6 @@ public class VampiricEnchant extends Enchantment {
 
     public VampiricEnchant() {
         super(Rarity.RARE, EnchantmentType.WEAPON, new EquipmentSlotType[]{EquipmentSlotType.MAINHAND});
-        this.setRegistryName("vampirism_enchant");
     }
 
     @Override

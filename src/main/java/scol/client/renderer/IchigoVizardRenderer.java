@@ -13,7 +13,7 @@ import scol.entity.IchigoVizard;
 @OnlyIn(Dist.CLIENT)
 public class IchigoVizardRenderer extends MobRenderer<IchigoVizard, IchigoVizardModel<IchigoVizard>> {
 
-    protected static final ResourceLocation TEXTURE = new ResourceLocation(Main.modid, "textures/entity/ichigo_vizard.png");
+    protected static final ResourceLocation TEXTURE = new ResourceLocation(Main.MODID, "textures/entity/ichigo_vizard.png");
 
     public IchigoVizardRenderer(EntityRendererManager rendermanager) {
         super(rendermanager, new IchigoVizardModel<>(), 1.0f);

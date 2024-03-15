@@ -20,10 +20,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
-import net.minecraftforge.registries.ObjectHolder;
 import scol.Main;
 import scol.handlers.HelpHandler;
 import scol.packets.client.PacketSetModelType;
+import scol.registries.ScolEntities;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -31,8 +31,8 @@ import java.util.Random;
 import java.util.function.Predicate;
 
 public class Onryo extends MonsterEntity {
-    @ObjectHolder(Main.modid + ":onryo")
-    public static EntityType<Onryo> TYPE;
+//    @ObjectHolder(Main.MODID + ":onryo")
+//    public static EntityType<Onryo> TYPE;
     public OnryoType onryoType = OnryoType.DEFAULT;
     public boolean canEscape = true;
 
@@ -41,7 +41,7 @@ public class Onryo extends MonsterEntity {
         this.moveControl = new MoveHelperController(this);
     }
     public Onryo(World worldIn, double x, double y, double z, float yRot, float xRot) {
-        this(Onryo.TYPE, worldIn);
+        this(ScolEntities.ONRYO, worldIn);
         this.setPos(x, y, z);
         this.yRot = yRot;
         this.xRot = xRot;

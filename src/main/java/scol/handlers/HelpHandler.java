@@ -6,7 +6,6 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
 import net.minecraft.world.gen.FlatGenerationSettings;
-import net.minecraft.world.gen.feature.NoFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.structure.Structure;
 import net.minecraft.world.gen.settings.DimensionStructuresSettings;
@@ -59,13 +58,13 @@ public class HelpHandler {
         });
     }
     private static <T extends IForgeRegistryEntry<T>> T registerStructureReg(IForgeRegistry<T> registry, T entry, String registryKey) {
-        entry.setRegistryName(new ResourceLocation(Main.modid, registryKey));
+        entry.setRegistryName(new ResourceLocation(Main.MODID, registryKey));
         registry.register(entry);
         return entry;
     }
 
-    public static void registerStructure(IForgeRegistry<Structure<?>> registry, String registryKey, Structure<NoFeatureConfig> structure, StructureFeature<?, ?> configuredStructure, int average, int minAverage) {
-        HelpHandler.registerStructureReg(registry, structure, registryKey);
+    public static void registerStructure(String registryKey, Structure<?> structure, StructureFeature<?, ?> configuredStructure, int average, int minAverage) {
+//        HelpHandler.registerStructureReg(registry, structure, registryKey);
         HelpHandler.setupMapSpacingAndLand(
                 structure,
                 new StructureSeparationSettings(
@@ -76,8 +75,7 @@ public class HelpHandler {
                 true
         );
         Registry<StructureFeature<?, ?>> registryConfigured = WorldGenRegistries.CONFIGURED_STRUCTURE_FEATURE;
-        Registry.register(registryConfigured, new ResourceLocation(Main.modid, "configured_"+registryKey), configuredStructure);
+        Registry.register(registryConfigured, new ResourceLocation(Main.MODID, "configured_"+registryKey), configuredStructure);
         FlatGenerationSettings.STRUCTURE_FEATURES.put(structure, configuredStructure);
-
     }
 }

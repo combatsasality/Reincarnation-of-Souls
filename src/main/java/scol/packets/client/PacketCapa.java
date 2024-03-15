@@ -5,7 +5,7 @@ import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
-import scol.scolCapability;
+import scol.ScolCapabality;
 
 import java.util.function.Supplier;
 
@@ -26,7 +26,7 @@ public class PacketCapa {
     public static void handle(PacketCapa msg, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> {
             ClientPlayerEntity player = Minecraft.getInstance().player;
-            player.getCapability(scolCapability.NeedVariables).ifPresent(cap -> {
+            player.getCapability(ScolCapabality.NeedVariables).ifPresent(cap -> {
                 cap.setNBT(msg.nbt);
             });
         });

@@ -27,30 +27,31 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerBossInfo;
 import net.minecraftforge.common.util.FakePlayer;
-import net.minecraftforge.registries.ObjectHolder;
-import scol.Main;
+import scol.ScolCapabality;
 import scol.handlers.HelpHandler;
 import scol.items.Zangetsu;
-import scol.scolCapability;
+import scol.registries.ScolEntities;
+import scol.registries.ScolItems;
+import scol.registries.ScolSounds;
 
 import java.util.List;
 
 public class IchigoVizard extends MonsterEntity {
     int cooldownSonido = 0;
 
-    @ObjectHolder(Main.modid + ":ichigo_vizard")
-    public static EntityType<IchigoVizard> TYPE;
+//    @ObjectHolder(Main.MODID + ":ichigo_vizard")
+//    public static EntityType<IchigoVizard> TYPE;
 
 
     public IchigoVizard(EntityType<? extends MonsterEntity> type, World world) {
         super(type, world);
-        ItemStack stack = new ItemStack(Main.zangetsu);
+        ItemStack stack = new ItemStack(ScolItems.ZANGETSU);
         Zangetsu.setBankai(stack, true);
         this.setItemInHand(Hand.MAIN_HAND, stack);
     }
 
     public IchigoVizard(World worldIn, double x, double y, double z) {
-        this(IchigoVizard.TYPE, worldIn);
+        this(ScolEntities.ICHIGO_VIZARD, worldIn);
         this.setPos(x, y, z);
         this.yRot = this.random.nextFloat() * 360.0F;
     }
@@ -184,7 +185,7 @@ public class IchigoVizard extends MonsterEntity {
                         this.setPos(target.getX(), target.getY(), target.getZ());
                         this.cooldownSonido = 200;
                         this.doHurtTarget(target);
-                        this.playSound(Main.sonidoSound, 50f, 1f);
+                        this.playSound(ScolSounds.SONIDO, 50f, 1f);
                     }
                 }
             }
@@ -207,15 +208,15 @@ public class IchigoVizard extends MonsterEntity {
     protected void dropCustomDeathLoot(DamageSource source, int p_213333_2_, boolean p_213333_3_) {
         if (source.getEntity() instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) source.getEntity();
-            if (!player.getCapability(scolCapability.NeedVariables).map(capa -> capa.isHasZangetsu()).orElse(false)) {
-                ItemStack stack = new ItemStack(Main.zangetsu);
+            if (!player.getCapability(ScolCapabality.NeedVariables).map(capa -> capa.isHasZangetsu()).orElse(false)) {
+                ItemStack stack = new ItemStack(ScolItems.ZANGETSU);
                 Zangetsu.setDeathModel(stack, true);
                 Zangetsu.setDisableGravity(stack, true);
                 stack.getOrCreateTag().putString("scol.Owner", player.getGameProfile().getName());
                 CustomItemEntity dropped = new CustomItemEntity(this.level, this.getX(), this.getY(), this.getZ(), stack);
                 dropped.setPickupDelay(40);
                 this.level.addFreshEntity(dropped);
-                player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> capa.setHasZangetsu(true));
+                player.getCapability(ScolCapabality.NeedVariables).ifPresent(capa -> capa.setHasZangetsu(true));
             }
         }
     }

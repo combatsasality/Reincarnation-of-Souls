@@ -11,7 +11,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class scolCapability {
+public class ScolCapabality {
 
     @CapabilityInject(DataCapability.class)
     public static Capability<DataCapability> NeedVariables;

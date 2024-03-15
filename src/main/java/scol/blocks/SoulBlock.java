@@ -11,9 +11,8 @@ import net.minecraft.world.IBlockReader;
 import net.minecraftforge.common.ToolType;
 
 public class SoulBlock extends Block {
-    public SoulBlock(String registryName) {
+    public SoulBlock() {
         super(AbstractBlock.Properties.of(Material.SAND, MaterialColor.SAND).harvestTool(ToolType.SHOVEL).strength(0.5F).speedFactor(0.4F));
-        this.setRegistryName(registryName);
     }
 
     @Override

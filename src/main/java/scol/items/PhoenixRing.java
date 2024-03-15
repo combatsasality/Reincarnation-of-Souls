@@ -14,8 +14,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fml.network.PacketDistributor;
 import scol.Main;
+import scol.ScolCapabality;
 import scol.packets.server.PacketGetCapability;
-import scol.scolCapability;
 import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurio;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
@@ -27,7 +27,6 @@ import java.util.List;
 public class PhoenixRing extends Item implements ICurioItem {
     public PhoenixRing() {
         super(new Properties().fireResistant().tab(Main.TAB).stacksTo(1));
-        this.setRegistryName("phoenix_ring");
     }
 
     public static int getFloatForChickRing(ItemStack item) {
@@ -41,7 +40,7 @@ public class PhoenixRing extends Item implements ICurioItem {
     public void appendHoverText(ItemStack stack, @Nullable World world, List<ITextComponent> list, ITooltipFlag tooltip) {
         if (world != null) {
             Main.packetInstance.send(PacketDistributor.SERVER.noArg(), new PacketGetCapability(true));
-            list.add(Minecraft.getInstance().player.getCapability(scolCapability.NeedVariables).map(capa -> capa.canUsePhoenixRing()).orElse(true) ? new TranslationTextComponent("tooltip.scol.active") : new TranslationTextComponent("tooltip.scol.inactive"));
+            list.add(Minecraft.getInstance().player.getCapability(ScolCapabality.NeedVariables).map(capa -> capa.canUsePhoenixRing()).orElse(true) ? new TranslationTextComponent("tooltip.scol.active") : new TranslationTextComponent("tooltip.scol.inactive"));
         }
         list.add(new TranslationTextComponent("tooltip.scol.empty"));
         if (Screen.hasShiftDown()) {
@@ -62,7 +61,7 @@ public class PhoenixRing extends Item implements ICurioItem {
         if (!livingEntity.level.isClientSide) {
             if (livingEntity.isOnFire()) livingEntity.clearFire();
             livingEntity.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 100, 0, false, false, false));
-            LazyOptional<scolCapability.DataCapability> capability = livingEntity.getCapability(scolCapability.NeedVariables);
+            LazyOptional<ScolCapabality.DataCapability> capability = livingEntity.getCapability(ScolCapabality.NeedVariables);
             if (capability.map(capa -> capa.getCoolDownPhoenixRing()).orElse(0) != 0) {
                 capability.ifPresent(capa -> capa.consumeCoolDownPhoenixRing(1));
             }

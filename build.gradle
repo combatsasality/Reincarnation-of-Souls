@@ -62,11 +62,6 @@ repositories {
     maven {
         url = "https://maven.theillusivec4.top/"
     }
-//    maven {
-//        // location of the maven that hosts JEI files
-//        name = "Progwml6 maven"
-//        url = "https://dvs1.progwml6.com/files/maven/"
-//    }
     maven {
         // location of a maven mirror for JEI files, as a fallback
         name = "ModMaven"
@@ -86,7 +81,7 @@ jar {
         attributes([
                 "Specification-Title": "${mod_name}",
                 "Specification-Vendor": "${mod_author}",
-                "Specification-Version": "${mod_version}", // We are version 1 of ourselves
+                "Specification-Version": "${mod_version}",
                 "Implementation-Title": "${mod_name}",
                 "Implementation-Version": "${mod_version}",
                 "Implementation-Vendor" :"${mod_author}",

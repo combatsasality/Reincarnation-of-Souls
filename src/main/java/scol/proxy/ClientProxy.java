@@ -4,18 +4,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.entity.PlayerRenderer;
+import net.minecraft.item.ItemModelsProperties;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import scol.client.renderer.*;
-import scol.entity.CustomItemEntity;
-import scol.entity.IchigoVizard;
-import scol.entity.Onryo;
-import scol.entity.projectile.PowerWaveEntity;
+import scol.items.PhoenixRing;
+import scol.items.Zangetsu;
+import scol.registries.ScolBlocks;
+import scol.registries.ScolEntities;
+import scol.registries.ScolItems;
 
 import java.util.Map;
-
-import static scol.Main.soulGlass;
 
 public class ClientProxy extends CommonProxy{
     public ClientProxy () {
@@ -30,11 +32,20 @@ public class ClientProxy extends CommonProxy{
     }
     @Override
     public void initEntityRendering() {
-        RenderingRegistry.registerEntityRenderingHandler(CustomItemEntity.TYPE, renderManager -> new CustomItemEntityRenderer(renderManager, Minecraft.getInstance().getItemRenderer()));
-        RenderingRegistry.registerEntityRenderingHandler(IchigoVizard.TYPE, IchigoVizardRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(PowerWaveEntity.TYPE, PowerWaveRenderer::new);
-        RenderingRegistry.registerEntityRenderingHandler(Onryo.TYPE, OnryoRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ScolEntities.CUSTOM_ITEM_ENTITY_ENT, renderManager -> new CustomItemEntityRenderer(renderManager, Minecraft.getInstance().getItemRenderer()));
+        RenderingRegistry.registerEntityRenderingHandler(ScolEntities.ICHIGO_VIZARD, IchigoVizardRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ScolEntities.POWER_WAVE, PowerWaveRenderer::new);
+        RenderingRegistry.registerEntityRenderingHandler(ScolEntities.ONRYO, OnryoRenderer::new);
     }
+
+    @Override
+    public void initPropertyOverrideRegistry(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            ItemModelsProperties.register(ScolItems.PHOENIX_RING.getItem(), new ResourceLocation("scol:chick"), (itemStack, clientWorld, livingEntity) -> PhoenixRing.getFloatForChickRing(itemStack));
+            ItemModelsProperties.register(ScolItems.ZANGETSU.getItem(), new ResourceLocation("scol:zangetsu_model"), (itemStack, clientWorld, livingEntity) -> Zangetsu.getZangetsuModel(itemStack));
+        });
+    }
+
     @Override
     public void loadComplete(FMLLoadCompleteEvent event) {
         this.initAuxiliaryRender();
@@ -43,6 +54,6 @@ public class ClientProxy extends CommonProxy{
     @Override
     public void setupClient(FMLCommonSetupEvent event) {
         // wtf forge?
-        RenderTypeLookup.setRenderLayer(soulGlass.getBlock(), RenderType.translucent());
+        RenderTypeLookup.setRenderLayer(ScolBlocks.SOUL_GLASS.getBlock(), RenderType.translucent());
     }
 }

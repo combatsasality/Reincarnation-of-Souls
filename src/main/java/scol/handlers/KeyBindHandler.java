@@ -14,6 +14,7 @@ import org.lwjgl.glfw.GLFW;
 import scol.Main;
 import scol.items.WorldWing;
 import scol.packets.server.PacketWorldWing;
+import scol.registries.ScolItems;
 import top.theillusivec4.curios.api.CuriosApi;
 import top.theillusivec4.curios.api.SlotResult;
 
@@ -39,7 +40,7 @@ public class KeyBindHandler {
         }
 
         if (this.worldWingKeyBind.consumeClick()) {
-            Optional<SlotResult> result = CuriosApi.getCuriosHelper().findFirstCurio(Minecraft.getInstance().player, Main.worldWing);
+            Optional<SlotResult> result = CuriosApi.getCuriosHelper().findFirstCurio(Minecraft.getInstance().player, ScolItems.WORLD_WING);
             if (result.isPresent()) {
                 Main.packetInstance.send(PacketDistributor.SERVER.noArg(), new PacketWorldWing(true));
                 ItemStack stack = result.get().getStack();

@@ -18,8 +18,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 import scol.Main;
+import scol.ScolCapabality;
 import scol.packets.server.PacketGetCapability;
-import scol.scolCapability;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -27,14 +27,13 @@ import java.util.List;
 public class TestItem extends Item {
     public TestItem() {
         super(new Properties());
-        this.setRegistryName("test_item");
     }
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn) {
         tooltip.add(new TranslationTextComponent("tooltip.item.test_item.0"));
         if (Screen.hasShiftDown()) {
-            tooltip.add(new StringTextComponent(Minecraft.getInstance().player.getCapability(scolCapability.NeedVariables).map(capa -> capa.getNBT()).orElse(null).toString()));
+            tooltip.add(new StringTextComponent(Minecraft.getInstance().player.getCapability(ScolCapabality.NeedVariables).map(capa -> capa.getNBT()).orElse(null).toString()));
         }
         Main.packetInstance.send(PacketDistributor.SERVER.noArg(), new PacketGetCapability(true));
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
@@ -57,15 +56,6 @@ public class TestItem extends Item {
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
-        player.getCapability(scolCapability.NeedVariables).ifPresent(capa -> {
-            capa.setCoolDownPhoenixRing(0);
-            capa.setActiveBankaiTime(0);
-            capa.raiseLevelBankai();
-            capa.raiseLevelBankai();
-            capa.raiseLevelBankai();
-            capa.raiseLevelBankai();
-            capa.setCooldownBankai(0);
-        });
         return super.use(world, player, hand);
     }
 
