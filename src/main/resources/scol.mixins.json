@@ -1,9 +1,9 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "scol.mixin",
+  "package": "com.combatsasality.scol.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "scol.refmap.json",
+  "refmap": "com.combatsasality.scol.refmap.json",
   "verbose": true,
   "mixins": [
     "MixinAssemble",
