@@ -12,34 +12,34 @@ import java.util.UUID;
 
 public class SoulGlassTile extends TileEntity {
 
-    public UUID owner;
+    public String owner;
     public SoulGlassTile() {
         super(ScolTiles.SOUL_GLASS);
     }
 
     @Override
     public CompoundNBT save(CompoundNBT nbt) {
-        nbt.putUUID("owner", owner);
+        nbt.putString("owner", this.owner);
         return super.save(nbt);
     }
 
     @Override
     public void load(BlockState state, CompoundNBT nbt) {
         super.load(state, nbt);
-        if (nbt.hasUUID("owner")) owner = nbt.getUUID("owner");
+        this.owner = nbt.getString("owner");
     }
 
     @Nullable
     @Override
     public SUpdateTileEntityPacket getUpdatePacket() {
         CompoundNBT nbt = new CompoundNBT();
-        nbt.putUUID("owner", owner);
+        nbt.putString("owner", owner);
         return new SUpdateTileEntityPacket(this.worldPosition, -1, nbt);
     }
 
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
         CompoundNBT nbt = pkt.getTag();
-        owner = nbt.getUUID("owner");
+        owner = nbt.getString("owner");
     }
 }

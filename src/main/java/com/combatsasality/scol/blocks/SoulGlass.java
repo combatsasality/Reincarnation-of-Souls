@@ -43,7 +43,7 @@ public class SoulGlass extends AbstractGlassBlock {
         TileEntity tile = world.getBlockEntity(pos);
         if (tile instanceof SoulGlassTile && player instanceof PlayerEntity) {
             SoulGlassTile soulGlassTile = (SoulGlassTile) tile;
-            soulGlassTile.owner = player.getUUID();
+            soulGlassTile.owner = ((PlayerEntity) player).getGameProfile().getName();
         }
         super.setPlacedBy(world, pos, state, player, stack);
     }
@@ -53,7 +53,7 @@ public class SoulGlass extends AbstractGlassBlock {
         TileEntity tile = world.getBlockEntity(pos);
         if (tile instanceof SoulGlassTile) {
             SoulGlassTile soulGlassTile = (SoulGlassTile) tile;
-            if (player.getUUID().equals(soulGlassTile.owner)) {
+            if (player.getGameProfile().getName().equals(soulGlassTile.owner)) {
                 world.destroyBlock(pos, true);
                 return ActionResultType.SUCCESS;
             }
