@@ -126,14 +126,6 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void toolTipForShiftNBT(ItemTooltipEvent event) { // Delete when create gradlew build
-        if (Screen.hasShiftDown()) {
-            event.getToolTip().add(new StringTextComponent(event.getItemStack().getOrCreateTag().toString()));
-        }
-    }
-
-    @SubscribeEvent
     public static void addAttribute(final EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, ScolAttributes.MAGICAL_DAMAGE);
     }

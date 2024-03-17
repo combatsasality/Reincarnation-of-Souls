@@ -2,6 +2,7 @@ package com.combatsasality.scol.items;
 
 import com.combatsasality.scol.Main;
 import com.combatsasality.scol.ScolCapabality;
+import com.combatsasality.scol.handlers.CheckVersionHandler;
 import com.combatsasality.scol.packets.server.PacketGetCapability;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
@@ -56,6 +57,7 @@ public class TestItem extends Item {
 
     @Override
     public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        CheckVersionHandler.getNewestVersion();
         return super.use(world, player, hand);
     }
 

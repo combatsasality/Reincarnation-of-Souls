@@ -94,5 +94,8 @@
     "item.minecraft.potion.effect.hero_of_village": "Зелье героя деревни",
     "item.minecraft.splash_potion.effect.hero_of_village": "Взрывное зелье героя деревни",
     "item.minecraft.lingering_potion.effect.hero_of_village": "Туманное зелье героя деревни",
-    "item.minecraft.tipped_arrow.effect.hero_of_village": "Стрела героя деревни"
+    "item.minecraft.tipped_arrow.effect.hero_of_village": "Стрела героя деревни",
+
+    "scol.update.0": "§bВышло новое обновление для Soul Collector: %s",
+    "scol.update.1": "§bУстановить его можно здесь: §r[§lНажми на меня§r]"
 }

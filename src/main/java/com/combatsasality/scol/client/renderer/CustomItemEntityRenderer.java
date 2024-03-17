@@ -30,8 +30,8 @@ public class CustomItemEntityRenderer extends EntityRenderer<CustomItemEntity> {
     public CustomItemEntityRenderer(EntityRendererManager renderManagerIn, net.minecraft.client.renderer.ItemRenderer itemRendererIn) {
         super(renderManagerIn);
         this.itemRenderer = itemRendererIn;
-        this.shadowRadius = 0.15F;
-        this.shadowStrength = 0.75F;
+        this.shadowRadius = 0.0F;
+        this.shadowStrength = 0.0F;
     }
 
     protected int getModelCount(ItemStack stack) {

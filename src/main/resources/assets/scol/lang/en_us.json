@@ -94,5 +94,8 @@
   "item.minecraft.potion.effect.hero_of_village": "Potion Of The Village Hero",
   "item.minecraft.splash_potion.effect.hero_of_village": "Splash Potion Of The Village Hero",
   "item.minecraft.lingering_potion.effect.hero_of_village": "Lingering Potion Of The Village Hero",
-  "item.minecraft.tipped_arrow.effect.hero_of_village": "Arrow Of The Village Hero"
+  "item.minecraft.tipped_arrow.effect.hero_of_village": "Arrow Of The Village Hero",
+
+  "scol.update.0": "§bNew update for Soul Collector is available: %s",
+  "scol.update.1": "§bDownload it here: §r[§lClick me§r]"
 }

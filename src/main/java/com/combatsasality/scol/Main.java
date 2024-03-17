@@ -1,8 +1,6 @@
 package com.combatsasality.scol;
 
-import com.combatsasality.scol.handlers.EventHandler;
-import com.combatsasality.scol.handlers.HelpHandler;
-import com.combatsasality.scol.handlers.KeyBindHandler;
+import com.combatsasality.scol.handlers.*;
 import com.combatsasality.scol.packets.client.PacketCapa;
 import com.combatsasality.scol.packets.client.PacketSetModelType;
 import com.combatsasality.scol.packets.server.PacketGetCapability;
@@ -25,7 +23,9 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.*;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
@@ -39,6 +39,8 @@ import top.theillusivec4.curios.api.SlotTypeMessage;
 public class Main {
     public static final CommonProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
     public static final String MODID = "scol";
+    public static final String VERSION = "0.1pre";
+    public static final String VERSION_MINECRAFT = "1.16.5";
     public static final Logger logger = LogManager.getLogger();
     private static final String PTC_VERSION = "1";
     public static SimpleChannel packetInstance;
@@ -85,6 +87,7 @@ public class Main {
         new ScolEntities();
         new ScolLootModifiers();
         new ScolStructures();
+        new ScolTiles();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onLoadComplete);
@@ -92,7 +95,9 @@ public class Main {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::doClientStuff);
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
+        MinecraftForge.EVENT_BUS.addListener(CheckVersionHandler::worldEventLoad);
         MinecraftForge.EVENT_BUS.register(keyBinds);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHandler.CONFIG, "soul_collector-common.toml");
 
         // Potion brewing
         PotionBrewing.addMix(Potions.WATER, Items.EMERALD_BLOCK, ScolPotions.HERO_OF_VILLAGE);

@@ -94,5 +94,8 @@
   "item.minecraft.potion.effect.hero_of_village": "Зілля героя селища",
   "item.minecraft.splash_potion.effect.hero_of_village": "Вибухове зілля героя селища",
   "item.minecraft.lingering_potion.effect.hero_of_village": "Осідаюче зілля героя селища",
-  "item.minecraft.tipped_arrow.effect.hero_of_village": "Стріла героя селища"
+  "item.minecraft.tipped_arrow.effect.hero_of_village": "Стріла героя селища",
+
+  "scol.update.0": "§bВийшло нове оновлення для Soul Collector: %s",
+  "scol.update.1": "§bВстановити його можна тут: §r[§lНатисни на мене§r]"
 }

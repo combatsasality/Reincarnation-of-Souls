@@ -1,6 +1,7 @@
 package com.combatsasality.scol.registries;
 
 import com.combatsasality.scol.blocks.SoulBlock;
+import com.combatsasality.scol.blocks.SoulGlass;
 import net.minecraft.block.*;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
@@ -10,7 +11,7 @@ import java.util.function.Supplier;
 public class ScolBlocks extends AbstractRegistry<Block> {
     // TODO: Replace default glass sound
     @ObjectHolder(MODID + ":soul_glass")
-    public static AbstractGlassBlock SOUL_GLASS;
+    public static SoulGlass SOUL_GLASS;
     @ObjectHolder(MODID + ":soul_block")
     public static SoulBlock SOUL_BLOCK;
     @ObjectHolder(MODID + ":aggressive_soul_block")
@@ -18,7 +19,7 @@ public class ScolBlocks extends AbstractRegistry<Block> {
 
     public ScolBlocks() {
         super(ForgeRegistries.BLOCKS);
-        register("soul_glass", () -> new GlassBlock(AbstractBlock.Properties.copy(Blocks.GLASS)));
+        register("soul_glass", SoulGlass::new);
         register("soul_block", SoulBlock::new);
         register("aggressive_soul_block", SoulBlock::new);
     }
