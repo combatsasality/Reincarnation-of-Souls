@@ -38,6 +38,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.text.*;
@@ -73,12 +74,15 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import top.theillusivec4.curios.api.CuriosApi;
+import top.theillusivec4.curios.api.event.CurioEquipEvent;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EventHandler {
@@ -177,24 +181,26 @@ public class EventHandler {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onKillInActivePhoenix(LivingDeathEvent event) {
-        if (event.getEntity() instanceof ServerPlayerEntity) {
-            ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+        if (event.getEntity() instanceof PlayerEntity) {
+            PlayerEntity player = (PlayerEntity) event.getEntity();
             CuriosApi.getCuriosHelper().findFirstCurio(player, ScolItems.INACTIVE_PHOENIX_RING).ifPresent(slotResult -> {
                 if (event.getSource().equals(DamageSource.LAVA)) {
-                    int dragonSoul = player.inventory.findSlotMatchingItem(new ItemStack(ScolItems.DRAGON_SOUL));
-                    int witherSoul = player.inventory.findSlotMatchingItem(new ItemStack(ScolItems.WITHER_SOUL));
-                    if (dragonSoul != -1 && witherSoul != -1) {
+                    NonNullList<ItemStack> streamList = player.inventory.items;
+                    Supplier<Stream<ItemStack>> dragonStream = () -> streamList.stream().filter(stack -> stack.getItem().equals(ScolItems.DRAGON_SOUL));
+                    Supplier<Stream<ItemStack>> witherStream = () -> streamList.stream().filter(stack -> stack.getItem().equals(ScolItems.WITHER_SOUL));
+                    if (dragonStream.get().findFirst().isPresent() && witherStream.get().findFirst().isPresent()) {
                         CuriosApi.getCuriosHelper().getCuriosHandler(player).map(capa -> capa.getCurios().get("ring")).get().getStacks().setStackInSlot(slotResult.getSlotContext().getIndex(), new ItemStack(ScolItems.PHOENIX_RING));
                         event.setCanceled(true);
-                        player.setHealth(0.5F);
+                        player.setHealth(player.getMaxHealth());
                         player.addEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 30, 0));
-                        player.inventory.getItem(dragonSoul).shrink(1);
-                        player.inventory.getItem(witherSoul).shrink(1);
+                        dragonStream.get().findFirst().get().shrink(1);
+                        witherStream.get().findFirst().get().shrink(1);
                     }
                 }
             });
         }
     }
+
 
     @SubscribeEvent
     public void AddVilagerTrade(VillagerTradesEvent event) {
