@@ -39,7 +39,7 @@ import top.theillusivec4.curios.api.SlotTypeMessage;
 public class Main {
     public static final CommonProxy proxy = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
     public static final String MODID = "scol";
-    public static final String VERSION = "0.1pre";
+    public static final String VERSION = "0.1";
     public static final String VERSION_MINECRAFT = "1.16.5";
     public static final Logger logger = LogManager.getLogger();
     private static final String PTC_VERSION = "1";

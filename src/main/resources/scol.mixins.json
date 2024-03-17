@@ -10,7 +10,9 @@
     "MixinTridentItem",
     "MixinTridentEntity"
   ],
-  "client": [],
+  "client": [
+    "MixinFixTitleAdvancement"
+  ],
   "injectors": {
     "defaultRequire": 1
   }

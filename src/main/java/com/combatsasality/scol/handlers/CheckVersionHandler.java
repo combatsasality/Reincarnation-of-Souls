@@ -77,9 +77,9 @@ public class CheckVersionHandler {
                 newVersionComponent.withStyle(TextFormatting.ITALIC);
                 newVersionComponent.withStyle(TextFormatting.DARK_PURPLE);
                 urlForNewVersion = new TranslationTextComponent("scol.update.1");
-                Style style = Style.EMPTY;
-                style = style.applyFormat(TextFormatting.DARK_PURPLE);
-                style = style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, response.url));
+                Style style = Style.EMPTY
+                        .applyFormat(TextFormatting.DARK_PURPLE)
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, response.url));
                 urlForNewVersion.setStyle(style);
             }
         }
