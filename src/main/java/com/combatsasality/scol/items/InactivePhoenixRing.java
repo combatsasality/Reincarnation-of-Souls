@@ -10,6 +10,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class InactivePhoenixRing extends Item implements ICurioItem {
+    public static final UUID HEALTH_MODIFIER_UUID = UUID.fromString("223c79e0-bb84-41a9-93e2-99adccbd93be");
     public InactivePhoenixRing() {
         super(new Properties().tab(Main.TAB).stacksTo(1));
     }
@@ -44,10 +47,25 @@ public class InactivePhoenixRing extends Item implements ICurioItem {
     }
 
     @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(SlotContext slotContext, UUID uuid, ItemStack stack) {
-        Multimap<Attribute, AttributeModifier> map = ArrayListMultimap.create();
-        map.put(Attributes.MAX_HEALTH, new AttributeModifier(uuid, "remove_health_inphoenixring", -1.0F, AttributeModifier.Operation.MULTIPLY_TOTAL));
-        return map;
+    public void onEquip(SlotContext slotContext, ItemStack prevStack, ItemStack stack) {
+        PlayerEntity player = (PlayerEntity) slotContext.getWearer();
+        ModifiableAttributeInstance health = player.getAttribute(Attributes.MAX_HEALTH);
+        AttributeModifier modifier = health.getModifier(HEALTH_MODIFIER_UUID);
+        if (modifier == null) {
+            health.addPermanentModifier(new AttributeModifier(HEALTH_MODIFIER_UUID, Main.MODID+":remove_health_inactive_phoenix_ring", -1.0F, AttributeModifier.Operation.MULTIPLY_TOTAL));
+        }
+        float amount = player.getHealth() - player.getMaxHealth();
+        if (amount > 0) {
+            player.setHealth(player.getMaxHealth());
+        }
+    }
+
+    @Override
+    public void onUnequip(SlotContext slotContext, ItemStack newStack, ItemStack stack) {
+        ModifiableAttributeInstance health = ((PlayerEntity) slotContext.getWearer()).getAttribute(Attributes.MAX_HEALTH);
+        if (health.getModifier(HEALTH_MODIFIER_UUID) != null) {
+            health.removeModifier(HEALTH_MODIFIER_UUID);
+        }
     }
 
     @Override
@@ -57,7 +75,7 @@ public class InactivePhoenixRing extends Item implements ICurioItem {
 
     @Override
     public boolean canUnequip(String identifier, LivingEntity livingEntity, ItemStack stack) {
-        return livingEntity instanceof ServerPlayerEntity && ((ServerPlayerEntity) livingEntity).isCreative() || livingEntity instanceof ServerPlayerEntity && CuriosApi.getCuriosHelper().findFirstCurio(livingEntity, ScolItems.PHOENIX_RING).isPresent();
+        return livingEntity instanceof PlayerEntity && ((PlayerEntity) livingEntity).isCreative() || livingEntity instanceof PlayerEntity && CuriosApi.getCuriosHelper().findFirstCurio(livingEntity, ScolItems.PHOENIX_RING).isPresent();
     }
 
     @Nonnull

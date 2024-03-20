@@ -155,7 +155,7 @@ public class Zangetsu extends SwordItem {
                 player.addEffect(new EffectInstance(Effects.DAMAGE_RESISTANCE, 200, levelBankai-1, false, false, false, null));
                 player.addEffect(new EffectInstance(Effects.DAMAGE_BOOST, 200, levelBankai-1, false, false, false, null));
                 player.addEffect(new EffectInstance(Effects.REGENERATION, 200, levelBankai-1, false, false, false, null));
-                player.getFoodData().eat(20, 1.0F);
+                player.getFoodData().eat(20, 20.0F);
                 return;
             }
 
