@@ -82,14 +82,10 @@ public class AltarTile extends BaseItemStackTile implements ITickableTileEntity 
             if (this.getItem().getItem().equals(Items.ENCHANTED_BOOK)) {
                 return;
             }
-            Map<Enchantment, Integer> enchantments = new HashMap<>();
+            Map<Enchantment, Integer> enchantments = EnchantmentHelper.getEnchantments(this.getItem());
             this.getPedestals().forEach(pedestal -> {
-                Map<Enchantment, Integer> pedestalEnchantments = EnchantmentHelper.getEnchantments(pedestal.getItem());
-                if (!pedestalEnchantments.isEmpty()) {
-                    enchantments.putAll(pedestalEnchantments);
-                }
+                enchantments.putAll(EnchantmentHelper.getEnchantments(pedestal.getItem()));
             });
-            enchantments.putAll(EnchantmentHelper.getEnchantments(this.getItem()));
             EnchantmentHelper.setEnchantments(enchantments, this.getItem());
         }
     }
