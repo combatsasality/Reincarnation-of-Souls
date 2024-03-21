@@ -12,6 +12,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.math.shapes.VoxelShapes;
 import net.minecraft.world.IBlockReader;
+import net.minecraftforge.common.ToolType;
 
 import java.util.stream.Stream;
 
@@ -22,7 +23,7 @@ public class Pedestal extends BaseItemStackBlock {
             Block.box(6, 0, 6, 10, 10, 10)
     ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
     public Pedestal() {
-        super(Properties.of(Material.STONE));
+        super(Properties.of(Material.STONE).strength(1.5F, 6.0F).harvestTool(ToolType.PICKAXE));
     }
 
     @Override

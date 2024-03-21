@@ -140,11 +140,11 @@ public class EventHandler {
         }
     }
 
-    @SubscribeEvent
-    @OnlyIn(Dist.CLIENT)
-    public void tooltipNbt(ItemTooltipEvent event) { // DELETE WHEN GRADLEW BUILD
-        event.getToolTip().add(new StringTextComponent("NBT: " + event.getItemStack().getOrCreateTag().toString()).withStyle(TextFormatting.GRAY));
-    }
+//    @SubscribeEvent
+//    @OnlyIn(Dist.CLIENT)
+//    public void tooltipNbt(ItemTooltipEvent event) { // DELETE WHEN GRADLEW BUILD
+//        event.getToolTip().add(new StringTextComponent("NBT: " + event.getItemStack().getOrCreateTag().toString()).withStyle(TextFormatting.GRAY));
+//    }
 
     @SubscribeEvent
     public static void addAttribute(final EntityAttributeModificationEvent event) {

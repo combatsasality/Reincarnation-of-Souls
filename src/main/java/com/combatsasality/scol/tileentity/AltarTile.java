@@ -24,13 +24,13 @@ public class AltarTile extends BaseItemStackTile implements ITickableTileEntity 
          List<BlockPos> positions = new ArrayList<>();
          BlockPos pos = this.getBlockPos().mutable();
          positions.add(pos.west(3));
-         positions.add(pos.east(3));
-         positions.add(pos.north(3));
-         positions.add(pos.south(3));
          positions.add(pos.north(2).west(2));
+         positions.add(pos.north(3));
          positions.add(pos.north(2).east(2));
-         positions.add(pos.south(2).west(2));
+         positions.add(pos.east(3));
          positions.add(pos.south(2).east(2));
+         positions.add(pos.south(3));
+         positions.add(pos.south(2).west(2));
          return positions;
     }
     public void doActivate() {
@@ -126,9 +126,11 @@ public class AltarTile extends BaseItemStackTile implements ITickableTileEntity 
             this.tick++;
         }
         if (this.tick >= 60) {
-            this.activate();
             List<PedestalTile> pedestals = this.getPedestals();
-            if (this.getEnchantType(pedestals) == 0) {
+            int type = this.getEnchantType(pedestals);
+            this.activate();
+            if (type == 0) {
+                pedestals = this.getPedestals();
                 pedestals.forEach(pedestal ->
                 {
                     if (!pedestal.getItem().isEmpty()) {
