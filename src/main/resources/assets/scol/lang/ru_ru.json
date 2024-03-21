@@ -42,6 +42,8 @@
     "block.scol.soul_glass": "Стекло душ",
     "block.scol.soul_block": "Блок душ",
     "block.scol.aggressive_soul_block": "Блок душ",
+    "block.scol.pedestal": "Пьедестал",
+    "block.scol.altar": "Алтарь",
 
 
     "attribute.name.scol.magical_damage": "к магическому урону",
