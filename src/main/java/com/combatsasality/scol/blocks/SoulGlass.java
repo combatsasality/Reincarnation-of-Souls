@@ -23,7 +23,7 @@ import java.util.Random;
 public class SoulGlass extends AbstractGlassBlock {
 
     public SoulGlass() {
-        super(AbstractBlock.Properties.copy(Blocks.GLASS).strength(-1.0F, 3600000.0F).noDrops());
+        super(AbstractBlock.Properties.copy(Blocks.GLASS).strength(-1.0F, Float.MAX_VALUE));
     }
 
     @Override
@@ -61,11 +61,4 @@ public class SoulGlass extends AbstractGlassBlock {
         return ActionResultType.PASS;
     }
 
-    @Override
-    public void onRemove(BlockState state, World world, BlockPos pos, BlockState newState, boolean isMoving) {
-        if (state.getBlock() != newState.getBlock()) {
-            world.addFreshEntity(new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(this)));
-        }
-        super.onRemove(state, world, pos, newState, isMoving);
-    }
 }

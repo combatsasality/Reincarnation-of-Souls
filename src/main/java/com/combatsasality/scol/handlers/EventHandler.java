@@ -140,11 +140,11 @@ public class EventHandler {
         }
     }
 
-//    @SubscribeEvent
-//    @OnlyIn(Dist.CLIENT)
-//    public void tooltipNbt(ItemTooltipEvent event) { // DELETE WHEN GRADLEW BUILD
-//        event.getToolTip().add(new StringTextComponent("NBT: " + event.getItemStack().getOrCreateTag().toString()).withStyle(TextFormatting.GRAY));
-//    }
+    @SubscribeEvent
+    @OnlyIn(Dist.CLIENT)
+    public void tooltipNbt(ItemTooltipEvent event) { // DELETE WHEN GRADLEW BUILD
+        event.getToolTip().add(new StringTextComponent("NBT: " + event.getItemStack().getOrCreateTag().toString()).withStyle(TextFormatting.GRAY));
+    }
 
     @SubscribeEvent
     public static void addAttribute(final EntityAttributeModificationEvent event) {
@@ -242,7 +242,7 @@ public class EventHandler {
             }
             event.setCanceled(true);
             CustomItemEntity newEntity = new CustomItemEntity(ent.level, ent.getX(), ent.getY(), ent.getZ(), ent.getItem());
-            newEntity.setPickupDelay(40);
+            newEntity.setPickupDelay(ent.pickupDelay);
             newEntity.setDeltaMovement(ent.getDeltaMovement());
             newEntity.setNoGravity(false);
             newEntity.setInvulnerable(false);
@@ -447,9 +447,7 @@ public class EventHandler {
             int soulCatcherLevel = EnchantmentHelper.getItemEnchantmentLevel(ScolEnchantments.SOUL_CATCHER, left);
             ItemStack result = left.copy();
             event.setMaterialCost(1);
-            Map map = EnchantmentHelper.getEnchantments(left).entrySet().stream().filter((entry) -> {
-                return !entry.getKey().equals(ScolEnchantments.SOUL_CATCHER);
-            }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            Map map = EnchantmentHelper.getEnchantments(left).entrySet().stream().filter((entry) -> !entry.getKey().equals(ScolEnchantments.SOUL_CATCHER)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             switch (((ISoulMaterial) right.getItem()).getSoulType()) {
                 case FRIENDLY:
                     if (soulCatcherLevel >= 1) {

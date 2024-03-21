@@ -6,12 +6,14 @@ import com.combatsasality.scol.items.Zangetsu;
 import com.combatsasality.scol.registries.ScolBlocks;
 import com.combatsasality.scol.registries.ScolEntities;
 import com.combatsasality.scol.registries.ScolItems;
+import com.combatsasality.scol.registries.ScolTiles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.entity.PlayerRenderer;
 import net.minecraft.item.ItemModelsProperties;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -53,7 +55,8 @@ public class ClientProxy extends CommonProxy {
 
     @Override
     public void setupClient(FMLCommonSetupEvent event) {
-        // wtf forge?
         RenderTypeLookup.setRenderLayer(ScolBlocks.SOUL_GLASS.getBlock(), RenderType.translucent());
+        ClientRegistry.bindTileEntityRenderer(ScolTiles.PEDESTAL, PedestalTileRenderer::new);
+        ClientRegistry.bindTileEntityRenderer(ScolTiles.ALTAR, AltarTileRenderer::new);
     }
 }

@@ -8,7 +8,13 @@ import com.combatsasality.scol.packets.server.PacketWorldWing;
 import com.combatsasality.scol.proxy.ClientProxy;
 import com.combatsasality.scol.proxy.CommonProxy;
 import com.combatsasality.scol.registries.*;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderState;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -33,6 +39,8 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import top.theillusivec4.curios.api.SlotTypeMessage;
 
 @Mod(Main.MODID)
@@ -71,7 +79,6 @@ public class Main {
             }
         }
     };
-
 
 
     public Main() {

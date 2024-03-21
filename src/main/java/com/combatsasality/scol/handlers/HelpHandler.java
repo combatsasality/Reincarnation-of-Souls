@@ -3,9 +3,13 @@ package com.combatsasality.scol.handlers;
 import com.combatsasality.scol.Main;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.WorldGenRegistries;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.FlatGenerationSettings;
 import net.minecraft.world.gen.feature.StructureFeature;
 import net.minecraft.world.gen.feature.structure.Structure;
@@ -64,7 +68,6 @@ public class HelpHandler {
     }
 
     public static void registerStructure(String registryKey, Structure<?> structure, StructureFeature<?, ?> configuredStructure, int average, int minAverage) {
-//        HelpHandler.registerStructureReg(registry, structure, registryKey);
         HelpHandler.setupMapSpacingAndLand(
                 structure,
                 new StructureSeparationSettings(
@@ -77,5 +80,12 @@ public class HelpHandler {
         Registry<StructureFeature<?, ?>> registryConfigured = WorldGenRegistries.CONFIGURED_STRUCTURE_FEATURE;
         Registry.register(registryConfigured, new ResourceLocation(Main.MODID, "configured_"+registryKey), configuredStructure);
         FlatGenerationSettings.STRUCTURE_FEATURES.put(structure, configuredStructure);
+    }
+
+    public static void createVisualLighting(BlockPos pos, World world) {
+        LightningBoltEntity ent = EntityType.LIGHTNING_BOLT.create(world);
+        ent.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
+        ent.setVisualOnly(true);
+        world.addFreshEntity(ent);
     }
 }

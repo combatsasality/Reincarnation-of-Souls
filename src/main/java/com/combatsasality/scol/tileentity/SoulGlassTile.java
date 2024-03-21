@@ -1,6 +1,7 @@
 package com.combatsasality.scol.tileentity;
 
 import com.combatsasality.scol.registries.ScolTiles;
+import com.combatsasality.scol.tileentity.generic.BaseTile;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
@@ -10,7 +11,7 @@ import net.minecraft.tileentity.TileEntity;
 import javax.annotation.Nullable;
 import java.util.UUID;
 
-public class SoulGlassTile extends TileEntity {
+public class SoulGlassTile extends BaseTile {
 
     public String owner;
     public SoulGlassTile() {
@@ -29,17 +30,4 @@ public class SoulGlassTile extends TileEntity {
         this.owner = nbt.getString("owner");
     }
 
-    @Nullable
-    @Override
-    public SUpdateTileEntityPacket getUpdatePacket() {
-        CompoundNBT nbt = new CompoundNBT();
-        nbt.putString("owner", owner);
-        return new SUpdateTileEntityPacket(this.worldPosition, -1, nbt);
-    }
-
-    @Override
-    public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) {
-        CompoundNBT nbt = pkt.getTag();
-        owner = nbt.getString("owner");
-    }
 }
