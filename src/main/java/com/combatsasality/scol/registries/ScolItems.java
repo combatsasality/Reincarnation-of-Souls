@@ -86,7 +86,7 @@ public class ScolItems extends AbstractRegistry<Item> {
 
         //Blocks
 
-//        // TODO: Rewrite this
+        // TODO: Rewrite this
         register("soul_glass", () -> new BlockItem(ScolBlocks.SOUL_GLASS, new Item.Properties().tab(Main.TAB)));
         register("soul_block", () -> new BlockItem(ScolBlocks.SOUL_BLOCK, new Item.Properties().tab(Main.TAB)));
         register("aggressive_soul_block", () -> new BlockItem(ScolBlocks.AGGRESSIVE_SOUL_BLOCK, new Item.Properties().tab(Main.TAB)));

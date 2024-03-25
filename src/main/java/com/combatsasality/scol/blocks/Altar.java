@@ -27,9 +27,10 @@ import java.util.stream.Stream;
 
 public class Altar extends BaseItemStackBlock {
     private static final VoxelShape ALTAR_SHAPE = Stream.of(
-            Block.box(4, 10, 4, 12, 11.3, 12),
-            Block.box(3, 0, 3, 13, 0.30000000000000004, 13),
-            Block.box(6, 0, 6, 10, 10, 10)
+            Block.box(3, 0, 3, 13, 0.8, 13),
+            Block.box(4, 0.8, 4, 12, 3.0999999999999996, 12),
+            Block.box(5, 9.1, 5, 11, 15.100000000000001, 11),
+            Block.box(5, 3.0999999999999996, 5, 11, 9.100000000000001, 11)
     ).reduce((v1, v2) -> VoxelShapes.join(v1, v2, IBooleanFunction.OR)).get();
     public Altar() {
         super(Properties.of(Material.STONE).strength(1.5F, 6.0F).harvestTool(ToolType.PICKAXE));

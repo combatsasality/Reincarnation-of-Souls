@@ -27,8 +27,6 @@ public class StructureAdditionModifier extends LootModifier {
     @Nonnull
     @Override
     protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
-        // generatedLoot is the loot that would be dropped, if we wouldn't add or replace
-        // anything!
         if(context.getRandom().nextFloat() > chance) {
             generatedLoot.add(new ItemStack(addition, 1));
         }

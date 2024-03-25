@@ -1,13 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
+
   "pattern": [
-    "XXX",
+    "XYX",
     " X ",
-    "XXX"
+    "XYX"
   ],
   "key" : {
     "X": {
-      "item": "minecraft:iron_block"
+      "item": "minecraft:polished_blackstone"
+    },
+    "Y": {
+      "item": "minecraft:crying_obsidian"
     }
   },
   "result": {

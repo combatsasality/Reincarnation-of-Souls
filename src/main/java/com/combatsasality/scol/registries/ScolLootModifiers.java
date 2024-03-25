@@ -18,5 +18,6 @@ public class ScolLootModifiers extends AbstractRegistry<GlobalLootModifierSerial
         // Entity Addition Modifiers
         register("part_mask_second_from_wither", () -> new EntityAdditionModifier.Serializer(0.98F, 0.01F));
         register("sound_disk_from_pig", () -> new EntityAdditionModifier.Serializer(0.99F, 0F));
+        register("sound_disk_from_skeleton", () -> new EntityAdditionModifier.Serializer(0.00F, 0F));
     }
 }

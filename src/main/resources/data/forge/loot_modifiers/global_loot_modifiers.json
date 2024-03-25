@@ -7,6 +7,7 @@
     "scol:inactive_ring_in_netherbridge",
     "scol:sound_disk_from_pig",
     "scol:part_mask_in_end_city",
-    "scol:part_mask_second_from_wither"
+    "scol:part_mask_second_from_wither",
+    "scol:sound_disk_from_skeleton"
   ]
 }

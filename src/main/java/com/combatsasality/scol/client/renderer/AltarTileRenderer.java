@@ -29,7 +29,7 @@ public class AltarTileRenderer extends TileEntityRenderer<AltarTile> {
         ItemStack stack = altarTile.getItem();
         if (!stack.isEmpty()) {
             matrixStack.pushPose();
-            matrixStack.translate(0.5D, 1.0D, 0.5D);
+            matrixStack.translate(0.5D, 1.2D, 0.5D);
             float scale = stack.getItem() instanceof BlockItem ? 0.95F : 0.75F;
             matrixStack.scale(scale, scale, scale);
             double tick = System.currentTimeMillis() / 800.0D;
