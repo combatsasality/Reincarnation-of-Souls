@@ -1,4 +1,4 @@
-package com.combatsasality.scol.integration.jei;
+package com.combatsasality.scol.integration;
 
 import com.combatsasality.scol.items.generic.ISoulMaterial;
 import com.combatsasality.scol.registries.ScolEnchantments;

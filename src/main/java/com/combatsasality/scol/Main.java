@@ -85,9 +85,9 @@ public class Main {
         // Key binds
         keyBinds = new KeyBindHandler();
 
-        new ScolItems();
         new ScolSounds();
         new ScolBlocks();
+        new ScolItems();
         new ScolAttributes();
         new ScolEnchantments();
         new ScolPotions();

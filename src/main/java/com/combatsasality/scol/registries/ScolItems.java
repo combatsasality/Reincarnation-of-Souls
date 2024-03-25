@@ -5,6 +5,7 @@ import com.combatsasality.scol.items.*;
 import com.combatsasality.scol.items.generic.ISoulMaterial;
 import com.combatsasality.scol.items.generic.ItemBase;
 import net.minecraft.item.*;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -85,14 +86,7 @@ public class ScolItems extends AbstractRegistry<Item> {
 
 
         //Blocks
-
-        // TODO: Rewrite this
-        register("soul_glass", () -> new BlockItem(ScolBlocks.SOUL_GLASS, new Item.Properties().tab(Main.TAB)));
-        register("soul_block", () -> new BlockItem(ScolBlocks.SOUL_BLOCK, new Item.Properties().tab(Main.TAB)));
-        register("aggressive_soul_block", () -> new BlockItem(ScolBlocks.AGGRESSIVE_SOUL_BLOCK, new Item.Properties().tab(Main.TAB)));
-        register("pedestal", () -> new BlockItem(ScolBlocks.PEDESTAL, new Item.Properties().tab(Main.TAB)));
-        register("altar", () -> new BlockItem(ScolBlocks.ALTAR, new Item.Properties().tab(Main.TAB)));
-
+        ScolBlocks.getBlocks().forEach((name, block) -> register(name, () -> new BlockItem(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(MODID, name)), new Item.Properties().tab(Main.TAB))));
     }
 
 
