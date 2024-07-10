@@ -1,5 +1,5 @@
 {
-  "advancement.scol_advancements": "Soul Collector",
+  "advancement.scol_advancements": "Reincarnation of Souls",
   "advancement.scol_advancements.desc": "The start of something bigger",
   "advancement.scol:worldWing": "Where are your wings? That I loved so much...",
   "advancement.scol:worldWing.desc": "Get the world's wings",
@@ -7,12 +7,14 @@
   "advancement.scol:findCross.desc": "Find the coffin cross",
   "advancement.scol:findCombatsasality": "He didn't want to be remembered...",
   "advancement.scol:findCombatsasality.desc": "Find the combatsasality cross",
+  "advancement.scol:frostmourne": "One Warrior in the field",
+  "advancement.scol:frostmourne.desc": "Create an Frostmourne",
 
 
-  "itemGroup.scolTab": "Soul Collector",
-  "item.scol.frostmourne": "FrostMourne",
-  "item.scol.frostmourne_handle": "Handle FrostMourne",
-  "item.scol.frostmourne_blade": "Blade FrostMourne",
+  "itemGroup.scolTab": "Reincarnation of Souls",
+  "item.scol.frostmourne": "Frostmourne",
+  "item.scol.frostmourne_handle": "Handle Frostmourne",
+  "item.scol.frostmourne_blade": "Blade Frostmourne",
   "item.scol.phoenix_ring_inactive": "Inactive Phoenix Ring",
   "item.scol.phoenix_ring": "Phoenix Ring",
   "item.scol.dragon_soul": "Dragon Soul",
@@ -94,7 +96,7 @@
   "death.attack.soul": "%1$s was killed by an aggressive soul",
 
 
-  "key.categories.scol": "Soul Collector",
+  "key.categories.scol": "Reincarnation of Souls",
   "key.world_wing": "Switch the speed of the wings",
 
   "item.minecraft.potion.effect.hero_of_village": "Potion Of The Village Hero",
@@ -102,6 +104,6 @@
   "item.minecraft.lingering_potion.effect.hero_of_village": "Lingering Potion Of The Village Hero",
   "item.minecraft.tipped_arrow.effect.hero_of_village": "Arrow Of The Village Hero",
 
-  "scol.update.0": "§bNew update for Soul Collector is available: %s",
+  "scol.update.0": "§bNew update for Reincarnation of Souls is available: %s",
   "scol.update.1": "§bDownload it here: §r[§lClick me§r]"
 }

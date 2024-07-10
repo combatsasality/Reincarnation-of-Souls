@@ -1,5 +1,5 @@
 {
-  "advancement.scol_advancements": "Soul Collector",
+  "advancement.scol_advancements": "Reincarnation of Souls",
   "advancement.scol_advancements.desc": "Початок чогось більшого",
   "advancement.scol:worldWing": "Де твої крила? Які так подобалися мені...",
   "advancement.scol:worldWing.desc": "Отримайте світові крила",
@@ -7,9 +7,11 @@
   "advancement.scol:findCross.desc": "Знайдіть гробовий хрест",
   "advancement.scol:findCombatsasality": "Він не хотів, щоб його пам'ятали...",
   "advancement.scol:findCombatsasality.desc": "Знайдіть крест combatsasality",
+  "advancement.scol:frostmourne": "Один у полі воїн",
+  "advancement.scol:frostmourne.desc": "Створіть Крижану Скорботу",
 
 
-  "itemGroup.scolTab": "Soul Collector",
+  "itemGroup.scolTab": "Reincarnation of Souls",
   "item.scol.frostmourne": "Крижана Скорбота",
   "item.scol.frostmourne_handle": "Рукоятка Крижаної Скорботи",
   "item.scol.frostmourne_blade": "Лезо Крижаної Скорботи",
@@ -94,7 +96,7 @@
   "death.attack.soul": "%1$s було вбито аггресивною душею",
 
 
-  "key.categories.scol": "Soul Collector",
+  "key.categories.scol": "Reincarnation of Souls",
   "key.world_wing": "Переключити швидкість крил",
 
   "item.minecraft.potion.effect.hero_of_village": "Зілля героя селища",
@@ -102,6 +104,6 @@
   "item.minecraft.lingering_potion.effect.hero_of_village": "Осідаюче зілля героя селища",
   "item.minecraft.tipped_arrow.effect.hero_of_village": "Стріла героя селища",
 
-  "scol.update.0": "§bВийшло нове оновлення для Soul Collector: %s",
+  "scol.update.0": "§bВийшло нове оновлення для Reincarnation of Souls: %s",
   "scol.update.1": "§bВстановити його можна тут: §r[§lНатисни на мене§r]"
 }

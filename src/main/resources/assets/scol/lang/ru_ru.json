@@ -1,5 +1,5 @@
 {
-    "advancement.scol_advancements": "Soul Collector",
+    "advancement.scol_advancements": "Reincarnation of Souls",
     "advancement.scol_advancements.desc": "Начало чего то большего",
     "advancement.scol:worldWing": "Где твои крылья? Которые так нравились мне...",
     "advancement.scol:worldWing.desc": "Получите мировые крылья",
@@ -7,9 +7,11 @@
     "advancement.scol:findCross.desc": "Найдите гробовой крест",
     "advancement.scol:findCombatsasality": "Он не хотел чтобы его помнили...",
     "advancement.scol:findCombatsasality.desc": "Найдите крест combatsasality",
+    "advancement.scol:frostmourne": "Один в поле воин",
+    "advancement.scol:frostmourne.desc": "Создайте Ледяную Скорбь",
 
 
-    "itemGroup.scolTab": "Soul Collector",
+    "itemGroup.scolTab": "Reincarnation of Souls",
     "item.scol.frostmourne": "Ледяная Скорбь",
     "item.scol.frostmourne_handle": "Рукоятка Ледяной Скорби",
     "item.scol.frostmourne_blade": "Лезвие Ледяной Скорби",
@@ -94,7 +96,7 @@
     "death.attack.soul": "%1$s был убит аггресивной душой",
 
 
-    "key.categories.scol": "Soul Collector",
+    "key.categories.scol": "Reincarnation of Souls",
     "key.world_wing": "Переключить скорость крыльев",
 
     "item.minecraft.potion.effect.hero_of_village": "Зелье героя деревни",
@@ -102,6 +104,6 @@
     "item.minecraft.lingering_potion.effect.hero_of_village": "Туманное зелье героя деревни",
     "item.minecraft.tipped_arrow.effect.hero_of_village": "Стрела героя деревни",
 
-    "scol.update.0": "§bВышло новое обновление для Soul Collector: %s",
+    "scol.update.0": "§bВышло новое обновление для Reincarnation of Souls: %s",
     "scol.update.1": "§bУстановить его можно здесь: §r[§lНажми на меня§r]"
 }
