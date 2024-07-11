@@ -1,10 +1,10 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"0": "scol:models/frostmourne/handle",
-		"1": "scol:models/frostmourne/details",
-		"2": "scol:models/frostmourne/blade",
-		"3": "scol:models/frostmourne/blade2"
+		"0": "scol:item/models/frostmourne/handle",
+		"1": "scol:item/models/frostmourne/details",
+		"2": "scol:item/models/frostmourne/blade",
+		"3": "scol:item/models/frostmourne/blade2"
 	},
 	"elements": [
 		{
