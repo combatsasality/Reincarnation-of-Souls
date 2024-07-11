@@ -1,10 +1,9 @@
 package com.combatsasality.scol.handlers;
 
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.crafting.Ingredient;
 
-public enum ItemTier implements IItemTier {
-
+public enum ItemTier implements Tier {
     FOR_ALL(0,0, 0.0F, 0, 22);
 
     public int durability = 0;
@@ -14,7 +13,6 @@ public enum ItemTier implements IItemTier {
     public int enchantemnt = 0;
 
     public Ingredient repair = null;
-
 
     ItemTier(int durability, float speed, float attack, int harvestlevel, int enchantemnt) {
         this.durability = durability;
@@ -62,4 +60,3 @@ public enum ItemTier implements IItemTier {
         return this.repair;
     }
 }
-

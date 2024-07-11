@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "scol:items/aggressive_soul_material_temporary_texture"
-  }
-}

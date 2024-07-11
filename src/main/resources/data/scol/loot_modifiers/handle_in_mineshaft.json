@@ -1,9 +1,0 @@
-{
-  "conditions": [
-    {
-      "condition": "forge:loot_table_id",
-      "loot_table_id": "minecraft:chests/abandoned_mineshaft"
-    }
-  ],
-  "addition": "scol:frostmourne_handle"
-}
