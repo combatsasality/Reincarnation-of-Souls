@@ -1,0 +1,11 @@
+{
+  "type": "scol:structure_addition",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/igloo_chest"
+    }
+  ],
+  "item": "scol:frostmourne_handle",
+  "chance": 0.40
+}

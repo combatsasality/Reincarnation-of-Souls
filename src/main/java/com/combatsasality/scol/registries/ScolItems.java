@@ -20,6 +20,10 @@ public class ScolItems extends AbstractRegistry<Item> {
     public static ItemBase PART_MASK_THIRD;
     @ObjectHolder(value = MODID + ":part_mask_fourth", registryName = "item")
     public static ItemBase PART_MASK_FOURTH;
+    @ObjectHolder(value = MODID + ":frostmourne_handle", registryName = "item")
+    public static ItemBase HANDLE_FROST;
+    @ObjectHolder(value = MODID + ":frostmourne_blade", registryName = "item")
+    public static ItemBase BLADE_FROST;
 
 
     public ScolItems() {
@@ -30,5 +34,7 @@ public class ScolItems extends AbstractRegistry<Item> {
         register("part_mask_second", ItemBase::new);
         register("part_mask_third", ItemBase::new);
         register("part_mask_fourth", ItemBase::new);
+        register("frostmourne_handle", ItemBase::new);
+        register("frostmourne_blade", ItemBase::new);
     }
 }

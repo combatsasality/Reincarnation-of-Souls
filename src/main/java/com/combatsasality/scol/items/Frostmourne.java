@@ -4,6 +4,7 @@ import com.combatsasality.scol.handlers.ItemTier;
 import com.combatsasality.scol.items.generic.ITab;
 import com.combatsasality.scol.registries.ScolAttributes;
 import com.combatsasality.scol.registries.ScolTabs;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
@@ -66,5 +68,15 @@ public class Frostmourne extends SwordItem implements ITab {
     @Override
     public CreativeModeTab getCreativeTab() {
         return ScolTabs.MAIN;
+    }
+
+    @Override
+    public List<ItemStack> getCreativeTabStacks() {
+        ImmutableList.Builder<ItemStack> builder = ImmutableList.builder();
+        builder.add(new ItemStack(this));
+        ItemStack stackWithSouls = new ItemStack(this);
+        stackWithSouls.getOrCreateTag().putInt("scol.Souls", 100);
+        builder.add(stackWithSouls);
+        return builder.build();
     }
 }

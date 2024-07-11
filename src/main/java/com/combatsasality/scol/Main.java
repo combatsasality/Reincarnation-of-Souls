@@ -4,6 +4,7 @@ import com.combatsasality.scol.handlers.EventHandler;
 import com.combatsasality.scol.items.generic.ITab;
 import com.combatsasality.scol.registries.ScolAttributes;
 import com.combatsasality.scol.registries.ScolItems;
+import com.combatsasality.scol.registries.ScolLootModifiers;
 import com.combatsasality.scol.registries.ScolTabs;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.MinecraftForge;
@@ -29,6 +30,7 @@ public class Main {
         new ScolTabs();
         new ScolItems();
         new ScolAttributes();
+        new ScolLootModifiers();
     }
 
     @SubscribeEvent
