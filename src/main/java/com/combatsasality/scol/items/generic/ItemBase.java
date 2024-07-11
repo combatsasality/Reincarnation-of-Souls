@@ -5,20 +5,12 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 
 public class ItemBase extends Item implements ITab{
-    public ItemBase(String regItem, Properties properties) {
-        super(properties);
-    }
-
-    public ItemBase(String regItem) {
-        super(new Properties());
-    }
-
     public ItemBase(Properties properties) {
         super(properties);
     }
 
     public ItemBase() {
-        super(new Properties());
+        super(new Properties().stacksTo(64));
     }
 
     @Override
