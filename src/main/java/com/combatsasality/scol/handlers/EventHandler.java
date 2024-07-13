@@ -1,22 +1,45 @@
 package com.combatsasality.scol.handlers;
 
+import com.combatsasality.scol.Main;
+import com.combatsasality.scol.capabilities.ScolCapability;
+import com.combatsasality.scol.items.PhoenixRing;
+import com.combatsasality.scol.registries.ScolCapabilities;
 import com.combatsasality.scol.registries.ScolItems;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.util.FakePlayer;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import top.theillusivec4.curios.api.CuriosApi;
 
 import java.awt.*;
+import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EventHandler {
@@ -54,6 +77,80 @@ public class EventHandler {
             newComponent.withStyle(ChatFormatting.DARK_PURPLE);
             event.getToolTip().set(index-1, newComponent);
 
+        }
+
+    }
+
+    @SubscribeEvent
+    public void DropSoul(LivingDeathEvent event) {
+        if (event.getEntity().level().isClientSide) return;
+        if (event.getSource().getEntity() instanceof ServerPlayer player) {
+            ItemStack stack = player.getMainHandItem();
+            if (event.getEntity() instanceof EnderDragon) {
+                if (!player.addItem(new ItemStack(ScolItems.DRAGON_SOUL))) player.drop(new ItemStack(ScolItems.DRAGON_SOUL), true);
+            } else if (event.getEntity() instanceof WitherBoss && Math.random() > 0.75-stack.getEnchantmentLevel(Enchantments.MOB_LOOTING)*0.1) {
+                if (!player.addItem(new ItemStack(ScolItems.WITHER_SOUL))) player.drop(new ItemStack(ScolItems.WITHER_SOUL), true);
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof Player && !(event.getObject() instanceof FakePlayer)) {
+            event.addCapability(new ResourceLocation(Main.MODID, "capability"), ScolCapability.createProvider());
+        }
+    }
+
+    @SubscribeEvent
+    public void cloneCapabilityPlayer(PlayerEvent.Clone event) {
+        Player player = event.getEntity();
+        Player oldPlayer = event.getOriginal();
+        oldPlayer.revive();
+        LazyOptional<ScolCapability.IScolCapability> oldCap = oldPlayer.getCapability(ScolCapabilities.SCOL_CAPABILITY);
+        LazyOptional<ScolCapability.IScolCapability> newCap = player.getCapability(ScolCapabilities.SCOL_CAPABILITY);
+        oldCap.ifPresent(old -> newCap.ifPresent(newCap1 -> {
+            newCap1.readTag(old.writeTag());
+        }));
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onKillInactivePhoenix(LivingDeathEvent event) {
+        if (event.getEntity() instanceof Player player && event.getSource().typeHolder().is(DamageTypes.LAVA)) {
+            CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
+                inventory.findFirstCurio(ScolItems.INACTIVE_PHOENIX_RING).ifPresent(stack -> {
+                    NonNullList<ItemStack> streamList = player.getInventory().items;
+                    Optional<ItemStack> dragonStream = streamList.stream().filter(stack1 -> stack1.getItem().equals(ScolItems.DRAGON_SOUL)).findFirst();
+                    Optional<ItemStack> witherStream = streamList.stream().filter(stack1 -> stack1.getItem().equals(ScolItems.WITHER_SOUL)).findFirst();
+                    if (dragonStream.isPresent() && witherStream.isPresent()) {
+                        inventory.setEquippedCurio("ring", stack.slotContext().index(), new ItemStack(ScolItems.PHOENIX_RING));
+                        event.setCanceled(true);
+                        player.setHealth(player.getMaxHealth());
+                        player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 30, 0));
+                        witherStream.get().shrink(1);
+                        dragonStream.get().shrink(1);
+                    }
+                });
+            });
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    public void onKillPhoenixRing(LivingDeathEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
+                inventory.findFirstCurio(ScolItems.PHOENIX_RING).ifPresent(stack -> {
+                    LazyOptional<ScolCapability.IScolCapability> capability = player.getCapability(ScolCapabilities.SCOL_CAPABILITY);
+                    if (capability.map(ScolCapability.IScolCapability::canUsePhoenixRing).orElse(true)) {
+                        capability.ifPresent(capa -> capa.setCoolDownPhoenixRing(15600));
+                        event.setCanceled(true);
+                        player.setHealth(player.getMaxHealth());
+                        PhoenixRing.godModeActived(stack.stack());
+                    } else if (PhoenixRing.godModeIsActive(stack.stack())) {
+                        event.setCanceled(true);
+                        player.setHealth(player.getMaxHealth());
+                    }
+                });
+            });
         }
 
     }

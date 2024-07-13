@@ -1,6 +1,8 @@
 package com.combatsasality.scol.registries;
 
 import com.combatsasality.scol.items.Frostmourne;
+import com.combatsasality.scol.items.InactivePhoenixRing;
+import com.combatsasality.scol.items.PhoenixRing;
 import com.combatsasality.scol.items.TestItem;
 import com.combatsasality.scol.items.generic.ItemBase;
 import net.minecraft.world.item.Item;
@@ -24,6 +26,14 @@ public class ScolItems extends AbstractRegistry<Item> {
     public static ItemBase HANDLE_FROST;
     @ObjectHolder(value = MODID + ":frostmourne_blade", registryName = "item")
     public static ItemBase BLADE_FROST;
+    @ObjectHolder(value = MODID + ":phoenix_ring_inactive", registryName = "item")
+    public static InactivePhoenixRing INACTIVE_PHOENIX_RING;
+    @ObjectHolder(value = MODID + ":phoenix_ring", registryName = "item")
+    public static PhoenixRing PHOENIX_RING;
+    @ObjectHolder(value = MODID + ":dragon_soul", registryName = "item")
+    public static ItemBase DRAGON_SOUL;
+    @ObjectHolder(value = MODID + ":wither_soul", registryName = "item")
+    public static ItemBase WITHER_SOUL;
 
 
     public ScolItems() {
@@ -36,5 +46,9 @@ public class ScolItems extends AbstractRegistry<Item> {
         register("part_mask_fourth", ItemBase::new);
         register("frostmourne_handle", ItemBase::new);
         register("frostmourne_blade", ItemBase::new);
+        register("phoenix_ring_inactive", InactivePhoenixRing::new);
+        register("phoenix_ring", PhoenixRing::new);
+        register("dragon_soul", ItemBase::new);
+        register("wither_soul", ItemBase::new);
     }
 }

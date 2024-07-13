@@ -1,0 +1,11 @@
+{
+  "type": "scol:structure_addition",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/nether_bridge"
+    }
+  ],
+  "item": "scol:phoenix_ring_inactive",
+  "chance": 0.70
+}
