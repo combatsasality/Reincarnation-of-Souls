@@ -3,6 +3,7 @@
   "entries": [
     "scol:handle_in_igloo",
     "scol:handle_in_mineshaft",
-    "scol:handle_in_pillager_outpost"
+    "scol:handle_in_pillager_outpost",
+    "scol:inactive_ring_in_netherbridge"
   ]
 }

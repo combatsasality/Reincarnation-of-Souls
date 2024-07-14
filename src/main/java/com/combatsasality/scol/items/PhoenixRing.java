@@ -1,21 +1,26 @@
 package com.combatsasality.scol.items;
 
+import com.combatsasality.scol.Main;
 import com.combatsasality.scol.capabilities.ScolCapability;
 import com.combatsasality.scol.items.generic.ITab;
+import com.combatsasality.scol.packets.server.PacketGetCapability;
 import com.combatsasality.scol.registries.ScolCapabilities;
 import com.combatsasality.scol.registries.ScolTabs;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import top.theillusivec4.curios.api.SlotContext;
@@ -40,6 +45,10 @@ public class PhoenixRing extends Item implements ICurioItem, ITab {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
+        if (level != null) {
+            Main.packetInstance.send(PacketDistributor.SERVER.noArg(), new PacketGetCapability(true));
+            tooltip.add(Minecraft.getInstance().player.getCapability(ScolCapabilities.SCOL_CAPABILITY).map(capa -> capa.canUsePhoenixRing()).orElse(true) ? Component.translatable("tooltip.scol.active") : Component.translatable("tooltip.scol.inactive"));
+        }
         tooltip.add(Component.translatable("tooltip.scol.empty"));
         if (Screen.hasShiftDown()) {
             tooltip.add(Component.translatable("tooltip.scol.phoenix_ring.0"));
@@ -79,7 +88,7 @@ public class PhoenixRing extends Item implements ICurioItem, ITab {
 
     @Override
     public boolean canUnequip(SlotContext slotContext, ItemStack stack) {
-        return !godModeIsActive(stack);
+        return !godModeIsActive(stack) || (slotContext.entity() instanceof Player player) && player.isCreative();
     }
 
     @Override

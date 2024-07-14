@@ -10,7 +10,6 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -36,10 +35,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.curios.api.CuriosApi;
 
-import java.awt.*;
 import java.util.Optional;
-import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 public class EventHandler {
@@ -103,14 +99,17 @@ public class EventHandler {
 
     @SubscribeEvent
     public void cloneCapabilityPlayer(PlayerEvent.Clone event) {
+        if (!event.isWasDeath()) return;
+
         Player player = event.getEntity();
         Player oldPlayer = event.getOriginal();
-        oldPlayer.revive();
-        LazyOptional<ScolCapability.IScolCapability> oldCap = oldPlayer.getCapability(ScolCapabilities.SCOL_CAPABILITY);
-        LazyOptional<ScolCapability.IScolCapability> newCap = player.getCapability(ScolCapabilities.SCOL_CAPABILITY);
-        oldCap.ifPresent(old -> newCap.ifPresent(newCap1 -> {
-            newCap1.readTag(old.writeTag());
-        }));
+
+        oldPlayer.reviveCaps();
+
+        player.getCapability(ScolCapabilities.SCOL_CAPABILITY).orElse(null).readTag(
+                oldPlayer.getCapability(ScolCapabilities.SCOL_CAPABILITY).orElse(null).writeTag());
+
+        oldPlayer.invalidateCaps();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
