@@ -27,16 +27,50 @@ public class ScolCapability {
         void consumeCoolDownPhoenixRing(int i);
         void setCoolDownPhoenixRing(int i);
         boolean canUsePhoenixRing();
+
+
+        // Zangetsu
+        boolean isHasZangetsu();
+        void setHasZangetsu(boolean b);
+
+        // Level Bankai
+        int getLevelBankai();
+        void raiseLevelBankai();
+
+        // Cooldown Bankai
+        int getCooldownBankai();
+        void setCooldownBankai(int i);
+        void consumeCooldownBankai(int i);
+
+        // Active Bankai
+        void setActiveBankai(boolean b);
+        boolean isActiveBankai();
+        void setActiveBankaiTime(int i);
+        int getActiveBankaiTime();
+        void consumeActiveBankaiTime(int i);
+
+        // Bankai
+        boolean canUseBankai();
     }
 
     public static class Capability implements IScolCapability {
         private int coolDownPhoenixRing = 0;
+        private boolean hasZangetsu = false;
+        private int levelBankai = 0;
+        private int cooldownBankai = 0;
+        private boolean activeBankai = false;
+        private int activeBankaiTime = 0;
 
 
         @Override
         public Tag writeTag() {
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.putInt("coolDownPhoenixRing", coolDownPhoenixRing);
+            compoundTag.putBoolean("hasZangetsu", hasZangetsu);
+            compoundTag.putInt("levelBankai", levelBankai);
+            compoundTag.putInt("cooldownBankai", cooldownBankai);
+            compoundTag.putBoolean("activeBankai", activeBankai);
+            compoundTag.putInt("activeBankaiTime", activeBankaiTime);
             return compoundTag;
         }
 
@@ -44,6 +78,11 @@ public class ScolCapability {
         public void readTag(Tag nbt) {
             CompoundTag compoundTag = (CompoundTag) nbt;
             coolDownPhoenixRing = compoundTag.getInt("coolDownPhoenixRing");
+            hasZangetsu = compoundTag.getBoolean("hasZangetsu");
+            levelBankai = compoundTag.getInt("levelBankai");
+            cooldownBankai = compoundTag.getInt("cooldownBankai");
+            activeBankai = compoundTag.getBoolean("activeBankai");
+            activeBankaiTime = compoundTag.getInt("activeBankaiTime");
         }
 
         @Override
@@ -68,6 +107,82 @@ public class ScolCapability {
         @Override
         public boolean canUsePhoenixRing() {
             return coolDownPhoenixRing == 0;
+        }
+
+        @Override
+        public boolean isHasZangetsu() {
+            return hasZangetsu;
+        }
+
+        @Override
+        public void setHasZangetsu(boolean b) {
+            hasZangetsu = b;
+        }
+
+        @Override
+        public int getLevelBankai() {
+            return levelBankai;
+        }
+
+        @Override
+        public void raiseLevelBankai() {
+            if (levelBankai >= 4) {
+                return;
+            }
+            levelBankai++;
+        }
+
+        @Override
+        public int getCooldownBankai() {
+            return cooldownBankai;
+        }
+
+        @Override
+        public void setCooldownBankai(int i) {
+            cooldownBankai = i;
+        }
+
+        @Override
+        public void consumeCooldownBankai(int i) {
+            if (cooldownBankai < i || cooldownBankai < 0) {
+                cooldownBankai = 0;
+                return;
+            }
+            cooldownBankai -= i;
+        }
+
+        @Override
+        public void setActiveBankai(boolean b) {
+            activeBankai = b;
+        }
+
+        @Override
+        public boolean isActiveBankai() {
+            return activeBankai || activeBankaiTime > 0;
+        }
+
+        @Override
+        public void setActiveBankaiTime(int i) {
+            activeBankaiTime = i;
+        }
+
+        @Override
+        public int getActiveBankaiTime() {
+            return activeBankaiTime;
+        }
+
+        @Override
+        public void consumeActiveBankaiTime(int i) {
+            if (activeBankaiTime < i || activeBankaiTime < 0) {
+                activeBankaiTime = 0;
+                return;
+            }
+            activeBankaiTime -= i;
+        }
+
+        @Override
+        public boolean canUseBankai() {
+            return cooldownBankai == 0 | cooldownBankai == 0 && levelBankai >= 3;
         }
     }
 

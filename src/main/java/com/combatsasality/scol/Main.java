@@ -1,6 +1,7 @@
 package com.combatsasality.scol;
 
 import com.combatsasality.scol.capabilities.ScolCapability;
+import com.combatsasality.scol.entity.IchigoVizard;
 import com.combatsasality.scol.handlers.EventHandler;
 import com.combatsasality.scol.handlers.KeyBindHandler;
 import com.combatsasality.scol.items.generic.ITab;
@@ -19,10 +20,12 @@ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkRegistry;
@@ -44,6 +47,7 @@ public class Main {
     public Main() {
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientRegistries);
         FMLJavaModLoadingContext.get().getModEventBus().register(PROXY);
         keyBindHandler = new KeyBindHandler();
 
@@ -57,7 +61,7 @@ public class Main {
         new ScolItems();
         new ScolAttributes();
         new ScolLootModifiers();
-
+        new ScolEntities();
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -65,6 +69,11 @@ public class Main {
         packetInstance.registerMessage(0, PacketSetCapability.class, PacketSetCapability::encode, PacketSetCapability::decode, PacketSetCapability::handle);
         packetInstance.registerMessage(1, PacketGetCapability.class, PacketGetCapability::encode, PacketGetCapability::decode, PacketGetCapability::handle);
         packetInstance.registerMessage(2, PacketWorldWing.class, PacketWorldWing::encode, PacketWorldWing::decode, PacketWorldWing::handle);
+    }
+
+    private void clientRegistries(FMLClientSetupEvent event) {
+        ScolItems.PHOENIX_RING.registerChick();
+        PROXY.initEntityRendering();
     }
 
     @SubscribeEvent
@@ -93,11 +102,17 @@ public class Main {
     @SubscribeEvent
     public void addAttribute(final EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, ScolAttributes.MAGICAL_DAMAGE);
+
+    }
+    @SubscribeEvent
+    public void addEntityAttributes(EntityAttributeCreationEvent event) {
+        event.put(ScolEntities.ICHIGO_VAZARD, IchigoVizard.createAttributes().build());
     }
 
     @SubscribeEvent
     public void registerCaps(RegisterCapabilitiesEvent event) {
         event.register(ScolCapability.IScolCapability.class);
     }
+
 
 }

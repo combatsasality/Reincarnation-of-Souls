@@ -8,7 +8,9 @@ import com.combatsasality.scol.registries.ScolCapabilities;
 import com.combatsasality.scol.registries.ScolTabs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -19,6 +21,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
@@ -123,4 +127,10 @@ public class PhoenixRing extends Item implements ICurioItem, ITab {
 
         ICurioItem.super.curioTick(slotContext, stack);
     }
+
+    @OnlyIn(Dist.CLIENT)
+    public void registerChick() {
+        ItemProperties.register(this, new ResourceLocation(Main.MODID, "chick"), (stack, world, entity, number) -> getFloatForChickRing(stack));
+    }
+
 }
