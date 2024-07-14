@@ -1,0 +1,35 @@
+{
+  "display": {
+    "icon": {
+      "item": "scol:world_wing"
+    },
+    "title": {
+      "translate": "advancement.scol:worldWing"
+    },
+    "description": {
+      "translate": "advancement.scol:worldWing.desc"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": true
+  },
+  "parent": "scol:root",
+  "criteria": {
+    "world_wing": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": ["scol:world_wing"]
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "world_wing"
+    ]
+  ]
+}

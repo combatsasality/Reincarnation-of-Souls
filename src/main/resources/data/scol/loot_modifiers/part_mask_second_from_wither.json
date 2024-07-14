@@ -1,0 +1,12 @@
+{
+  "type": "scol:entity_addition",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:entities/wither_skeleton"
+    }
+  ],
+  "item": "scol:part_mask_second",
+  "chance": 0.98,
+  "looting_multiplier": 0.01
+}

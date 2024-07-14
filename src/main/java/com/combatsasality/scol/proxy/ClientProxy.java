@@ -4,6 +4,7 @@ import com.combatsasality.scol.client.renderer.ShieldLayer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.telemetry.events.WorldLoadEvent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -27,5 +28,6 @@ public class ClientProxy extends CommonProxy {
             }
         }
     }
+
 
 }

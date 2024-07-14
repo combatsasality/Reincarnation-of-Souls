@@ -1,11 +1,10 @@
 package com.combatsasality.scol.registries;
 
-import com.combatsasality.scol.items.Frostmourne;
-import com.combatsasality.scol.items.InactivePhoenixRing;
-import com.combatsasality.scol.items.PhoenixRing;
-import com.combatsasality.scol.items.TestItem;
+import com.combatsasality.scol.items.*;
 import com.combatsasality.scol.items.generic.ItemBase;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.RecordItem;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -34,6 +33,12 @@ public class ScolItems extends AbstractRegistry<Item> {
     public static ItemBase DRAGON_SOUL;
     @ObjectHolder(value = MODID + ":wither_soul", registryName = "item")
     public static ItemBase WITHER_SOUL;
+    @ObjectHolder(value = MODID + ":world_wing", registryName = "item")
+    public static WorldWing WORLD_WING;
+    @ObjectHolder(value = MODID + ":music_disc_metal_3", registryName = "item")
+    public static RecordItem MUSIC_DISC_METAL_3;
+    @ObjectHolder(value = MODID + ":music_disc_silent_relapse", registryName = "item")
+    public static RecordItem MUSIC_DISC_SILENT_RELAPSE;
 
 
     public ScolItems() {
@@ -50,5 +55,12 @@ public class ScolItems extends AbstractRegistry<Item> {
         register("phoenix_ring", PhoenixRing::new);
         register("dragon_soul", ItemBase::new);
         register("wither_soul", ItemBase::new);
+        register("world_wing", WorldWing::new);
+        Item.Properties discProperties = new Item.Properties().rarity(Rarity.EPIC).stacksTo(1);
+        register("music_disc_metal_3", () -> new RecordItem(1, () -> ScolSounds.MUSIC_METAL_3, discProperties, 2380));
+        register("music_disc_silent_relapse", () -> new RecordItem(2, () -> ScolSounds.MUSIC_SILENT_RELAPSE, discProperties, 1420));
+//        register("music_disc_metal_3", () -> new RecordItem(1, ScolSounds.MUSIC_METAL_3, discProperties, 119));
+//        register("music_disc_silent_relapse", () -> new RecordItem(1,  ScolSounds.MUSIC_SILENT_RELAPSE, discProperties, 71));
+
     }
 }

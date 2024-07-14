@@ -1,0 +1,16 @@
+{
+  "type": "scol:entity_addition",
+  "conditions": [
+    {
+      "condition": "minecraft:entity_properties",
+      "predicate": {
+        "type": "#minecraft:skeletons"
+      },
+      "entity": "killer",
+      "loot_table_id": "minecraft:entities/skeleton"
+    }
+  ],
+  "item": "scol:music_disc_silent_relapse",
+  "chance": 0,
+  "looting_multiplier": 0.00
+}

@@ -1,0 +1,24 @@
+{
+  "sonido": {
+    "subtitle": "sonido",
+    "sounds": [
+      "scol:sonido"
+    ]
+  },
+  "music.metal_3": {
+    "sounds": [
+      {
+        "name": "scol:music/scrrxll__metal_3",
+        "stream": true
+      }
+    ]
+  },
+  "music.silent_relapse": {
+    "sounds": [
+      {
+        "name": "scol:music/scrrxll__silent_relapse",
+        "stream": true
+      }
+    ]
+  }
+}

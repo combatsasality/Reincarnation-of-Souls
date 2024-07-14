@@ -151,7 +151,19 @@ public class EventHandler {
                 });
             });
         }
-
     }
+
+    @SubscribeEvent
+    public void worldWingBreakSpeed(PlayerEvent.BreakSpeed event) {
+        Player player = event.getEntity();
+        CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
+            inventory.findFirstCurio(ScolItems.WORLD_WING).ifPresent(stack -> {
+                if (!player.onGround()) {
+                    if (event.getOriginalSpeed() < event.getNewSpeed() * 5) event.setNewSpeed(event.getNewSpeed() * 5);
+                }
+            });
+        });
+    }
+
 
 }

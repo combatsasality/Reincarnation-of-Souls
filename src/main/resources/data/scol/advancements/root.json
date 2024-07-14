@@ -1,0 +1,27 @@
+{
+  "display": {
+    "icon": {
+      "item": "scol:music_disc_metal_3"
+    },
+    "title": {
+      "translate": "advancement.scol_advancements"
+    },
+    "description": {
+      "translate": "advancement.scol_advancements.desc"
+    },
+    "background": "minecraft:textures/block/soul_soil.png",
+    "show_toast": false,
+    "announce_to_chat": false,
+    "hidden": false
+  },
+  "criteria": {
+    "music_disc": {
+      "trigger": "minecraft:tick"
+    }
+  },
+  "requirements": [
+    [
+      "music_disc"
+    ]
+  ]
+}

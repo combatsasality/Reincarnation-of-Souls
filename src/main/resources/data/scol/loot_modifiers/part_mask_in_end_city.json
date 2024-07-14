@@ -1,0 +1,11 @@
+{
+  "type": "scol:structure_addition",
+  "conditions": [
+    {
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:chests/end_city_treasure"
+    }
+  ],
+  "item": "scol:part_mask_fourth",
+  "chance": 0.75
+}
