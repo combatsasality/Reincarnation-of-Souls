@@ -7,7 +7,7 @@ import net.minecraftforge.registries.ObjectHolder;
 
 public class ScolAttributes extends AbstractRegistry<Attribute> {
     @ObjectHolder(value = MODID + ":magical_damage", registryName = "attribute")
-    public static RangedAttribute MAGICAL_DAMAGE;
+    public static final RangedAttribute MAGICAL_DAMAGE = null;
 
 
     public ScolAttributes() {

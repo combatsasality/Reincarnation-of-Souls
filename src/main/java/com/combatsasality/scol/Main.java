@@ -52,6 +52,7 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         MinecraftForge.EVENT_BUS.register(keyBindHandler);
         new ScolTabs();
+        new ScolEnchantments();
         new ScolSounds();
         new ScolItems();
         new ScolAttributes();

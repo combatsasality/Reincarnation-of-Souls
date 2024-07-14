@@ -83,8 +83,8 @@
     "chat.send.wingspeed": "Скорость крыльев: %d",
 
 
-    "enchantment.scol.vampirism_enchant": "Вампиризм",
-    "enchantment.scol.vampirism_enchant.desc": "Крадет жизненную энергию у врага",
+    "enchantment.scol.vampiric_enchant": "Вампиризм",
+    "enchantment.scol.vampiric_enchant.desc": "Крадет жизненную энергию у врага",
     "enchantment.scol.attack_speed_increase": "Скорость рук",
     "enchantment.scol.attack_speed_increase.desc": "Увеличивает скорость атаки",
     "enchantment.scol.soul_catcher": "Ловец душ",

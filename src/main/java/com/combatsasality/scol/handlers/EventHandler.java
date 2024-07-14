@@ -4,6 +4,7 @@ import com.combatsasality.scol.Main;
 import com.combatsasality.scol.capabilities.ScolCapability;
 import com.combatsasality.scol.items.PhoenixRing;
 import com.combatsasality.scol.registries.ScolCapabilities;
+import com.combatsasality.scol.registries.ScolEnchantments;
 import com.combatsasality.scol.registries.ScolItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.NonNullList;
@@ -13,21 +14,32 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -41,7 +53,7 @@ import java.util.Optional;
 public class EventHandler {
 
     @SubscribeEvent
-    public void FrostmourneKill(LivingDeathEvent event) {
+    public void frostmourneKill(LivingDeathEvent event) {
         if (event.getEntity().level().isClientSide) return;
         if (event.getSource().getEntity() instanceof ServerPlayer player) {
             ItemStack stack = player.getMainHandItem();
@@ -55,7 +67,7 @@ public class EventHandler {
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void ToolTipForMagicalDamage(ItemTooltipEvent event) { //It's a bullshit code, so what? If you know how to do it in a non-bullshit way, write me :D
+    public void toolTipForMagicalDamage(ItemTooltipEvent event) { //It's a bullshit code, so what? If you know how to do it in a non-bullshit way, write me :D
         int index = 0;
         if (!event.getItemStack().getItem().equals(ScolItems.FROSTMOURNE)) return;
         for (Component text : event.getToolTip()) {
@@ -78,7 +90,7 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void DropSoul(LivingDeathEvent event) {
+    public void dropSoul(LivingDeathEvent event) {
         if (event.getEntity().level().isClientSide) return;
         if (event.getSource().getEntity() instanceof ServerPlayer player) {
             ItemStack stack = player.getMainHandItem();
@@ -163,6 +175,29 @@ public class EventHandler {
                 }
             });
         });
+    }
+
+    @SubscribeEvent
+    public void doVampiric(LivingAttackEvent event) {
+        if (event.getSource().getEntity() instanceof LivingEntity player && !player.level().isClientSide && player.isAlive()) {
+            ItemStack stack = player.getMainHandItem();
+            int enchantLevel = stack.getEnchantmentLevel(ScolEnchantments.VAMPIRIC_ENCHANT);
+            if (enchantLevel != 0) {
+                player.heal((float) (event.getAmount() * (enchantLevel * 0.1 * 2)));
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void doSpeedEnchant(ItemAttributeModifierEvent event) {
+        int enchantLevel = event.getItemStack().getEnchantmentLevel(ScolEnchantments.ATTACK_SPEED_INCREASE);
+        if (enchantLevel != 0) {
+            if (event.getSlotType().equals(EquipmentSlot.MAINHAND) && event.getItemStack().getItem() instanceof SwordItem) {
+                double attackSpeed = event.getModifiers().get(Attributes.ATTACK_SPEED).stream().mapToDouble(AttributeModifier::getAmount).sum();
+                event.removeModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4D, AttributeModifier.Operation.ADDITION));
+                event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", attackSpeed + (enchantLevel * 0.5), AttributeModifier.Operation.ADDITION));
+            }
+        }
     }
 
 

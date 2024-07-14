@@ -83,8 +83,8 @@
   "chat.send.wingspeed": "Wing speed: %d",
 
 
-  "enchantment.scol.vampirism_enchant": "Vampirism",
-  "enchantment.scol.vampirism_enchant.desc": "Steals life energy from the enemy",
+  "enchantment.scol.vampiric_enchant": "Vampirism",
+  "enchantment.scol.vampiric_enchant.desc": "Steals life energy from the enemy",
   "enchantment.scol.attack_speed_increase": "Hand Speed",
   "enchantment.scol.attack_speed_increase.desc": "Increases attack speed",
   "enchantment.scol.soul_catcher": "Soul Catcher",
