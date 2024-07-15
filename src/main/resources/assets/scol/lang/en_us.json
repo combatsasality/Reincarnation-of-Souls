@@ -91,9 +91,8 @@
   "enchantment.scol.soul_catcher.desc": "Increases the chance of getting a soul",
 
 
-  "death.attack.frostmourne_hurt": "%1$s was killed by the FrostMourne player %2$s",
-  "death.attack.ReturnDamageIchigo": "I must admit, it never ceases to amaze me how brainless %1$s can be",
-  "death.attack.soul": "%1$s was killed by an aggressive soul",
+  "death.attack.frostmourne": "%1$s was killed by the Frostmourne player %2$s",
+  "death.attack.ichigo": "I must admit, it never ceases to amaze me how brainless %1$s can be",
 
 
   "key.categories.scol": "Reincarnation of Souls",

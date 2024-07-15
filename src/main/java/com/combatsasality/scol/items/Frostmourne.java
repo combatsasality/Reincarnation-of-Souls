@@ -3,6 +3,7 @@ package com.combatsasality.scol.items;
 import com.combatsasality.scol.handlers.ItemTier;
 import com.combatsasality.scol.items.generic.ITab;
 import com.combatsasality.scol.registries.ScolAttributes;
+import com.combatsasality.scol.registries.ScolDamageTypes;
 import com.combatsasality.scol.registries.ScolTabs;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
@@ -40,7 +41,7 @@ public class Frostmourne extends SwordItem implements ITab {
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (entity instanceof LivingEntity || entity instanceof PartEntity<?>) {
-            if (entity.hurt(entity.damageSources().indirectMagic(entity, player), (float) (player.getAttribute(ScolAttributes.MAGICAL_DAMAGE).getValue() * player.getAttackStrengthScale(1.0f)))) {
+            if (entity.hurt(entity.damageSources().source(ScolDamageTypes.FROSTMOURNE, player), (float) (player.getAttribute(ScolAttributes.MAGICAL_DAMAGE).getValue() * player.getAttackStrengthScale(1.0f)))) {
                 player.doEnchantDamageEffects((LivingEntity) entity, player);
             }
         }

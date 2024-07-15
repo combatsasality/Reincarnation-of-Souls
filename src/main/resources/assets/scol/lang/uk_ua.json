@@ -91,9 +91,8 @@
   "enchantment.scol.soul_catcher.desc": "Збільшує шанс випадіння душ",
 
 
-  "death.attack.frostmourne_hurt": "%1$s був убитий Крижаною Скорботою гравця %2$s",
-  "death.attack.ReturnDamageIchigo": "Я повинен визнати, що мене ніколи не перестає дивувати яким безмозглим %1$s може бути",
-  "death.attack.soul": "%1$s було вбито аггресивною душею",
+  "death.attack.frostmourne": "%1$s був убитий Крижаною Скорботою гравця %2$s",
+  "death.attack.ichigo": "Я повинен визнати, що мене ніколи не перестає дивувати яким безмозглим %1$s може бути",
 
 
   "key.categories.scol": "Reincarnation of Souls",

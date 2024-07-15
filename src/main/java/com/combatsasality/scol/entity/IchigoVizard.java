@@ -1,10 +1,7 @@
 package com.combatsasality.scol.entity;
 
 import com.combatsasality.scol.items.Zangetsu;
-import com.combatsasality.scol.registries.ScolCapabilities;
-import com.combatsasality.scol.registries.ScolEntities;
-import com.combatsasality.scol.registries.ScolItems;
-import com.combatsasality.scol.registries.ScolSounds;
+import com.combatsasality.scol.registries.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
@@ -122,8 +119,7 @@ public class IchigoVizard extends Monster {
     @Override
     public boolean doHurtTarget(Entity entity) {
         if (this.canAttack((LivingEntity) entity)) {
-            // TODO: add damage type bypass armor
-            entity.hurt(this.damageSources().mobAttack(this), (this.random.nextInt((8 - 5 + 1) + 5) * 2));
+            entity.hurt(this.damageSources().source(ScolDamageTypes.ICHIGO, this), (this.random.nextInt((8 - 5 + 1) + 5) * 2));
             return true;
         }
         return false;

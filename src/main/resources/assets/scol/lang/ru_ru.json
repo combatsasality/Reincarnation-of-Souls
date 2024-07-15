@@ -91,9 +91,8 @@
     "enchantment.scol.soul_catcher.desc": "Увеличивает шанс выпадения души",
 
 
-    "death.attack.frostmourne_hurt": "%1$s был убит Ледяной Скорбью игрока %2$s",
-    "death.attack.ReturnDamageIchigo": "Я должен признать, что меня никогда не перестаёт удивлять каким безмозглым %1$s может быть",
-    "death.attack.soul": "%1$s был убит аггресивной душой",
+    "death.attack.frostmourne": "%1$s был убит Ледяной Скорбью игрока %2$s",
+    "death.attack.ichigo": "Я должен признать, что меня никогда не перестаёт удивлять каким безмозглым %1$s может быть",
 
 
     "key.categories.scol": "Reincarnation of Souls",
