@@ -2,6 +2,8 @@ package com.combatsasality.scol;
 
 import com.combatsasality.scol.capabilities.ScolCapability;
 import com.combatsasality.scol.entity.IchigoVizard;
+import com.combatsasality.scol.handlers.CheckVersionHandler;
+import com.combatsasality.scol.handlers.ConfigHandler;
 import com.combatsasality.scol.handlers.EventHandler;
 import com.combatsasality.scol.handlers.KeyBindHandler;
 import com.combatsasality.scol.items.generic.ITab;
@@ -24,7 +26,9 @@ import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.EntityAttributeModificationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -40,7 +44,7 @@ public class Main {
     public static SimpleChannel packetInstance;
     public static final String MODID = "scol";
     public static final String VERSION = "1.0";
-    public static final String VERSION_MINECRAFT = "1.16.5";
+    public static final String VERSION_MINECRAFT = "1.20.1";
     public static KeyBindHandler keyBindHandler;
 
 
@@ -55,6 +59,7 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         MinecraftForge.EVENT_BUS.register(keyBindHandler);
+        MinecraftForge.EVENT_BUS.addListener(CheckVersionHandler::worldEventLoad);
         new ScolTabs();
         new ScolEnchantments();
         new ScolTiles();
@@ -64,6 +69,8 @@ public class Main {
         new ScolAttributes();
         new ScolLootModifiers();
         new ScolEntities();
+
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigHandler.CONFIG);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
