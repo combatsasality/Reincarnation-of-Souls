@@ -7,6 +7,7 @@ import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.RecordItem;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.registries.RegisterEvent;
 
 public class ScolItems extends AbstractRegistry<Item> {
     @ObjectHolder(value = MODID + ":test_item", registryName = "item")
@@ -41,6 +42,8 @@ public class ScolItems extends AbstractRegistry<Item> {
     public static final RecordItem MUSIC_DISC_SILENT_RELAPSE = null;
     @ObjectHolder(value = MODID + ":zangetsu", registryName = "item")
     public static final Zangetsu ZANGETSU = null;
+    @ObjectHolder(value = MODID + ":summon_mask", registryName = "item")
+    public static final SummonMask SUMMON_MASK = null;
 
 
     public ScolItems() {
@@ -62,5 +65,13 @@ public class ScolItems extends AbstractRegistry<Item> {
         register("music_disc_metal_3", () -> new RecordItem(1, () -> ScolSounds.MUSIC_METAL_3, discProperties, 2380));
         register("music_disc_silent_relapse", () -> new RecordItem(2, () -> ScolSounds.MUSIC_SILENT_RELAPSE, discProperties, 1420));
         register("zangetsu", Zangetsu::new);
+        register("summon_mask", SummonMask::new);
+    }
+
+    @Override
+    protected void onRegister(RegisterEvent event) {
+        ScolBlocks.getBlockItemMap().forEach((block, item) -> {
+            event.register(ForgeRegistries.Keys.ITEMS, block, () -> item.apply(ForgeRegistries.BLOCKS.getValue(block)));
+        });
     }
 }

@@ -30,6 +30,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.FakePlayer;
 
 import java.util.List;
@@ -54,6 +55,12 @@ public class IchigoVizard extends Monster {
     public IchigoVizard(Level level, BlockPos pos) {
         this(level, pos.getX(), pos.getY(), pos.getZ());
     }
+
+    public IchigoVizard(Level level, Vec3 vec3) {
+        this(level, vec3.x, vec3.y, vec3.z);
+    }
+
+
     private final ServerBossEvent bossEvent = (ServerBossEvent) new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS).setDarkenScreen(true);
 
     public static AttributeSupplier.Builder createAttributes() {
