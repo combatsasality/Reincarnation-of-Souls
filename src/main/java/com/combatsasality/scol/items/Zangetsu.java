@@ -3,6 +3,7 @@ package com.combatsasality.scol.items;
 import com.combatsasality.scol.Main;
 import com.combatsasality.scol.capabilities.ScolCapability;
 import com.combatsasality.scol.entity.CustomItemEntity;
+import com.combatsasality.scol.entity.projectile.PowerWaveEntity;
 import com.combatsasality.scol.handlers.ItemTier;
 import com.combatsasality.scol.items.generic.ITab;
 import com.combatsasality.scol.registries.ScolCapabilities;
@@ -106,7 +107,9 @@ public class Zangetsu extends SwordItem implements ITab {
             } else {
                 if (capability.map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
                     player.getCooldowns().addCooldown(this, 150 / capability.map(capa -> capa.getLevelBankai()).orElse(1));
-                    // TODO: add power wave entity here
+                    PowerWaveEntity powerWaveEntity = new PowerWaveEntity(level, player);
+                    powerWaveEntity.shootFromRotation();
+                    level.addFreshEntity(powerWaveEntity);
                 }
             }
         }

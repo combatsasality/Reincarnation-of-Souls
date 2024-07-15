@@ -2,6 +2,7 @@ package com.combatsasality.scol.proxy;
 
 import com.combatsasality.scol.client.renderer.CustomItemRenderer;
 import com.combatsasality.scol.client.renderer.IchigoVizardRenderer;
+import com.combatsasality.scol.client.renderer.PowerWaveRenderer;
 import com.combatsasality.scol.client.renderer.ShieldLayer;
 import com.combatsasality.scol.registries.ScolEntities;
 import net.minecraft.client.Minecraft;
@@ -36,5 +37,6 @@ public class ClientProxy extends CommonProxy {
     public void initEntityRendering() {
         EntityRenderers.register(ScolEntities.ICHIGO_VAZARD, IchigoVizardRenderer::new);
         EntityRenderers.register(ScolEntities.CUSTOM_ITEM_ENTITY, renderManager -> new CustomItemRenderer(renderManager, Minecraft.getInstance().getItemRenderer()));
+        EntityRenderers.register(ScolEntities.POWER_WAVE_ENTITY, PowerWaveRenderer::new);
     }
 }

@@ -55,7 +55,15 @@ public class TestItem extends Item {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        context.getLevel().playSound(null, context.getClickedPos(), ScolSounds.MUSIC_METAL_3, context.getPlayer().getSoundSource(), 1.0F, 1.0F);
+        context.getPlayer().getCapability(ScolCapabilities.SCOL_CAPABILITY).ifPresent(capa -> {
+            capa.setActiveBankaiTime(0);
+            capa.raiseLevelBankai();
+            capa.raiseLevelBankai();
+            capa.raiseLevelBankai();
+            capa.raiseLevelBankai();
+            capa.raiseLevelBankai();
+            capa.setCooldownBankai(0);
+        });
         return super.useOn(context);
     }
 }

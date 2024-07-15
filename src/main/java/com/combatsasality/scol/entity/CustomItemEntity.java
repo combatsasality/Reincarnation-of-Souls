@@ -3,6 +3,7 @@ package com.combatsasality.scol.entity;
 import com.combatsasality.scol.items.Zangetsu;
 import com.combatsasality.scol.registries.ScolEntities;
 import com.combatsasality.scol.registries.ScolItems;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -18,6 +19,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -136,7 +138,29 @@ public class CustomItemEntity extends Entity {
         }
         if (this.level().isClientSide) {
             this.noPhysics = false;
+        } else {
+            this.noPhysics = !this.level().noCollision(this, this.getBoundingBox().deflate(1.0E-7D));
+            if (this.noPhysics) {
+                this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D, this.getZ());
+            }
         }
+        if (!this.onGround() || this.getDeltaMovement().horizontalDistanceSqr() > (double)1.0E-5F || (this.tickCount + this.getId()) % 4 == 0) {
+            this.move(MoverType.SELF, this.getDeltaMovement());
+            float f1 = 0.98F;
+            if (this.onGround()) {
+                BlockPos groundPos = getBlockPosBelowThatAffectsMyMovement();
+                f1 = this.level().getBlockState(groundPos).getFriction(level(), groundPos, this) * 0.98F;
+            }
+
+            this.setDeltaMovement(this.getDeltaMovement().multiply((double)f1, 0.98D, (double)f1));
+            if (this.onGround()) {
+                Vec3 vec31 = this.getDeltaMovement();
+                if (vec31.y < 0.0D) {
+                    this.setDeltaMovement(vec31.multiply(1.0D, -0.5D, 1.0D));
+                }
+            }
+        }
+
 
         ++this.age;
 

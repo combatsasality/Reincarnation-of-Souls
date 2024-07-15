@@ -2,7 +2,9 @@ package com.combatsasality.scol.handlers;
 
 import com.combatsasality.scol.Main;
 import com.combatsasality.scol.capabilities.ScolCapability;
+import com.combatsasality.scol.entity.CustomItemEntity;
 import com.combatsasality.scol.items.PhoenixRing;
+import com.combatsasality.scol.items.Zangetsu;
 import com.combatsasality.scol.registries.ScolCapabilities;
 import com.combatsasality.scol.registries.ScolEnchantments;
 import com.combatsasality.scol.registries.ScolItems;
@@ -25,28 +27,36 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.common.BasicItemListing;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.ItemAttributeModifierEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.village.VillagerTradesEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import top.theillusivec4.curios.api.CuriosApi;
 
+import java.util.Iterator;
 import java.util.Optional;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -194,9 +204,80 @@ public class EventHandler {
         if (enchantLevel != 0) {
             if (event.getSlotType().equals(EquipmentSlot.MAINHAND) && event.getItemStack().getItem() instanceof SwordItem) {
                 double attackSpeed = event.getModifiers().get(Attributes.ATTACK_SPEED).stream().mapToDouble(AttributeModifier::getAmount).sum();
-                event.removeModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4D, AttributeModifier.Operation.ADDITION));
-                event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", attackSpeed + (enchantLevel * 0.5), AttributeModifier.Operation.ADDITION));
+                double attackDamage = event.getModifiers().get(Attributes.ATTACK_DAMAGE).stream().mapToDouble(AttributeModifier::getAmount).sum();
+                if (attackDamage != 0) {
+                    event.removeModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4, AttributeModifier.Operation.ADDITION));
+                    event.removeModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", attackDamage, AttributeModifier.Operation.ADDITION));
+                    event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", attackSpeed + (enchantLevel * 0.5), AttributeModifier.Operation.ADDITION));
+                    event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", attackDamage, AttributeModifier.Operation.ADDITION));
+                } else {
+                    event.removeModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4, AttributeModifier.Operation.ADDITION));
+                    event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", attackSpeed + (enchantLevel * 0.5), AttributeModifier.Operation.ADDITION));
+                }
+
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void EntityDroppingZangetsu(EntityJoinLevelEvent event) {
+        if (event.getLevel().isClientSide) return;
+        if (event.getEntity() instanceof ItemEntity itemEntity && itemEntity.getItem().getItem().equals(ScolItems.ZANGETSU)) {
+            if (Zangetsu.getOwner(itemEntity.getItem()).isEmpty()) {
+                event.setCanceled(true);
+                return;
+            }
+            event.setCanceled(true);
+            CustomItemEntity newEntity = new CustomItemEntity(itemEntity.level(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), itemEntity.getItem());
+            newEntity.setPickupDelay(itemEntity.pickupDelay);
+            newEntity.setDeltaMovement(itemEntity.getDeltaMovement());
+            newEntity.setNoGravity(false);
+            newEntity.setInvulnerable(false);
+            event.getLevel().addFreshEntity(newEntity);
+        }
+    }
+
+    @SubscribeEvent
+    public void DropZangetsu(LivingDropsEvent event) {
+        if (event.getEntity() instanceof  ServerPlayer player) {
+            boolean check = false;
+            Iterator<ItemEntity> iterator = event.getDrops().iterator();
+            while (iterator.hasNext()) {
+                ItemEntity itemEntity = iterator.next();
+                if (itemEntity.getItem().getItem().equals(ScolItems.ZANGETSU)) {
+                    if (check || Zangetsu.getOwner(itemEntity.getItem()).isEmpty()) {
+                        itemEntity.discard();
+                    } else {
+                        iterator.remove();
+                        ItemStack stack = itemEntity.getItem();
+                        Zangetsu.setDeathModel(stack,true);
+                        if (!stack.getHoverName().getString().equalsIgnoreCase("combatsasality")) {
+                            Zangetsu.setDisableGravity(stack, true);
+                        }
+                        CustomItemEntity newEntity = new CustomItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), stack);
+                        itemEntity.discard();
+                        player.level().addFreshEntity(newEntity);
+                        check = true;
+                    }
+                }
+            }
+        }
+    }
+
+    @SubscribeEvent
+    public void AddVillagerTrade(VillagerTradesEvent event) {
+        if (event.getType().equals(VillagerProfession.ARMORER)) {
+            ItemStack emerald = new ItemStack(Items.EMERALD);
+            emerald.setCount(64);
+            ItemStack nether = new ItemStack(Items.NETHERITE_INGOT);
+            nether.setCount(5);
+            event.getTrades().get(5).add(new BasicItemListing(emerald, nether, new ItemStack(ScolItems.PART_MASK_FIRST), 2, 0, 0));
+        } else if (event.getType().equals(VillagerProfession.CLERIC)) {
+            ItemStack flesh = new ItemStack(Items.ROTTEN_FLESH);
+            flesh.setCount(64);
+            ItemStack bone = new ItemStack(Items.BONE);
+            bone.setCount(64);
+            event.getTrades().get(5).add(new BasicItemListing(flesh, bone, new ItemStack(ScolItems.PART_MASK_THIRD), 2, 0, 0));
         }
     }
 

@@ -40,8 +40,8 @@ public class IchigoVizard extends Monster {
 
     public IchigoVizard(EntityType<IchigoVizard> type, Level level) {
         super(type, level);
-        // TODO: Add in hand Zangetsu
-        ItemStack zangetsu = new ItemStack(Items.NETHERITE_SWORD);
+        ItemStack zangetsu = new ItemStack(ScolItems.ZANGETSU);
+        Zangetsu.setBankai(zangetsu, true);
         this.setItemInHand(InteractionHand.MAIN_HAND, zangetsu);
 
     }
