@@ -281,4 +281,41 @@ public class EventHandler {
         }
     }
 
+    @SubscribeEvent
+    public void ringMidasDrop(LivingDropsEvent event) {
+        if (event.getSource().getEntity() instanceof ServerPlayer player) {
+            if (event.getEntity() instanceof ServerPlayer) {
+                return;
+            }
+            CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
+                if (inventory.findFirstCurio(ScolItems.RING_MIDAS).isPresent()) {
+                    int looting = EnchantmentHelper.getMobLooting(player);
+                    float random = looting * 0.01F + player.getRandom().nextFloat();
+                    if (random > 0.70) {
+                        ItemEntity item = new ItemEntity(player.level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), ItemStack.EMPTY);
+                        if (random > 0.97) {
+                            ItemStack stack = new ItemStack(Items.NETHERITE_SCRAP);
+                            stack.setCount(1 + looting);
+                            item.setItem(stack);
+                        } else if (random > 0.90) {
+                            ItemStack stack = new ItemStack(Items.DIAMOND);
+                            stack.setCount(1 + looting);
+                            item.setItem(stack);
+                        } else if (random > 0.80) {
+                            ItemStack stack = new ItemStack(Items.GOLD_INGOT);
+                            stack.setCount(1 + looting);
+                            item.setItem(stack);
+                        } else {
+                            ItemStack stack = new ItemStack(Items.IRON_INGOT);
+                            stack.setCount(1 + looting);
+                            item.setItem(stack);
+                        }
+                        event.getDrops().clear();
+                        event.getDrops().add(item);
+                    }
+                }
+            });
+        }
+    }
+
 }

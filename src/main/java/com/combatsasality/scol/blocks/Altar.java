@@ -1,6 +1,8 @@
 package com.combatsasality.scol.blocks;
 
 import com.combatsasality.scol.blocks.generic.BaseItemStackBlock;
+import com.combatsasality.scol.blocks.generic.ITickAbleTile;
+import com.combatsasality.scol.registries.ScolTiles;
 import com.combatsasality.scol.tiles.AltarTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
@@ -11,9 +13,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.BlockHitResult;
@@ -24,7 +26,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 import java.util.stream.Stream;
 
-public class Altar extends BaseItemStackBlock {
+public class Altar extends BaseItemStackBlock implements ITickAbleTile {
     private static final VoxelShape ALTAR_SHAPE = Stream.of(
             Block.box(3, 0, 3, 13, 0.8, 13),
             Block.box(4, 0.8, 4, 12, 3.0999999999999996, 12),
@@ -48,6 +50,7 @@ public class Altar extends BaseItemStackBlock {
         return new AltarTile(blockPos, blockState);
     }
 
+
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand interactionHand, BlockHitResult hitResult) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
@@ -68,5 +71,13 @@ public class Altar extends BaseItemStackBlock {
     }
 
 
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getServerTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return ITickAbleTile.createTicker(type, ScolTiles.ALTAR, AltarTile::tick);
+    }
 
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getClientTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return ITickAbleTile.createTicker(type, ScolTiles.ALTAR, AltarTile::tick);
+    }
 }

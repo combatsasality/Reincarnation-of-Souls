@@ -44,6 +44,8 @@ public class ScolItems extends AbstractRegistry<Item> {
     public static final Zangetsu ZANGETSU = null;
     @ObjectHolder(value = MODID + ":summon_mask", registryName = "item")
     public static final SummonMask SUMMON_MASK = null;
+    @ObjectHolder(value = MODID + ":ring_midas", registryName = "item")
+    public static final RingMidas RING_MIDAS = null;
 
 
     public ScolItems() {
@@ -66,6 +68,7 @@ public class ScolItems extends AbstractRegistry<Item> {
         register("music_disc_silent_relapse", () -> new RecordItem(2, () -> ScolSounds.MUSIC_SILENT_RELAPSE, discProperties, 1420));
         register("zangetsu", Zangetsu::new);
         register("summon_mask", SummonMask::new);
+        register("ring_midas", RingMidas::new);
     }
 
     @Override

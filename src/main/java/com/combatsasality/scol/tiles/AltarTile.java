@@ -12,6 +12,7 @@ import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,7 +20,7 @@ import net.minecraft.world.phys.AABB;
 
 import java.util.*;
 
-public class AltarTile extends BaseItemStackTile implements BlockEntityTicker<AltarTile> {
+public class AltarTile extends BaseItemStackTile  {
     private int stage = 0;
     private int tick = 0;
 
@@ -115,40 +116,39 @@ public class AltarTile extends BaseItemStackTile implements BlockEntityTicker<Al
     }
 
 
-    @Override
-    public void tick(Level level, BlockPos blockPos, BlockState blockState, AltarTile altarTile) {
-        if (this.stage == 1) {
-            if (this.tick % 20 == 0 && this.tick != 60) {
-                List<PedestalTile> pedestals = this.getPedestals();
-                if (this.getEnchantType(pedestals) == 0) {
-                    createVisualLighting(this.getBlockPos());
+    public static void tick(Level level, BlockPos blockPos, BlockState blockState, AltarTile altarTile) {
+        if (altarTile.stage == 1) {
+            if (altarTile.tick % 20 == 0 && altarTile.tick != 60) {
+                List<PedestalTile> pedestals = altarTile.getPedestals();
+                if (altarTile.getEnchantType(pedestals) == 0) {
+                    altarTile.createVisualLighting(altarTile.getBlockPos());
                 } else {
                     pedestals.forEach(pedestal -> {
                         if (!pedestal.getItem().isEmpty()) {
-                            createVisualLighting(pedestal.getBlockPos());
+                            altarTile.createVisualLighting(pedestal.getBlockPos());
                         }
                     });
                 }
             }
-            this.tick++;
+            altarTile.tick++;
         }
 
-        if (this.tick >= 60) {
-            List<PedestalTile> pedestals = this.getPedestals();
-            int type = this.getEnchantType(pedestals);
-            this.activate();
+        if (altarTile.tick >= 60) {
+            List<PedestalTile> pedestals = altarTile.getPedestals();
+            int type = altarTile.getEnchantType(pedestals);
+            altarTile.activate();
             if (type == 0) {
-                pedestals = this.getPedestals();
+                pedestals = altarTile.getPedestals();
                 pedestals.forEach(pedestal -> {
                     if (!pedestal.getItem().isEmpty()) {
-                        createVisualLighting(pedestal.getBlockPos());
+                        altarTile.createVisualLighting(pedestal.getBlockPos());
                     }
                 });
             } else {
-                createVisualLighting(this.getBlockPos());
+                altarTile.createVisualLighting(altarTile.getBlockPos());
             }
-            this.stage = 0;
-            this.tick = 0;
+            altarTile.stage = 0;
+            altarTile.tick = 0;
         }
     }
 
@@ -164,4 +164,5 @@ public class AltarTile extends BaseItemStackTile implements BlockEntityTicker<Al
     public AABB getRenderBoundingBox() {
         return super.getRenderBoundingBox();
     }
+
 }
