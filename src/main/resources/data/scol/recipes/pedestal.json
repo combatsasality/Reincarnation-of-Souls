@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+
+  "pattern": [
+    "XYX",
+    " X ",
+    "XYX"
+  ],
+  "key" : {
+    "X": {
+      "item": "minecraft:deepslate_tiles"
+    },
+    "Y": {
+      "item": "minecraft:crying_obsidian"
+    }
+  },
+  "result": {
+    "item": "scol:pedestal"
+  }
+}

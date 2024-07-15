@@ -23,6 +23,6 @@ public abstract class BaseTile extends BlockEntity {
     @Nullable
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
-        return ClientboundBlockEntityDataPacket.create(this);
+        return ClientboundBlockEntityDataPacket.create(this, BlockEntity::saveWithFullMetadata);
     }
 }

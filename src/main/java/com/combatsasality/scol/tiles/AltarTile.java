@@ -15,6 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.*;
 
@@ -157,5 +158,10 @@ public class AltarTile extends BaseItemStackTile implements BlockEntityTicker<Al
         ent.setPos(pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5);
         ent.setVisualOnly(true);
         this.level.addFreshEntity(ent);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox() {
+        return super.getRenderBoundingBox();
     }
 }

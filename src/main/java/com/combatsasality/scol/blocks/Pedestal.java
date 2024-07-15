@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -32,9 +33,8 @@ public class Pedestal extends BaseItemStackBlock {
 
 
     public Pedestal() {
-        super(Properties.copy(Blocks.STONE).strength(1.5F, 6.0F).requiresCorrectToolForDrops());
+        super(Properties.of().mapColor(MapColor.DEEPSLATE).strength(1.5F, 6.0F).requiresCorrectToolForDrops());
         this.registerDefaultState(this.getStateDefinition().any().setValue(FACING, Direction.NORTH));
-        // TODO: add tool for drops
     }
 
     @Override

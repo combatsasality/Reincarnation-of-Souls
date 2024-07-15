@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ZXZ",
+    " Y ",
+    "ZXZ"
+  ],
+  "key" : {
+    "X": {
+      "item": "minecraft:deepslate_tiles"
+    },
+    "Y": {
+      "item": "minecraft:diamond"
+    },
+    "Z": {
+      "item": "minecraft:crying_obsidian"
+    }
+  },
+  "result": {
+    "item": "scol:altar"
+  }
+}
