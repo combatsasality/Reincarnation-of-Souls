@@ -1,6 +1,9 @@
 package com.combatsasality.scol.entity;
 
+import com.combatsasality.scol.items.Zangetsu;
+import com.combatsasality.scol.registries.ScolCapabilities;
 import com.combatsasality.scol.registries.ScolEntities;
+import com.combatsasality.scol.registries.ScolItems;
 import com.combatsasality.scol.registries.ScolSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerBossEvent;
@@ -183,7 +186,21 @@ public class IchigoVizard extends Monster {
 
 
     @Override
-    protected void dropCustomDeathLoot(DamageSource p_21385_, int p_21386_, boolean p_21387_) {
-        // TODO: add zangetsu drop
+    protected void dropCustomDeathLoot(DamageSource source, int p_21386_, boolean p_21387_) {
+        if (source.getEntity() instanceof ServerPlayer player) {
+            player.getCapability(ScolCapabilities.SCOL_CAPABILITY).ifPresent(capa -> {
+                if (!capa.isHasZangetsu()) {
+                    ItemStack stack = new ItemStack(ScolItems.ZANGETSU);
+                    Zangetsu.setDeathModel(stack, true);
+                    Zangetsu.setDisableGravity(stack, true);
+                    stack.getOrCreateTag().putString("scol.Owner", player.getGameProfile().getName());
+                    CustomItemEntity dropped = new CustomItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), stack);
+                    dropped.setPickupDelay(40);
+                    if (this.level().addFreshEntity(dropped)) {
+                        capa.setHasZangetsu(true);
+                    }
+                }
+            });
+        }
     }
 }

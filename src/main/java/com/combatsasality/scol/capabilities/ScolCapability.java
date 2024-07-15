@@ -182,7 +182,7 @@ public class ScolCapability {
 
         @Override
         public boolean canUseBankai() {
-            return cooldownBankai == 0 | cooldownBankai == 0 && levelBankai >= 3;
+            return cooldownBankai == 0 || cooldownBankai == 0 && levelBankai >= 3;
         }
     }
 

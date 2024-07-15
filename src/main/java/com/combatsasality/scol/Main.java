@@ -73,6 +73,7 @@ public class Main {
 
     private void clientRegistries(FMLClientSetupEvent event) {
         ScolItems.PHOENIX_RING.registerChick();
+        ScolItems.ZANGETSU.registerVariants();
         PROXY.initEntityRendering();
     }
 

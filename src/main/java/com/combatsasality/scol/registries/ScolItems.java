@@ -39,6 +39,8 @@ public class ScolItems extends AbstractRegistry<Item> {
     public static final RecordItem MUSIC_DISC_METAL_3 = null;
     @ObjectHolder(value = MODID + ":music_disc_silent_relapse", registryName = "item")
     public static final RecordItem MUSIC_DISC_SILENT_RELAPSE = null;
+    @ObjectHolder(value = MODID + ":zangetsu", registryName = "item")
+    public static final Zangetsu ZANGETSU = null;
 
 
     public ScolItems() {
@@ -59,6 +61,6 @@ public class ScolItems extends AbstractRegistry<Item> {
         Item.Properties discProperties = new Item.Properties().rarity(Rarity.EPIC).stacksTo(1);
         register("music_disc_metal_3", () -> new RecordItem(1, () -> ScolSounds.MUSIC_METAL_3, discProperties, 2380));
         register("music_disc_silent_relapse", () -> new RecordItem(2, () -> ScolSounds.MUSIC_SILENT_RELAPSE, discProperties, 1420));
-
+        register("zangetsu", Zangetsu::new);
     }
 }
