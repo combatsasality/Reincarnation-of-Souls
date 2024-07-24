@@ -121,8 +121,6 @@ public class EventHandler {
 
     @SubscribeEvent
     public void cloneCapabilityPlayer(PlayerEvent.Clone event) {
-        if (!event.isWasDeath()) return;
-
         Player player = event.getEntity();
         Player oldPlayer = event.getOriginal();
 
