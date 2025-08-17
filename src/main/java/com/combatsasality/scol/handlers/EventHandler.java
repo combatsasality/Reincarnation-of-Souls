@@ -16,7 +16,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -47,7 +46,6 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.village.VillagerTradesEvent;
@@ -163,7 +161,7 @@ public class EventHandler {
                         capability.ifPresent(capa -> capa.setCoolDownPhoenixRing(15600));
                         event.setCanceled(true);
                         player.setHealth(player.getMaxHealth());
-                        PhoenixRing.godModeActived(stack.stack());
+                        PhoenixRing.godModeActive(stack.stack());
                     } else if (PhoenixRing.godModeIsActive(stack.stack())) {
                         event.setCanceled(true);
                         player.setHealth(player.getMaxHealth());

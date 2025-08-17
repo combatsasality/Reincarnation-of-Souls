@@ -47,6 +47,7 @@ public abstract class BaseItemStackBlock extends BaseEntityBlock {
                     tile.setItem(ItemStack.EMPTY);
                 }
             }
+
         }
 
         return InteractionResult.SUCCESS;

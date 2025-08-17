@@ -31,7 +31,6 @@ import top.theillusivec4.curios.api.SlotContext;
 import top.theillusivec4.curios.api.type.capability.ICurio;
 import top.theillusivec4.curios.api.type.capability.ICurioItem;
 
-import javax.annotation.Nonnull;
 import java.util.List;
 
 public class PhoenixRing extends Item implements ICurioItem, ITab {
@@ -73,7 +72,7 @@ public class PhoenixRing extends Item implements ICurioItem, ITab {
         return stack.getOrCreateTag().getInt("scol.GodMode") != 0;
     }
 
-    public static void godModeActived(ItemStack stack) {
+    public static void godModeActive(ItemStack stack) {
         stack.getOrCreateTag().putInt("scol.GodMode", 3600);
     }
 
@@ -109,7 +108,7 @@ public class PhoenixRing extends Item implements ICurioItem, ITab {
             LazyOptional<ScolCapability.IScolCapability> capability = player.getCapability(ScolCapabilities.SCOL_CAPABILITY);
             capability.ifPresent(capa -> {
                 if (capa.getCoolDownPhoenixRing() != 0) {
-                    capa.consumeCoolDownPhoenixRing(0);
+                    capa.consumeCoolDownPhoenixRing(1);
                 }
             });
             if (godModeIsActive(stack)) {
@@ -120,7 +119,7 @@ public class PhoenixRing extends Item implements ICurioItem, ITab {
                 player.revive();
                 player.setHealth(player.getMaxHealth());
                 capability.ifPresent(capa -> capa.setCoolDownPhoenixRing(15600));
-                godModeActived(stack);
+                godModeActive(stack);
             }
         }
 
