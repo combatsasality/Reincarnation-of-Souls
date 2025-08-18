@@ -63,6 +63,7 @@ public class TestItem extends Item {
             capa.raiseLevelBankai();
             capa.raiseLevelBankai();
             capa.setCooldownBankai(0);
+            capa.setCoolDownPhoenixRing(0);
         });
         return super.useOn(context);
     }

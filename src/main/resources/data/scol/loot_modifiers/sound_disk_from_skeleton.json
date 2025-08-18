@@ -6,7 +6,14 @@
       "predicate": {
         "type": "#minecraft:skeletons"
       },
-      "entity": "killer",
+      "entity": "killer"
+    },
+    {
+      "condition": "minecraft:entity_properties",
+      "entity": "this",
+      "predicate": {
+        "type": "#minecraft:skeletons"
+      },
       "loot_table_id": "minecraft:entities/skeleton"
     }
   ],

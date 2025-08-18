@@ -38,7 +38,6 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.entity.PartEntity;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -231,30 +230,58 @@ public class Zangetsu extends SwordItem implements ITab {
     }
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
-        if (!player.level().isClientSide) {
-            if (entity.isAttackable() && !isBankai(stack)) {
-                if (entity instanceof PartEntity) {
-                    entity.hurt(entity.damageSources().playerAttack(player), 1 + (float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
-                    return true;
-                }
-                for (LivingEntity livingEntity : player.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(1.0D))) {
-                    if (livingEntity != player && (!(livingEntity instanceof ArmorStand))) {
-                        livingEntity.knockback(0.4F, (double) Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(player.getYRot() * ((float) Math.PI / 180F))));
-                        livingEntity.hurt(livingEntity.damageSources().playerAttack(player), 1 + (float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
-                        player.doEnchantDamageEffects(livingEntity, player);
+    public boolean hurtEnemy(ItemStack stack, LivingEntity entity, LivingEntity attacker) {
+
+        if (attacker instanceof Player player) {
+            if (!isBankai(stack)) {
+                    for (LivingEntity livingentity : player.level().getEntitiesOfClass(LivingEntity.class, player.getItemInHand(InteractionHand.MAIN_HAND).getSweepHitBox(player, entity))) {
+                        if (livingentity != player && livingentity != entity && !player.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker())) {
+                            livingentity.hurt(player.damageSources().playerAttack(player), 1 + (float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
+                            player.doEnchantDamageEffects(player, livingentity);
+                            //                            player.doEnchantDamageEffects(livingentity, player);
+//                            super.hurtEnemy(stack, livingentity, player);
+//                            super.onLeftClickEntity(stack, player, livingentity);
+//                            super.
+                            //                            System.out.println(player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
+                        }
                     }
-                }
-                player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
-                player.sweepAttack();
-                return true;
-            }
-            if (entity.isAttackable() && isBankai(stack) && player.getCapability(ScolCapabilities.SCOL_CAPABILITY).map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
+
+                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
+                    player.sweepAttack();
+
+            } else if (isBankai(stack) && player.getCapability(ScolCapabilities.SCOL_CAPABILITY).map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
                 entity.invulnerableTime = 0;
             }
         }
-
-
-        return super.onLeftClickEntity(stack, player, entity);
+        return super.hurtEnemy(stack, entity, attacker);
     }
+
+
+    //    @Override
+//    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+//        if (!player.level().isClientSide) {
+//            if (entity.isAttackable() && !isBankai(stack)) {
+//                if (entity instanceof PartEntity) {
+//                    entity.hurt(entity.damageSources().playerAttack(player), 1 + (float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
+//                    return true;
+//                }
+//                for (LivingEntity livingEntity : player.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(1.0D))) {
+//                    if (livingEntity != player && (!(livingEntity instanceof ArmorStand))) {
+//                        livingEntity.knockback(0.4F, (double) Mth.sin(player.getYRot() * ((float) Math.PI / 180F)), (double) (-Mth.cos(player.getYRot() * ((float) Math.PI / 180F))));
+//                        livingEntity.hurt(livingEntity.damageSources().playerAttack(player), 1 + (float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
+//                        player.doEnchantDamageEffects(livingEntity, player);
+//                    }
+//                }
+//                player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
+//                player.sweepAttack();
+//                return true;
+//            }
+//            if (entity.isAttackable() && isBankai(stack) && player.getCapability(ScolCapabilities.SCOL_CAPABILITY).map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
+//                entity.invulnerableTime = 0;
+//            }
+//        }
+//
+//
+//        return super.onLeftClickEntity(stack, player, entity);
+//    }
 }
