@@ -2,7 +2,6 @@ package com.combatsasality.scol;
 
 import com.combatsasality.scol.capabilities.ScolCapability;
 import com.combatsasality.scol.entity.IchigoVizard;
-import com.combatsasality.scol.handlers.CheckVersionHandler;
 import com.combatsasality.scol.handlers.ConfigHandler;
 import com.combatsasality.scol.handlers.EventHandler;
 import com.combatsasality.scol.handlers.KeyBindHandler;
@@ -59,7 +58,8 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         MinecraftForge.EVENT_BUS.register(keyBindHandler);
-        MinecraftForge.EVENT_BUS.addListener(CheckVersionHandler::worldEventLoad);
+//      Maybe later...
+//        MinecraftForge.EVENT_BUS.addListener(CheckVersionHandler::worldEventLoad);
         new ScolTabs();
         new ScolEnchantments();
         new ScolTiles();

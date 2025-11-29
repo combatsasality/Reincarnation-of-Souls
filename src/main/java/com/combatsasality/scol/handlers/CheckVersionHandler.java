@@ -67,7 +67,7 @@ public class CheckVersionHandler {
     }
 
     public static void worldEventLoad(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity().level().isClientSide || !ConfigHandler.UPDATE_CHECK.get()) return;
+//        if (event.getEntity().level().isClientSide || !ConfigHandler.UPDATE_CHECK.get()) return;
         if (newVersion == null) {
             Response response = getNewestVersion();
             if (response.status) {
