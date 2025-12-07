@@ -52,20 +52,24 @@ public class PowerWaveEntity extends Projectile {
             this.discard();
         }
     }
+
     public void damageEntities(List<LivingEntity> listOfEntities) {
         Player owner = (Player) this.getOwner();
         for (LivingEntity entity : listOfEntities) {
             if (entity != owner && entity.isAttackable()) {
-                entity.hurt(entity.damageSources().playerAttack(owner), (float) (owner.getAttribute(Attributes.ATTACK_DAMAGE).getValue() + 60.0F));
+                entity.hurt(entity.damageSources().playerAttack(owner), (float)
+                        (owner.getAttribute(Attributes.ATTACK_DAMAGE).getValue() + 60.0F));
             }
         }
     }
 
     public void shootFromRotation() {
-        float f = -Mth.sin(this.getYRot() * ((float)Math.PI / 180F)) * Mth.cos(this.getXRot() * ((float)Math.PI / 180F));
-        float f1 = -Mth.sin(this.getXRot() * ((float)Math.PI / 180F));
-        float f2 = Mth.cos(this.getYRot() * ((float)Math.PI / 180F)) * Mth.cos( this.getXRot() * ((float)Math.PI / 180F));
-        this.setDeltaMovement(new Vec3(f,f1,f2));
+        float f = -Mth.sin(this.getYRot() * ((float) Math.PI / 180F))
+                * Mth.cos(this.getXRot() * ((float) Math.PI / 180F));
+        float f1 = -Mth.sin(this.getXRot() * ((float) Math.PI / 180F));
+        float f2 =
+                Mth.cos(this.getYRot() * ((float) Math.PI / 180F)) * Mth.cos(this.getXRot() * ((float) Math.PI / 180F));
+        this.setDeltaMovement(new Vec3(f, f1, f2));
     }
 
     @Override

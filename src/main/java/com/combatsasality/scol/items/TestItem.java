@@ -30,7 +30,12 @@ public class TestItem extends Item {
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flagIn) {
         tooltip.add(Component.translatable("tooltip.item.test_item.0"));
         if (Screen.hasShiftDown()) {
-            tooltip.add(Component.literal(Minecraft.getInstance().player.getCapability(ScolCapabilities.SCOL_CAPABILITY).map(capa -> capa.writeTag()).orElse(null).toString()));
+            tooltip.add(Component.literal(Minecraft.getInstance()
+                    .player
+                    .getCapability(ScolCapabilities.SCOL_CAPABILITY)
+                    .map(capa -> capa.writeTag())
+                    .orElse(null)
+                    .toString()));
         }
         Main.packetInstance.send(PacketDistributor.SERVER.noArg(), new PacketGetCapability(true));
 
@@ -44,7 +49,6 @@ public class TestItem extends Item {
             player.setHealth(player.getMaxHealth());
             player.addEffect(new MobEffectInstance(MobEffects.SATURATION, 1000, 1, true, false));
             player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 1000, 1, true, false));
-
         }
         super.inventoryTick(stack, level, entity, p_41407_, p_41408_);
     }

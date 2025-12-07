@@ -23,13 +23,13 @@ import java.util.stream.Stream;
 
 public class Pedestal extends BaseItemStackBlock {
     private static final VoxelShape PEDESTAL_SHAPE = Stream.of(
-            Block.box(1, 0, 1, 15, 1, 15),
-            Block.box(2, 1, 2, 14, 3, 14),
-            Block.box(4, 3, 4, 12, 16, 12),
-            Block.box(1, 16, 1, 15, 18, 15)
-    ).reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR)).get();
+                    Block.box(1, 0, 1, 15, 1, 15),
+                    Block.box(2, 1, 2, 14, 3, 14),
+                    Block.box(4, 3, 4, 12, 16, 12),
+                    Block.box(1, 16, 1, 15, 18, 15))
+            .reduce((v1, v2) -> Shapes.join(v1, v2, BooleanOp.OR))
+            .get();
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-
 
     public Pedestal() {
         super(Properties.of().mapColor(MapColor.DEEPSLATE).strength(1.5F, 6.0F).requiresCorrectToolForDrops());
@@ -44,10 +44,9 @@ public class Pedestal extends BaseItemStackBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        return this.defaultBlockState()
+                .setValue(FACING, context.getHorizontalDirection().getOpposite());
     }
-
-
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
