@@ -1,5 +1,6 @@
 package com.combatsasality.scol;
 
+import com.combatsasality.scol.capabilities.AcademyCapability;
 import com.combatsasality.scol.capabilities.ScolCapability;
 import com.combatsasality.scol.entity.IchigoVizard;
 import com.combatsasality.scol.handlers.ConfigHandler;
@@ -138,5 +139,6 @@ public class Main {
     @SubscribeEvent
     public void registerCaps(RegisterCapabilitiesEvent event) {
         event.register(ScolCapability.IScolCapability.class);
+        event.register(AcademyCapability.IAcademyCapability.class);
     }
 }

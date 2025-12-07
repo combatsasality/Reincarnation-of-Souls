@@ -1,5 +1,6 @@
 package com.combatsasality.scol.registries;
 
+import com.combatsasality.scol.handlers.Academy;
 import com.combatsasality.scol.items.*;
 import com.combatsasality.scol.items.generic.ItemBase;
 import net.minecraft.world.item.Item;
@@ -88,6 +89,14 @@ public class ScolItems extends AbstractRegistry<Item> {
         register("zangetsu", Zangetsu::new);
         register("summon_mask", SummonMask::new);
         register("ring_midas", RingMidas::new);
+        register("book_of_lighting_rod_hawk", () -> new AcademyBook(Academy.LIGHTING_ROD_HAWK));
+        register("book_of_unity", () -> new AcademyBook(Academy.UNITY));
+        register("book_of_earthly_silence", () -> new AcademyBook(Academy.EARTHLY_SILENCE));
+        register("book_of_exiled_wanderer", () -> new AcademyBook(Academy.EXILED_WANDERER));
+        register("book_of_fire_basilisk", () -> new AcademyBook(Academy.FIRE_BASILISK));
+        register("book_of_death", () -> new AcademyBook(Academy.DEATH));
+        register("book_of_pacifying_flow", () -> new AcademyBook(Academy.PACIFYING_FLOW));
+        register("book_of_nature_keeper", () -> new AcademyBook(Academy.NATURE_KEEPER));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.combatsasality.scol.handlers;
 
 import com.combatsasality.scol.Main;
+import com.combatsasality.scol.capabilities.AcademyCapability;
 import com.combatsasality.scol.capabilities.ScolCapability;
 import com.combatsasality.scol.entity.CustomItemEntity;
 import com.combatsasality.scol.items.PhoenixRing;
@@ -70,12 +71,14 @@ public class EventHandler {
                 tag.putInt("scol.Souls", tag.getInt("scol.Souls") + 1);
             }
         }
-
     }
 
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void toolTipForMagicalDamage(ItemTooltipEvent event) { //It's a bullshit code, so what? If you know how to do it in a non-bullshit way, write me :D
+    public void toolTipForMagicalDamage(
+            ItemTooltipEvent
+                    event) { // It's a bullshit code, so what? If you know how to do it in a non-bullshit way, write me
+        // :D
         int index = 0;
         if (!event.getItemStack().getItem().equals(ScolItems.FROSTMOURNE)) return;
         for (Component text : event.getToolTip()) {
@@ -87,14 +90,13 @@ public class EventHandler {
             if (!(magicalComponent.getContents() instanceof TranslatableContents magicalTranslatable)) continue;
             if (!magicalTranslatable.getKey().equalsIgnoreCase("attribute.name.scol.magical_damage")) continue;
 
-
-            Object[] objects = new Object[]{translatableContents.getArgs()[0], translatableContents.getArgs()[1]};
+            Object[] objects = new Object[] {
+                translatableContents.getArgs()[0], translatableContents.getArgs()[1]
+            };
             MutableComponent newComponent = Component.translatable("attribute.modifier.equals.0", objects);
             newComponent.withStyle(ChatFormatting.DARK_PURPLE);
-            event.getToolTip().set(index-1, newComponent);
-
+            event.getToolTip().set(index - 1, newComponent);
         }
-
     }
 
     @SubscribeEvent
@@ -103,9 +105,12 @@ public class EventHandler {
         if (event.getSource().getEntity() instanceof ServerPlayer player) {
             ItemStack stack = player.getMainHandItem();
             if (event.getEntity() instanceof EnderDragon) {
-                if (!player.addItem(new ItemStack(ScolItems.DRAGON_SOUL))) player.drop(new ItemStack(ScolItems.DRAGON_SOUL), true);
-            } else if (event.getEntity() instanceof WitherBoss && Math.random() > 0.75-stack.getEnchantmentLevel(Enchantments.MOB_LOOTING)*0.1) {
-                if (!player.addItem(new ItemStack(ScolItems.WITHER_SOUL))) player.drop(new ItemStack(ScolItems.WITHER_SOUL), true);
+                if (!player.addItem(new ItemStack(ScolItems.DRAGON_SOUL)))
+                    player.drop(new ItemStack(ScolItems.DRAGON_SOUL), true);
+            } else if (event.getEntity() instanceof WitherBoss
+                    && Math.random() > 0.75 - stack.getEnchantmentLevel(Enchantments.MOB_LOOTING) * 0.1) {
+                if (!player.addItem(new ItemStack(ScolItems.WITHER_SOUL)))
+                    player.drop(new ItemStack(ScolItems.WITHER_SOUL), true);
             }
         }
     }
@@ -113,7 +118,8 @@ public class EventHandler {
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<Entity> event) {
         if (event.getObject() instanceof Player && !(event.getObject() instanceof FakePlayer)) {
-            event.addCapability(new ResourceLocation(Main.MODID, "capability"), ScolCapability.createProvider());
+            event.addCapability(new ResourceLocation(Main.MODID, "general"), ScolCapability.createProvider());
+            event.addCapability(new ResourceLocation(Main.MODID, "academy"), AcademyCapability.createProvider());
         }
     }
 
@@ -124,22 +130,39 @@ public class EventHandler {
 
         oldPlayer.reviveCaps();
 
-        player.getCapability(ScolCapabilities.SCOL_CAPABILITY).orElse(null).readTag(
-                oldPlayer.getCapability(ScolCapabilities.SCOL_CAPABILITY).orElse(null).writeTag());
+        player.getCapability(ScolCapabilities.SCOL_CAPABILITY)
+                .orElse(null)
+                .readTag(oldPlayer
+                        .getCapability(ScolCapabilities.SCOL_CAPABILITY)
+                        .orElse(null)
+                        .writeTag());
+
+        player.getCapability(ScolCapabilities.ACADEMY_CAPABILITY)
+                .orElse(null)
+                .readTag(oldPlayer
+                        .getCapability(ScolCapabilities.ACADEMY_CAPABILITY)
+                        .orElse(null)
+                        .writeTag());
 
         oldPlayer.invalidateCaps();
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onKillInactivePhoenix(LivingDeathEvent event) {
-        if (event.getEntity() instanceof Player player && event.getSource().typeHolder().is(DamageTypes.LAVA)) {
+        if (event.getEntity() instanceof Player player
+                && event.getSource().typeHolder().is(DamageTypes.LAVA)) {
             CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
                 inventory.findFirstCurio(ScolItems.INACTIVE_PHOENIX_RING).ifPresent(stack -> {
                     NonNullList<ItemStack> streamList = player.getInventory().items;
-                    Optional<ItemStack> dragonStream = streamList.stream().filter(stack1 -> stack1.getItem().equals(ScolItems.DRAGON_SOUL)).findFirst();
-                    Optional<ItemStack> witherStream = streamList.stream().filter(stack1 -> stack1.getItem().equals(ScolItems.WITHER_SOUL)).findFirst();
+                    Optional<ItemStack> dragonStream = streamList.stream()
+                            .filter(stack1 -> stack1.getItem().equals(ScolItems.DRAGON_SOUL))
+                            .findFirst();
+                    Optional<ItemStack> witherStream = streamList.stream()
+                            .filter(stack1 -> stack1.getItem().equals(ScolItems.WITHER_SOUL))
+                            .findFirst();
                     if (dragonStream.isPresent() && witherStream.isPresent()) {
-                        inventory.setEquippedCurio("ring", stack.slotContext().index(), new ItemStack(ScolItems.PHOENIX_RING));
+                        inventory.setEquippedCurio(
+                                "ring", stack.slotContext().index(), new ItemStack(ScolItems.PHOENIX_RING));
                         event.setCanceled(true);
                         player.setHealth(player.getMaxHealth());
                         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 30, 0));
@@ -156,8 +179,11 @@ public class EventHandler {
         if (event.getEntity() instanceof ServerPlayer player) {
             CuriosApi.getCuriosInventory(player).ifPresent(inventory -> {
                 inventory.findFirstCurio(ScolItems.PHOENIX_RING).ifPresent(stack -> {
-                    LazyOptional<ScolCapability.IScolCapability> capability = player.getCapability(ScolCapabilities.SCOL_CAPABILITY);
-                    if (capability.map(ScolCapability.IScolCapability::canUsePhoenixRing).orElse(true)) {
+                    LazyOptional<ScolCapability.IScolCapability> capability =
+                            player.getCapability(ScolCapabilities.SCOL_CAPABILITY);
+                    if (capability
+                            .map(ScolCapability.IScolCapability::canUsePhoenixRing)
+                            .orElse(true)) {
                         capability.ifPresent(capa -> capa.setCoolDownPhoenixRing(15600));
                         event.setCanceled(true);
                         player.setHealth(player.getMaxHealth());
@@ -185,7 +211,9 @@ public class EventHandler {
 
     @SubscribeEvent
     public void doVampiric(LivingAttackEvent event) {
-        if (event.getSource().getEntity() instanceof LivingEntity player && !player.level().isClientSide && player.isAlive()) {
+        if (event.getSource().getEntity() instanceof LivingEntity player
+                && !player.level().isClientSide
+                && player.isAlive()) {
             ItemStack stack = player.getMainHandItem();
             int enchantLevel = stack.getEnchantmentLevel(ScolEnchantments.VAMPIRIC_ENCHANT);
             if (enchantLevel != 0) {
@@ -198,19 +226,59 @@ public class EventHandler {
     public void doSpeedEnchant(ItemAttributeModifierEvent event) {
         int enchantLevel = event.getItemStack().getEnchantmentLevel(ScolEnchantments.ATTACK_SPEED_INCREASE);
         if (enchantLevel != 0) {
-            if (event.getSlotType().equals(EquipmentSlot.MAINHAND) && event.getItemStack().getItem() instanceof SwordItem) {
-                double attackSpeed = event.getModifiers().get(Attributes.ATTACK_SPEED).stream().mapToDouble(AttributeModifier::getAmount).sum();
-                double attackDamage = event.getModifiers().get(Attributes.ATTACK_DAMAGE).stream().mapToDouble(AttributeModifier::getAmount).sum();
+            if (event.getSlotType().equals(EquipmentSlot.MAINHAND)
+                    && event.getItemStack().getItem() instanceof SwordItem) {
+                double attackSpeed = event.getModifiers().get(Attributes.ATTACK_SPEED).stream()
+                        .mapToDouble(AttributeModifier::getAmount)
+                        .sum();
+                double attackDamage = event.getModifiers().get(Attributes.ATTACK_DAMAGE).stream()
+                        .mapToDouble(AttributeModifier::getAmount)
+                        .sum();
                 if (attackDamage != 0) {
-                    event.removeModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4, AttributeModifier.Operation.ADDITION));
-                    event.removeModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", attackDamage, AttributeModifier.Operation.ADDITION));
-                    event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", attackSpeed + (enchantLevel * 0.5), AttributeModifier.Operation.ADDITION));
-                    event.addModifier(Attributes.ATTACK_DAMAGE, new AttributeModifier(Item.BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", attackDamage, AttributeModifier.Operation.ADDITION));
+                    event.removeModifier(
+                            Attributes.ATTACK_SPEED,
+                            new AttributeModifier(
+                                    Item.BASE_ATTACK_SPEED_UUID,
+                                    "Weapon modifier",
+                                    -2.4,
+                                    AttributeModifier.Operation.ADDITION));
+                    event.removeModifier(
+                            Attributes.ATTACK_DAMAGE,
+                            new AttributeModifier(
+                                    Item.BASE_ATTACK_DAMAGE_UUID,
+                                    "Weapon modifier",
+                                    attackDamage,
+                                    AttributeModifier.Operation.ADDITION));
+                    event.addModifier(
+                            Attributes.ATTACK_SPEED,
+                            new AttributeModifier(
+                                    Item.BASE_ATTACK_SPEED_UUID,
+                                    "Weapon modifier",
+                                    attackSpeed + (enchantLevel * 0.5),
+                                    AttributeModifier.Operation.ADDITION));
+                    event.addModifier(
+                            Attributes.ATTACK_DAMAGE,
+                            new AttributeModifier(
+                                    Item.BASE_ATTACK_DAMAGE_UUID,
+                                    "Weapon modifier",
+                                    attackDamage,
+                                    AttributeModifier.Operation.ADDITION));
                 } else {
-                    event.removeModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.4, AttributeModifier.Operation.ADDITION));
-                    event.addModifier(Attributes.ATTACK_SPEED, new AttributeModifier(Item.BASE_ATTACK_SPEED_UUID, "Weapon modifier", attackSpeed + (enchantLevel * 0.5), AttributeModifier.Operation.ADDITION));
+                    event.removeModifier(
+                            Attributes.ATTACK_SPEED,
+                            new AttributeModifier(
+                                    Item.BASE_ATTACK_SPEED_UUID,
+                                    "Weapon modifier",
+                                    -2.4,
+                                    AttributeModifier.Operation.ADDITION));
+                    event.addModifier(
+                            Attributes.ATTACK_SPEED,
+                            new AttributeModifier(
+                                    Item.BASE_ATTACK_SPEED_UUID,
+                                    "Weapon modifier",
+                                    attackSpeed + (enchantLevel * 0.5),
+                                    AttributeModifier.Operation.ADDITION));
                 }
-
             }
         }
     }
@@ -218,13 +286,15 @@ public class EventHandler {
     @SubscribeEvent
     public void EntityDroppingZangetsu(EntityJoinLevelEvent event) {
         if (event.getLevel().isClientSide) return;
-        if (event.getEntity() instanceof ItemEntity itemEntity && itemEntity.getItem().getItem().equals(ScolItems.ZANGETSU)) {
+        if (event.getEntity() instanceof ItemEntity itemEntity
+                && itemEntity.getItem().getItem().equals(ScolItems.ZANGETSU)) {
             if (Zangetsu.getOwner(itemEntity.getItem()).isEmpty()) {
                 event.setCanceled(true);
                 return;
             }
             event.setCanceled(true);
-            CustomItemEntity newEntity = new CustomItemEntity(itemEntity.level(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), itemEntity.getItem());
+            CustomItemEntity newEntity = new CustomItemEntity(
+                    itemEntity.level(), itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), itemEntity.getItem());
             newEntity.setPickupDelay(itemEntity.pickupDelay);
             newEntity.setDeltaMovement(itemEntity.getDeltaMovement());
             newEntity.setNoGravity(false);
@@ -235,7 +305,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void DropZangetsu(LivingDropsEvent event) {
-        if (event.getEntity() instanceof  ServerPlayer player) {
+        if (event.getEntity() instanceof ServerPlayer player) {
             boolean check = false;
             Iterator<ItemEntity> iterator = event.getDrops().iterator();
             while (iterator.hasNext()) {
@@ -246,11 +316,12 @@ public class EventHandler {
                     } else {
                         iterator.remove();
                         ItemStack stack = itemEntity.getItem();
-                        Zangetsu.setDeathModel(stack,true);
+                        Zangetsu.setDeathModel(stack, true);
                         if (!stack.getHoverName().getString().equalsIgnoreCase("combatsasality")) {
                             Zangetsu.setDisableGravity(stack, true);
                         }
-                        CustomItemEntity newEntity = new CustomItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), stack);
+                        CustomItemEntity newEntity = new CustomItemEntity(
+                                player.level(), player.getX(), player.getY(), player.getZ(), stack);
                         itemEntity.discard();
                         player.level().addFreshEntity(newEntity);
                         check = true;
@@ -267,13 +338,17 @@ public class EventHandler {
             emerald.setCount(64);
             ItemStack nether = new ItemStack(Items.NETHERITE_INGOT);
             nether.setCount(5);
-            event.getTrades().get(5).add(new BasicItemListing(emerald, nether, new ItemStack(ScolItems.PART_MASK_FIRST), 2, 0, 0));
+            event.getTrades()
+                    .get(5)
+                    .add(new BasicItemListing(emerald, nether, new ItemStack(ScolItems.PART_MASK_FIRST), 2, 0, 0));
         } else if (event.getType().equals(VillagerProfession.CLERIC)) {
             ItemStack flesh = new ItemStack(Items.ROTTEN_FLESH);
             flesh.setCount(64);
             ItemStack bone = new ItemStack(Items.BONE);
             bone.setCount(64);
-            event.getTrades().get(5).add(new BasicItemListing(flesh, bone, new ItemStack(ScolItems.PART_MASK_THIRD), 2, 0, 0));
+            event.getTrades()
+                    .get(5)
+                    .add(new BasicItemListing(flesh, bone, new ItemStack(ScolItems.PART_MASK_THIRD), 2, 0, 0));
         }
     }
 
@@ -288,7 +363,12 @@ public class EventHandler {
                     int looting = EnchantmentHelper.getMobLooting(player);
                     float random = looting * 0.01F + player.getRandom().nextFloat();
                     if (random > 0.70) {
-                        ItemEntity item = new ItemEntity(player.level(), event.getEntity().getX(), event.getEntity().getY(), event.getEntity().getZ(), ItemStack.EMPTY);
+                        ItemEntity item = new ItemEntity(
+                                player.level(),
+                                event.getEntity().getX(),
+                                event.getEntity().getY(),
+                                event.getEntity().getZ(),
+                                ItemStack.EMPTY);
                         if (random > 0.97) {
                             ItemStack stack = new ItemStack(Items.NETHERITE_SCRAP);
                             stack.setCount(1 + looting);
@@ -313,5 +393,4 @@ public class EventHandler {
             });
         }
     }
-
 }
