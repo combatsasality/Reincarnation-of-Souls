@@ -10,7 +10,10 @@ public class ScolTabs extends AbstractRegistry<CreativeModeTab> {
     public static final CreativeModeTab MAIN;
 
     static {
-        MAIN = CreativeModeTab.builder().title(Component.translatable("itemGroup.scolTab")).icon(() -> new ItemStack(ScolItems.TEST_ITEM)).build();
+        MAIN = CreativeModeTab.builder()
+                .title(Component.translatable("itemGroup.scolTab"))
+                .icon(() -> new ItemStack(ScolItems.TEST_ITEM))
+                .build();
     }
 
     public ScolTabs() {

@@ -12,13 +12,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class IchigoVizardRenderer extends MobRenderer<IchigoVizard, IchigoVizardModel<IchigoVizard>> {
-    protected static final ResourceLocation TEXTURE = new ResourceLocation(Main.MODID, "textures/entity/ichigo_vizard.png");
+    protected static final ResourceLocation TEXTURE =
+            new ResourceLocation(Main.MODID, "textures/entity/ichigo_vizard.png");
 
     public IchigoVizardRenderer(EntityRendererProvider.Context context) {
         super(context, new IchigoVizardModel<>(IchigoVizardModel.createModel().bakeRoot()), 1.0f);
         this.addLayer(new ItemInHandLayer<>(this, context.getItemInHandRenderer()));
     }
-
 
     @Override
     public ResourceLocation getTextureLocation(IchigoVizard p_114482_) {

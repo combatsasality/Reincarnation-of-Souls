@@ -1,6 +1,5 @@
 package com.combatsasality.scol.tiles;
 
-import com.combatsasality.scol.blocks.Altar;
 import com.combatsasality.scol.registries.ScolTiles;
 import com.combatsasality.scol.tiles.generic.BaseItemStackTile;
 import net.minecraft.core.BlockPos;
@@ -10,20 +9,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
 import java.util.*;
 
-public class AltarTile extends BaseItemStackTile  {
+public class AltarTile extends BaseItemStackTile {
     private int stage = 0;
     private int tick = 0;
-
 
     public AltarTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
@@ -70,13 +65,15 @@ public class AltarTile extends BaseItemStackTile  {
         List<ItemStack> items = this.getPedestalsItems(pedestals);
         if (items.isEmpty()) {
             Map<Enchantment, Integer> enchantments = this.getItem().getAllEnchantments();
-            Iterator<Map.Entry<Enchantment, Integer>> iterator = enchantments.entrySet().iterator();
+            Iterator<Map.Entry<Enchantment, Integer>> iterator =
+                    enchantments.entrySet().iterator();
             List<Enchantment> toDelete = new ArrayList<>();
             pedestals.forEach(pedestal -> {
                 if (iterator.hasNext()) {
                     Map.Entry<Enchantment, Integer> entry = iterator.next();
                     pedestal.setItem(Items.ENCHANTED_BOOK.getDefaultInstance());
-                    EnchantmentHelper.setEnchantments(Collections.singletonMap(entry.getKey(), entry.getValue()), pedestal.getItem());
+                    EnchantmentHelper.setEnchantments(
+                            Collections.singletonMap(entry.getKey(), entry.getValue()), pedestal.getItem());
                     toDelete.add(entry.getKey());
                 }
             });
@@ -103,7 +100,6 @@ public class AltarTile extends BaseItemStackTile  {
         return items;
     }
 
-
     public int getEnchantType(List<PedestalTile> list) {
         if (this.getPedestalsItems(list).isEmpty()) {
             return 0;
@@ -111,10 +107,10 @@ public class AltarTile extends BaseItemStackTile  {
             return 1;
         }
     }
+
     public int getEnchantType() {
         return this.getEnchantType(this.getPedestals());
     }
-
 
     public static void tick(Level level, BlockPos blockPos, BlockState blockState, AltarTile altarTile) {
         if (altarTile.stage == 1) {
@@ -152,10 +148,9 @@ public class AltarTile extends BaseItemStackTile  {
         }
     }
 
-
     public void createVisualLighting(BlockPos pos) {
         LightningBolt ent = EntityType.LIGHTNING_BOLT.create(this.level);
-        ent.setPos(pos.getX()+0.5, pos.getY()+0.5, pos.getZ()+0.5);
+        ent.setPos(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
         ent.setVisualOnly(true);
         this.level.addFreshEntity(ent);
     }
@@ -164,5 +159,4 @@ public class AltarTile extends BaseItemStackTile  {
     public AABB getRenderBoundingBox() {
         return super.getRenderBoundingBox();
     }
-
 }

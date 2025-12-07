@@ -10,6 +10,7 @@ public class PedestalTile extends BaseItemStackTile {
     public PedestalTile(BlockEntityType<?> type, BlockPos pos, BlockState state) {
         super(type, pos, state);
     }
+
     public PedestalTile(BlockPos pos, BlockState state) {
         this(ScolTiles.PEDESTAL, pos, state);
     }

@@ -9,9 +9,10 @@ public class ScolAttributes extends AbstractRegistry<Attribute> {
     @ObjectHolder(value = MODID + ":magical_damage", registryName = "attribute")
     public static final RangedAttribute MAGICAL_DAMAGE = null;
 
-
     public ScolAttributes() {
         super(ForgeRegistries.ATTRIBUTES);
-        register("magical_damage", () -> new RangedAttribute("attribute.name.scol.magical_damage", 0.0D, 0.0D, Double.MAX_VALUE).setSyncable(true));
+        register("magical_damage", () -> new RangedAttribute(
+                        "attribute.name.scol.magical_damage", 0.0D, 0.0D, Double.MAX_VALUE)
+                .setSyncable(true));
     }
 }

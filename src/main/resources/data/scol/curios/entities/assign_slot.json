@@ -1,4 +1,9 @@
 {
-  "entities": ["player"],
-  "slots": ["ring", "scol_wings"]
+  "entities": [
+    "player"
+  ],
+  "slots": [
+    "ring",
+    "scol_wings"
+  ]
 }

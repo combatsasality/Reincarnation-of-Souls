@@ -12,7 +12,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.ItemTags;
@@ -36,7 +35,8 @@ import java.util.UUID;
  * Author Aizistral-Studios\Enigmatic-Legacy
  */
 public class CustomItemEntity extends Entity {
-    private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(CustomItemEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<ItemStack> ITEM =
+            SynchedEntityData.defineId(CustomItemEntity.class, EntityDataSerializers.ITEM_STACK);
     private int age;
     private int pickupDelay;
     private int health = 5;
@@ -139,12 +139,16 @@ public class CustomItemEntity extends Entity {
         if (this.level().isClientSide) {
             this.noPhysics = false;
         } else {
-            this.noPhysics = !this.level().noCollision(this, this.getBoundingBox().deflate(1.0E-7D));
+            this.noPhysics =
+                    !this.level().noCollision(this, this.getBoundingBox().deflate(1.0E-7D));
             if (this.noPhysics) {
-                this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D, this.getZ());
+                this.moveTowardsClosestSpace(
+                        this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0D, this.getZ());
             }
         }
-        if (!this.onGround() || this.getDeltaMovement().horizontalDistanceSqr() > (double)1.0E-5F || (this.tickCount + this.getId()) % 4 == 0) {
+        if (!this.onGround()
+                || this.getDeltaMovement().horizontalDistanceSqr() > (double) 1.0E-5F
+                || (this.tickCount + this.getId()) % 4 == 0) {
             this.move(MoverType.SELF, this.getDeltaMovement());
             float f1 = 0.98F;
             if (this.onGround()) {
@@ -152,7 +156,7 @@ public class CustomItemEntity extends Entity {
                 f1 = this.level().getBlockState(groundPos).getFriction(level(), groundPos, this) * 0.98F;
             }
 
-            this.setDeltaMovement(this.getDeltaMovement().multiply((double)f1, 0.98D, (double)f1));
+            this.setDeltaMovement(this.getDeltaMovement().multiply((double) f1, 0.98D, (double) f1));
             if (this.onGround()) {
                 Vec3 vec31 = this.getDeltaMovement();
                 if (vec31.y < 0.0D) {
@@ -160,7 +164,6 @@ public class CustomItemEntity extends Entity {
                 }
             }
         }
-
 
         ++this.age;
 
@@ -248,13 +251,16 @@ public class CustomItemEntity extends Entity {
     public void setItem(ItemStack stack) {
         this.getEntityData().set(CustomItemEntity.ITEM, stack);
     }
+
     public ItemStack getItem() {
         return this.getEntityData().get(CustomItemEntity.ITEM);
     }
+
     @Nullable
     public UUID getThrowerId() {
         return this.thrower;
     }
+
     public void setThrowerId(@Nullable UUID throwerId) {
         this.thrower = throwerId;
     }
@@ -272,6 +278,7 @@ public class CustomItemEntity extends Entity {
     public void setOwnerId(@Nullable UUID ownerId) {
         this.owner = ownerId;
     }
+
     public void setNoPickupDelay() {
         this.pickupDelay = 0;
     }
@@ -309,7 +316,7 @@ public class CustomItemEntity extends Entity {
                     Zangetsu.setDeathModel(item, false);
                     Zangetsu.setDisableGravity(item, false);
                     player.getInventory().add(item);
-                    player.take(this,1);
+                    player.take(this, 1);
                     item.setCount(0);
                     this.discard();
                     player.awardStat(Stats.ITEM_PICKED_UP.get(item.getItem()), 1);
@@ -340,6 +347,7 @@ public class CustomItemEntity extends Entity {
         d0 = d0 * 64.0D;
         return distance < d0 * d0;
     }
+
     @Override
     public boolean isAttackable() {
         return false;
@@ -353,6 +361,8 @@ public class CustomItemEntity extends Entity {
     @Override
     public Component getName() {
         Component itextcomponent = this.getCustomName();
-        return itextcomponent != null ? itextcomponent : Component.translatable(this.getItem().getDescriptionId());
+        return itextcomponent != null
+                ? itextcomponent
+                : Component.translatable(this.getItem().getDescriptionId());
     }
 }

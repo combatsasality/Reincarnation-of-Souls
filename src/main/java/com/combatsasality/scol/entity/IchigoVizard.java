@@ -23,7 +23,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
@@ -35,13 +34,11 @@ import java.util.List;
 public class IchigoVizard extends Monster {
     int cooldownSonido = 0;
 
-
     public IchigoVizard(EntityType<IchigoVizard> type, Level level) {
         super(type, level);
         ItemStack zangetsu = new ItemStack(ScolItems.ZANGETSU);
         Zangetsu.setBankai(zangetsu, true);
         this.setItemInHand(InteractionHand.MAIN_HAND, zangetsu);
-
     }
 
     public IchigoVizard(Level level, double x, double y, double z) {
@@ -49,6 +46,7 @@ public class IchigoVizard extends Monster {
         this.setPos(x, y, z);
         this.setYRot(this.random.nextFloat() * 360.0F);
     }
+
     public IchigoVizard(Level level, BlockPos pos) {
         this(level, pos.getX(), pos.getY(), pos.getZ());
     }
@@ -57,8 +55,9 @@ public class IchigoVizard extends Monster {
         this(level, vec3.x, vec3.y, vec3.z);
     }
 
-
-    private final ServerBossEvent bossEvent = (ServerBossEvent) new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS).setDarkenScreen(true);
+    private final ServerBossEvent bossEvent = (ServerBossEvent)
+            new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)
+                    .setDarkenScreen(true);
 
     public static AttributeSupplier.Builder createAttributes() {
         return Monster.createMobAttributes()
@@ -106,6 +105,7 @@ public class IchigoVizard extends Monster {
             this.discard();
         }
     }
+
     @Override
     protected boolean shouldDespawnInPeaceful() {
         return true;
@@ -119,7 +119,9 @@ public class IchigoVizard extends Monster {
     @Override
     public boolean doHurtTarget(Entity entity) {
         if (this.canAttack((LivingEntity) entity)) {
-            entity.hurt(this.damageSources().source(ScolDamageTypes.ICHIGO, this), (this.random.nextInt((8 - 5 + 1) + 5) * 2));
+            entity.hurt(
+                    this.damageSources().source(ScolDamageTypes.ICHIGO, this),
+                    (this.random.nextInt((8 - 5 + 1) + 5) * 2));
             return true;
         }
         return false;
@@ -135,7 +137,11 @@ public class IchigoVizard extends Monster {
             }
         }
 
-        if (source.is(DamageTypes.IN_WALL) || source.is(DamageTypes.ON_FIRE) || source.is(DamageTypes.IN_FIRE) || source.is(DamageTypes.FALL) || source.is(DamageTypes.FALLING_BLOCK)) {
+        if (source.is(DamageTypes.IN_WALL)
+                || source.is(DamageTypes.ON_FIRE)
+                || source.is(DamageTypes.IN_FIRE)
+                || source.is(DamageTypes.FALL)
+                || source.is(DamageTypes.FALLING_BLOCK)) {
             return false;
         }
 
@@ -158,15 +164,17 @@ public class IchigoVizard extends Monster {
     public void tick() {
         super.tick();
         if (this.isAlive() && !this.level().isClientSide) {
-            if (this.cooldownSonido != 0 ){
+            if (this.cooldownSonido != 0) {
                 this.cooldownSonido--;
             } else if (this.getTarget() != null) {
                 LivingEntity target = this.getTarget();
                 if (this.canAttack(target)) {
                     Path path = this.getNavigation().createPath(target, 1);
-                    if (this.getVisibilityPercent(target) < 0.1 || (path == null || !path.canReach()) || Math.abs(Math.abs(target.getY())-Math.abs(this.getY())) > 1.5) {
+                    if (this.getVisibilityPercent(target) < 0.1
+                            || (path == null || !path.canReach())
+                            || Math.abs(Math.abs(target.getY()) - Math.abs(this.getY())) > 1.5) {
                         this.setPos(target.getX(), target.getY(), target.getZ());
-                        this.cooldownSonido= 200;
+                        this.cooldownSonido = 200;
                         this.doHurtTarget(target);
                         this.playSound(ScolSounds.SONIDO, 50f, 1f);
                     }
@@ -182,11 +190,18 @@ public class IchigoVizard extends Monster {
         }
     }
 
-    public List<Player> getPlayersAround(double range)  {
-        AABB box = new AABB(this.getX() - range, this.getY() - range, this.getZ() - range, this.getX() + range, this.getY() + range, this.getZ() + range);
-        return this.level().getEntitiesOfClass(Player.class, box, player -> !player.isSpectator() && !(player instanceof FakePlayer));
+    public List<Player> getPlayersAround(double range) {
+        AABB box = new AABB(
+                this.getX() - range,
+                this.getY() - range,
+                this.getZ() - range,
+                this.getX() + range,
+                this.getY() + range,
+                this.getZ() + range);
+        return this.level()
+                .getEntitiesOfClass(
+                        Player.class, box, player -> !player.isSpectator() && !(player instanceof FakePlayer));
     }
-
 
     @Override
     protected void dropCustomDeathLoot(DamageSource source, int p_21386_, boolean p_21387_) {
@@ -196,8 +211,10 @@ public class IchigoVizard extends Monster {
                     ItemStack stack = new ItemStack(ScolItems.ZANGETSU);
                     Zangetsu.setDeathModel(stack, true);
                     Zangetsu.setDisableGravity(stack, true);
-                    stack.getOrCreateTag().putString("scol.Owner", player.getGameProfile().getName());
-                    CustomItemEntity dropped = new CustomItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), stack);
+                    stack.getOrCreateTag()
+                            .putString("scol.Owner", player.getGameProfile().getName());
+                    CustomItemEntity dropped =
+                            new CustomItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), stack);
                     dropped.setPickupDelay(40);
                     if (this.level().addFreshEntity(dropped)) {
                         capa.setHasZangetsu(true);

@@ -19,7 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -63,7 +62,10 @@ public class Zangetsu extends SwordItem implements ITab {
     @Override
     public List<ItemStack> getCreativeTabStacks() {
         ItemStack stack = new ItemStack(this);
-        stack.getOrCreateTag().putString("scol.Owner", Minecraft.getInstance().player.getGameProfile().getName());
+        stack.getOrCreateTag()
+                .putString(
+                        "scol.Owner",
+                        Minecraft.getInstance().player.getGameProfile().getName());
         return ImmutableList.of(stack);
     }
 
@@ -80,7 +82,8 @@ public class Zangetsu extends SwordItem implements ITab {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (!level.isClientSide) {
-            LazyOptional<ScolCapability.IScolCapability> capability = player.getCapability(ScolCapabilities.SCOL_CAPABILITY);
+            LazyOptional<ScolCapability.IScolCapability> capability =
+                    player.getCapability(ScolCapabilities.SCOL_CAPABILITY);
             if (player.isCrouching()) {
                 capability.ifPresent(capa -> {
                     if (capa.canUseBankai()) {
@@ -91,21 +94,44 @@ public class Zangetsu extends SwordItem implements ITab {
                             capa.setActiveBankai(!capa.isActiveBankai());
                         } else {
                             capa.setActiveBankaiTime(3600);
-                            capa.setCooldownBankai(24000 / (capa.getLevelBankai()+1));
+                            capa.setCooldownBankai(24000 / (capa.getLevelBankai() + 1));
                         }
                     }
                 });
             } else if (isBankai(player.getItemInHand(hand))) {
                 Vec3 viewPos = player.pick(20.0D, 0.0F, false).getLocation();
-                BlockState viewBlockOneUp = level.getBlockState(new BlockPos((int) viewPos.x, (int) (viewPos.y+1), (int) viewPos.z));
-                if (viewBlockOneUp.getBlock().equals(Blocks.AIR) || viewBlockOneUp.getBlock().equals(Blocks.WATER)) {
-                    player.getCooldowns().addCooldown(this, 60 / capability.map(capa -> capa.getLevelBankai()).orElse(1));
+                BlockState viewBlockOneUp =
+                        level.getBlockState(new BlockPos((int) viewPos.x, (int) (viewPos.y + 1), (int) viewPos.z));
+                if (viewBlockOneUp.getBlock().equals(Blocks.AIR)
+                        || viewBlockOneUp.getBlock().equals(Blocks.WATER)) {
+                    player.getCooldowns()
+                            .addCooldown(
+                                    this,
+                                    60
+                                            / capability
+                                                    .map(capa -> capa.getLevelBankai())
+                                                    .orElse(1));
                     player.teleportTo(viewPos.x, viewPos.y, viewPos.z);
-                    player.level().playSound(null, viewPos.x, viewPos.y, viewPos.z, ScolSounds.SONIDO, player.getSoundSource(), 1.0F, 1.0F);
+                    player.level()
+                            .playSound(
+                                    null,
+                                    viewPos.x,
+                                    viewPos.y,
+                                    viewPos.z,
+                                    ScolSounds.SONIDO,
+                                    player.getSoundSource(),
+                                    1.0F,
+                                    1.0F);
                 }
             } else {
                 if (capability.map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
-                    player.getCooldowns().addCooldown(this, 150 / capability.map(capa -> capa.getLevelBankai()).orElse(1));
+                    player.getCooldowns()
+                            .addCooldown(
+                                    this,
+                                    150
+                                            / capability
+                                                    .map(capa -> capa.getLevelBankai())
+                                                    .orElse(1));
                     PowerWaveEntity powerWaveEntity = new PowerWaveEntity(level, player);
                     powerWaveEntity.shootFromRotation();
                     level.addFreshEntity(powerWaveEntity);
@@ -118,16 +144,29 @@ public class Zangetsu extends SwordItem implements ITab {
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int p_41407_, boolean p_41408_) {
         if (level.isClientSide || !(entity instanceof ServerPlayer player)) return;
-        if (getOwner(stack).isEmpty()) {stack.setCount(0);return;}
+        if (getOwner(stack).isEmpty()) {
+            stack.setCount(0);
+            return;
+        }
         if (!getOwner(stack).equals(player.getGameProfile().getName())) {
             setDeathModel(stack, true);
             if (!stack.getHoverName().equals("combatsasality")) {
                 setDisableGravity(stack, true);
             }
-            CustomItemEntity itemEntity = new CustomItemEntity(level, player.getX(), player.getY(), player.getZ(), stack.copy());
+            CustomItemEntity itemEntity =
+                    new CustomItemEntity(level, player.getX(), player.getY(), player.getZ(), stack.copy());
             stack.setCount(0);
             level.addFreshEntity(itemEntity);
-            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ANVIL_PLACE, entity.getSoundSource(), 1.0F, 1.0F);
+            entity.level()
+                    .playSound(
+                            null,
+                            entity.getX(),
+                            entity.getY(),
+                            entity.getZ(),
+                            SoundEvents.ANVIL_PLACE,
+                            entity.getSoundSource(),
+                            1.0F,
+                            1.0F);
             return;
         }
         stack.getAllEnchantments().forEach((enchantment, integer) -> {
@@ -135,7 +174,8 @@ public class Zangetsu extends SwordItem implements ITab {
                 stack.enchant(enchantment, 0);
             }
         });
-        LazyOptional<ScolCapability.IScolCapability> capability = entity.getCapability(ScolCapabilities.SCOL_CAPABILITY);
+        LazyOptional<ScolCapability.IScolCapability> capability =
+                entity.getCapability(ScolCapabilities.SCOL_CAPABILITY);
         capability.ifPresent(capa -> {
             if (capa.getCooldownBankai() > 0) {
                 capa.consumeCooldownBankai(1);
@@ -149,11 +189,15 @@ public class Zangetsu extends SwordItem implements ITab {
                     capa.consumeActiveBankaiTime(1);
                 }
                 int levelBankai = capa.getLevelBankai();
-                player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, levelBankai-1, false, false, false));
-                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, levelBankai-1, false, false, false));
-                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, -1, levelBankai-1, false, false, false));
-                player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, -1, levelBankai-1, false, false, false));
-                player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, -1, levelBankai-1, false, false, false));
+                player.addEffect(
+                        new MobEffectInstance(MobEffects.MOVEMENT_SPEED, -1, levelBankai - 1, false, false, false));
+                player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, -1, levelBankai - 1, false, false, false));
+                player.addEffect(
+                        new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, -1, levelBankai - 1, false, false, false));
+                player.addEffect(
+                        new MobEffectInstance(MobEffects.DAMAGE_BOOST, -1, levelBankai - 1, false, false, false));
+                player.addEffect(
+                        new MobEffectInstance(MobEffects.REGENERATION, -1, levelBankai - 1, false, false, false));
                 player.getFoodData().eat(20, 20.0F);
                 return;
             }
@@ -165,21 +209,27 @@ public class Zangetsu extends SwordItem implements ITab {
     public static String getOwner(ItemStack stack) {
         return stack.getOrCreateTag().getString("scol.Owner");
     }
+
     public static boolean isBankai(ItemStack stack) {
         return stack.getOrCreateTag().getBoolean("scol.Bankai");
     }
+
     public static void setBankai(ItemStack stack, boolean bankai) {
         stack.getOrCreateTag().putBoolean("scol.Bankai", bankai);
     }
+
     public static void setDeathModel(ItemStack stack, boolean b) {
         stack.getOrCreateTag().putBoolean("scol.Death", b);
     }
+
     public static boolean isDeathModel(ItemStack stack) {
         return stack.getOrCreateTag().getBoolean("scol.Death");
     }
+
     public static boolean isDisableGravity(ItemStack stack) {
         return stack.getOrCreateTag().getBoolean("scol.DisableGravity");
     }
+
     public static void setDisableGravity(ItemStack stack, boolean disableGravity) {
         stack.getOrCreateTag().putBoolean("scol.DisableGravity", disableGravity);
     }
@@ -192,7 +242,8 @@ public class Zangetsu extends SwordItem implements ITab {
         if (isBankai && !isDeathModel) {
             return 6;
         }
-        if (hoverName.equalsIgnoreCase("\u0434\u0436\u0443\u043C\u0430\u043C\u0431\u0435\u0430\u0431\u0441") && !isDeathModel) {
+        if (hoverName.equalsIgnoreCase("\u0434\u0436\u0443\u043C\u0430\u043C\u0431\u0435\u0430\u0431\u0441")
+                && !isDeathModel) {
             return 4;
         }
         if (hoverName.equalsIgnoreCase("\u0434\u0436\u0443\u043C\u0430\u043C\u0431\u0435\u0430\u0431\u0441")) {
@@ -211,7 +262,10 @@ public class Zangetsu extends SwordItem implements ITab {
     }
 
     public void registerVariants() {
-        ItemProperties.register(this, new ResourceLocation(Main.MODID, "zangetsu_model"), (stack, world, entity, number) -> getZangetsuModel(stack));
+        ItemProperties.register(
+                this,
+                new ResourceLocation(Main.MODID, "zangetsu_model"),
+                (stack, world, entity, number) -> getZangetsuModel(stack));
     }
 
     @Override
@@ -219,32 +273,68 @@ public class Zangetsu extends SwordItem implements ITab {
         ImmutableMultimap.Builder<Attribute, AttributeModifier> map = ImmutableMultimap.builder();
         if (slot.equals(EquipmentSlot.MAINHAND)) {
             if (isBankai(stack)) {
-                map.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 99, AttributeModifier.Operation.ADDITION));
-                map.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", 6, AttributeModifier.Operation.ADDITION));
+                map.put(
+                        Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(
+                                BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", 99, AttributeModifier.Operation.ADDITION));
+                map.put(
+                        Attributes.ATTACK_SPEED,
+                        new AttributeModifier(
+                                BASE_ATTACK_SPEED_UUID, "Weapon modifier", 6, AttributeModifier.Operation.ADDITION));
             } else {
-                map.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Weapon modifier", this.getDamage(), AttributeModifier.Operation.ADDITION));
-                map.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.5, AttributeModifier.Operation.ADDITION));
+                map.put(
+                        Attributes.ATTACK_DAMAGE,
+                        new AttributeModifier(
+                                BASE_ATTACK_DAMAGE_UUID,
+                                "Weapon modifier",
+                                this.getDamage(),
+                                AttributeModifier.Operation.ADDITION));
+                map.put(
+                        Attributes.ATTACK_SPEED,
+                        new AttributeModifier(
+                                BASE_ATTACK_SPEED_UUID, "Weapon modifier", -2.5, AttributeModifier.Operation.ADDITION));
             }
         }
         return map.build();
     }
 
     @Override
-    public boolean hurtEnemy(ItemStack stack, LivingEntity entity, LivingEntity attacker) {
+    public boolean hurtEnemy(ItemStack stack, LivingEntity victim, LivingEntity attacker) {
         if (attacker instanceof Player player) {
             if (!isBankai(stack)) {
-                    for (LivingEntity livingentity : player.level().getEntitiesOfClass(LivingEntity.class, player.getItemInHand(InteractionHand.MAIN_HAND).getSweepHitBox(player, entity))) {
-                        if (livingentity != player && livingentity != entity && !player.isAlliedTo(livingentity) && (!(livingentity instanceof ArmorStand) || !((ArmorStand)livingentity).isMarker())) {
-                            livingentity.hurt(player.damageSources().playerAttack(player), 1 + (float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
-                            player.doEnchantDamageEffects(player, livingentity);
-                        }
+                for (LivingEntity livingentity : player.level()
+                        .getEntitiesOfClass(
+                                LivingEntity.class,
+                                player.getItemInHand(InteractionHand.MAIN_HAND).getSweepHitBox(player, victim))) {
+                    if (livingentity != player
+                            && livingentity != victim
+                            && !player.isAlliedTo(livingentity)
+                            && (!(livingentity instanceof ArmorStand) || !((ArmorStand) livingentity).isMarker())) {
+                        livingentity.hurt(
+                                player.damageSources().playerAttack(player),
+                                1 + (float) player.getAttributes().getValue(Attributes.ATTACK_DAMAGE));
+                        player.doEnchantDamageEffects(player, livingentity);
                     }
-                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.PLAYER_ATTACK_SWEEP, player.getSoundSource(), 1.0F, 1.0F);
-                    player.sweepAttack();
-            } else if (isBankai(stack) && player.getCapability(ScolCapabilities.SCOL_CAPABILITY).map(capa -> capa.getLevelBankai()).orElse(0) == 4) {
-                entity.invulnerableTime = 0;
+                }
+                player.level()
+                        .playSound(
+                                null,
+                                player.getX(),
+                                player.getY(),
+                                player.getZ(),
+                                SoundEvents.PLAYER_ATTACK_SWEEP,
+                                player.getSoundSource(),
+                                1.0F,
+                                1.0F);
+                player.sweepAttack();
+            } else if (isBankai(stack)
+                    && player.getCapability(ScolCapabilities.SCOL_CAPABILITY)
+                                    .map(capa -> capa.getLevelBankai())
+                                    .orElse(0)
+                            == 4) {
+                victim.invulnerableTime = 0;
             }
         }
-        return super.hurtEnemy(stack, entity, attacker);
+        return super.hurtEnemy(stack, victim, attacker);
     }
 }

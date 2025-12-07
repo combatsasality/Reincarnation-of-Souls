@@ -1,8 +1,8 @@
 package com.combatsasality.scol.registries;
 
 import com.combatsasality.scol.tiles.AltarTile;
-import com.combatsasality.scol.tiles.SoulGlassTile;
 import com.combatsasality.scol.tiles.PedestalTile;
+import com.combatsasality.scol.tiles.SoulGlassTile;
 import net.minecraft.Util;
 import net.minecraft.util.datafix.fixes.References;
 import net.minecraft.world.level.block.entity.BlockEntityType;

@@ -5,7 +5,7 @@
     "LYL",
     " С "
   ],
-  "key" : {
+  "key": {
     "A": {
       "item": "scol:wither_soul"
     },
@@ -25,5 +25,4 @@
   "result": {
     "item": "scol:world_wing"
   }
-
 }

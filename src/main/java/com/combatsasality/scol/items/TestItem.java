@@ -1,11 +1,8 @@
 package com.combatsasality.scol.items;
 
 import com.combatsasality.scol.Main;
-import com.combatsasality.scol.items.generic.ITab;
 import com.combatsasality.scol.packets.server.PacketGetCapability;
 import com.combatsasality.scol.registries.ScolCapabilities;
-import com.combatsasality.scol.registries.ScolSounds;
-import com.combatsasality.scol.registries.ScolTabs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -14,7 +11,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;

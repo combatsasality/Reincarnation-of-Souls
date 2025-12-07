@@ -13,10 +13,11 @@ import net.minecraft.world.item.ItemStack;
 
 public class PedestalTileRenderer implements BlockEntityRenderer<PedestalTile> {
 
-    public PedestalTileRenderer(BlockEntityRendererProvider.Context context) { }
+    public PedestalTileRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(PedestalTile tile, float v, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int i1) {
+    public void render(
+            PedestalTile tile, float v, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int i1) {
         var minecraft = Minecraft.getInstance();
         ItemStack stack = tile.getItem();
         if (!stack.isEmpty()) {
@@ -27,7 +28,10 @@ public class PedestalTileRenderer implements BlockEntityRenderer<PedestalTile> {
             double tick = System.currentTimeMillis() / 800.0D;
             poseStack.translate(0.0D, Math.sin(tick % (2 * Math.PI)) * 0.065D, 0.0D);
             poseStack.mulPose(Axis.YP.rotationDegrees((float) ((tick * 40.0D) % 360)));
-            minecraft.getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, i, i1, poseStack, multiBufferSource, minecraft.level, 0);
+            minecraft
+                    .getItemRenderer()
+                    .renderStatic(
+                            stack, ItemDisplayContext.GROUND, i, i1, poseStack, multiBufferSource, minecraft.level, 0);
             poseStack.popPose();
         }
     }

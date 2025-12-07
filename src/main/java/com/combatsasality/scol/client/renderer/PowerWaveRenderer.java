@@ -12,18 +12,34 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class PowerWaveRenderer extends EntityRenderer<PowerWaveEntity> {
-    protected static final ResourceLocation TEXTURE = new ResourceLocation(Main.MODID, "textures/entity/power_wave.png");
+    protected static final ResourceLocation TEXTURE =
+            new ResourceLocation(Main.MODID, "textures/entity/power_wave.png");
 
     public PowerWaveRenderer(EntityRendererProvider.Context rendererProvider) {
         super(rendererProvider);
     }
 
     @Override
-    public void render(PowerWaveEntity entity, float p_114486_, float p_114487_, PoseStack poseStack, MultiBufferSource multiBufferSource, int light) {
+    public void render(
+            PowerWaveEntity entity,
+            float p_114486_,
+            float p_114487_,
+            PoseStack poseStack,
+            MultiBufferSource multiBufferSource,
+            int light) {
         poseStack.pushPose();
-        PowerWaveModel model = new PowerWaveModel(PowerWaveModel.createBodyLayer().bakeRoot());
+        PowerWaveModel model =
+                new PowerWaveModel(PowerWaveModel.createBodyLayer().bakeRoot());
         model.setRotationAngle(entity.getXRot(), entity.getYRot());
-        model.renderToBuffer(poseStack, multiBufferSource.getBuffer(RenderType.entityCutout(TEXTURE)), light, OverlayTexture.NO_OVERLAY,  1.0F, 1.0F, 1.0F, 1.0F);
+        model.renderToBuffer(
+                poseStack,
+                multiBufferSource.getBuffer(RenderType.entityCutout(TEXTURE)),
+                light,
+                OverlayTexture.NO_OVERLAY,
+                1.0F,
+                1.0F,
+                1.0F,
+                1.0F);
 
         poseStack.popPose();
     }

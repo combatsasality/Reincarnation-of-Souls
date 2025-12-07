@@ -9,30 +9,44 @@ import net.minecraft.client.renderer.RenderType;
 import org.lwjgl.opengl.GL14;
 
 public class ScolRenderTypes extends RenderType {
-    private static final RenderStateShard.TransparencyStateShard GHOST_TRANSPARENCY = new RenderStateShard.TransparencyStateShard("ghost_transparency",
-            () -> {
-                RenderSystem.enableBlend();
-                RenderSystem.blendFunc(GlStateManager.SourceFactor.CONSTANT_ALPHA, GlStateManager.DestFactor.ONE_MINUS_CONSTANT_ALPHA);
-                GL14.glBlendColor(1.0F, 1.0F, 1.0F, 0.25F);
-            },
-            () -> {
-                GL14.glBlendColor(1.0F, 1.0F, 1.0F, 1.0F);
-                RenderSystem.disableBlend();
-                RenderSystem.defaultBlendFunc();
-            });
+    private static final RenderStateShard.TransparencyStateShard GHOST_TRANSPARENCY =
+            new RenderStateShard.TransparencyStateShard(
+                    "ghost_transparency",
+                    () -> {
+                        RenderSystem.enableBlend();
+                        RenderSystem.blendFunc(
+                                GlStateManager.SourceFactor.CONSTANT_ALPHA,
+                                GlStateManager.DestFactor.ONE_MINUS_CONSTANT_ALPHA);
+                        GL14.glBlendColor(1.0F, 1.0F, 1.0F, 0.25F);
+                    },
+                    () -> {
+                        GL14.glBlendColor(1.0F, 1.0F, 1.0F, 1.0F);
+                        RenderSystem.disableBlend();
+                        RenderSystem.defaultBlendFunc();
+                    });
     public static final RenderType GHOST = RenderType.create(
             "scol:ghost",
-            DefaultVertexFormat.BLOCK, VertexFormat.Mode.QUADS, 2097152, true, false,
+            DefaultVertexFormat.BLOCK,
+            VertexFormat.Mode.QUADS,
+            2097152,
+            true,
+            false,
             RenderType.CompositeState.builder()
                     .setLightmapState(LIGHTMAP)
                     .setShaderState(RENDERTYPE_SOLID_SHADER)
                     .setTextureState(BLOCK_SHEET)
                     .setTransparencyState(GHOST_TRANSPARENCY)
-                    .createCompositeState(false)
-    );
+                    .createCompositeState(false));
 
-
-    private ScolRenderTypes(String p_173178_, VertexFormat p_173179_, VertexFormat.Mode p_173180_, int p_173181_, boolean p_173182_, boolean p_173183_, Runnable p_173184_, Runnable p_173185_) {
+    private ScolRenderTypes(
+            String p_173178_,
+            VertexFormat p_173179_,
+            VertexFormat.Mode p_173180_,
+            int p_173181_,
+            boolean p_173182_,
+            boolean p_173183_,
+            Runnable p_173184_,
+            Runnable p_173185_) {
         super(p_173178_, p_173179_, p_173180_, p_173181_, p_173182_, p_173183_, p_173184_, p_173185_);
     }
 }

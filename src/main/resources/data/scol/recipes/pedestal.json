@@ -1,12 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
-
   "pattern": [
     "XYX",
     " X ",
     "XYX"
   ],
-  "key" : {
+  "key": {
     "X": {
       "item": "minecraft:deepslate_tiles"
     },

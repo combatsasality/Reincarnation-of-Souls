@@ -16,11 +16,12 @@ public class KeyBindHandler {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
     public void onKeyInput(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.START || !Minecraft.getInstance().isWindowActive() || Minecraft.getInstance().player == null) return;
+        if (event.phase != TickEvent.Phase.START
+                || !Minecraft.getInstance().isWindowActive()
+                || Minecraft.getInstance().player == null) return;
 
         if (this.worldWingKeyBind.consumeClick()) {
             Main.packetInstance.send(PacketDistributor.SERVER.noArg(), new PacketWorldWing(true));
         }
     }
-
 }

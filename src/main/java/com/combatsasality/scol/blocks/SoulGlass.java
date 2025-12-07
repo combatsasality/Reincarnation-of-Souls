@@ -28,7 +28,8 @@ public class SoulGlass extends AbstractGlassBlock implements EntityBlock {
     }
 
     @Override
-    public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
+    public void setPlacedBy(
+            Level level, BlockPos pos, BlockState state, @Nullable LivingEntity entity, ItemStack stack) {
         if (level.isClientSide) return;
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof SoulGlassTile soulGlassTile && entity instanceof Player player) {
@@ -39,7 +40,13 @@ public class SoulGlass extends AbstractGlassBlock implements EntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand interactionHand, BlockHitResult hitResult) {
+    public InteractionResult use(
+            BlockState state,
+            Level level,
+            BlockPos pos,
+            Player player,
+            InteractionHand interactionHand,
+            BlockHitResult hitResult) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof SoulGlassTile soulGlassTile) {
             if (player.getGameProfile().getName().equalsIgnoreCase(soulGlassTile.owner)) {

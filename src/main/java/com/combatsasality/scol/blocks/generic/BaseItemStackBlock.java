@@ -26,7 +26,13 @@ public abstract class BaseItemStackBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand interactionHand, BlockHitResult hitResult) {
+    public InteractionResult use(
+            BlockState state,
+            Level level,
+            BlockPos pos,
+            Player player,
+            InteractionHand interactionHand,
+            BlockHitResult hitResult) {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof BaseItemStackTile tile) {
             ItemStack heldItem = player.getMainHandItem();
@@ -47,7 +53,6 @@ public abstract class BaseItemStackBlock extends BaseEntityBlock {
                     tile.setItem(ItemStack.EMPTY);
                 }
             }
-
         }
 
         return InteractionResult.SUCCESS;

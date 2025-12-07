@@ -1,6 +1,6 @@
 {
-    "parent": "minecraft:item/generated",
-    "textures": {
-        "layer0": "scol:item/wither_soul"
-    }
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "scol:item/wither_soul"
+  }
 }

@@ -1,4 +1,6 @@
 {
   "replace": false,
-  "values": ["scol:world_wing"]
+  "values": [
+    "scol:world_wing"
+  ]
 }

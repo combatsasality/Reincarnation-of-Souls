@@ -1,6 +1,5 @@
 package com.combatsasality.scol.registries;
 
-
 import com.combatsasality.scol.Main;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;

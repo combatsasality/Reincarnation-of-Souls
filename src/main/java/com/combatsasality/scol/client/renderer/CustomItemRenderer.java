@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
@@ -48,9 +47,19 @@ public class CustomItemRenderer extends EntityRenderer<CustomItemEntity> {
     }
 
     @Override
-    public void render(CustomItemEntity entityIn, float entityYaw, float partialTicks, PoseStack PoseStackIn, MultiBufferSource bufferIn, int packedLightIn) {
-        if (!Minecraft.getInstance().player.isAlive() && Math.sqrt(entityIn.distanceToSqr(Minecraft.getInstance().player.getX(), Minecraft.getInstance().player.getEyeY(), Minecraft.getInstance().player.getZ())) <= 1.0)
-            return;
+    public void render(
+            CustomItemEntity entityIn,
+            float entityYaw,
+            float partialTicks,
+            PoseStack PoseStackIn,
+            MultiBufferSource bufferIn,
+            int packedLightIn) {
+        if (!Minecraft.getInstance().player.isAlive()
+                && Math.sqrt(entityIn.distanceToSqr(
+                                Minecraft.getInstance().player.getX(),
+                                Minecraft.getInstance().player.getEyeY(),
+                                Minecraft.getInstance().player.getZ()))
+                        <= 1.0) return;
         PoseStackIn.pushPose();
         ItemStack itemstack = entityIn.getItem();
         int i = itemstack.isEmpty() ? 187 : Item.getId(itemstack.getItem()) + itemstack.getDamageValue();
@@ -59,14 +68,28 @@ public class CustomItemRenderer extends EntityRenderer<CustomItemEntity> {
         if (Zangetsu.isDisableGravity(itemstack)) {
             PoseStackIn.translate(0.0D, 0.25F, 0.0D);
             PoseStackIn.mulPose(Axis.YP.rotation(0));
-            this.itemRenderer.render(itemstack, ItemDisplayContext.GROUND, false, PoseStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel);
+            this.itemRenderer.render(
+                    itemstack,
+                    ItemDisplayContext.GROUND,
+                    false,
+                    PoseStackIn,
+                    bufferIn,
+                    packedLightIn,
+                    OverlayTexture.NO_OVERLAY,
+                    ibakedmodel);
             // TODO: add so he can look in different directions
         } else {
             boolean flag = ibakedmodel.isGui3d();
             int j = this.getModelCount(itemstack);
             float f = 0.25F;
             float f1 = Mth.sin((entityIn.getAge() + partialTicks) / 10.0F + entityIn.hoverStart) * 0.1F + 0.1F;
-            float f2 = this.shouldBob() ? ibakedmodel.getTransforms().getTransform(ItemDisplayContext.GROUND).scale.y() : 0;
+            float f2 = this.shouldBob()
+                    ? ibakedmodel
+                            .getTransforms()
+                            .getTransform(ItemDisplayContext.GROUND)
+                            .scale
+                            .y()
+                    : 0;
             PoseStackIn.translate(0.0D, f1 + 0.25F * f2, 0.0D);
             float f3 = entityIn.getItemHover(partialTicks);
             PoseStackIn.mulPose(Axis.YP.rotation(f3));
@@ -84,15 +107,27 @@ public class CustomItemRenderer extends EntityRenderer<CustomItemEntity> {
                         float f11 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                         float f13 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
                         float f10 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F;
-                        PoseStackIn.translate(this.shouldSpreadItems() ? f11 : 0, this.shouldSpreadItems() ? f13 : 0, this.shouldSpreadItems() ? f10 : 0);
+                        PoseStackIn.translate(
+                                this.shouldSpreadItems() ? f11 : 0,
+                                this.shouldSpreadItems() ? f13 : 0,
+                                this.shouldSpreadItems() ? f10 : 0);
                     } else {
                         float f12 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
                         float f14 = (this.random.nextFloat() * 2.0F - 1.0F) * 0.15F * 0.5F;
-                        PoseStackIn.translate(this.shouldSpreadItems() ? f12 : 0, this.shouldSpreadItems() ? f14 : 0, 0.0D);
+                        PoseStackIn.translate(
+                                this.shouldSpreadItems() ? f12 : 0, this.shouldSpreadItems() ? f14 : 0, 0.0D);
                     }
                 }
 
-                this.itemRenderer.render(itemstack, ItemDisplayContext.GROUND, false, PoseStackIn, bufferIn, packedLightIn, OverlayTexture.NO_OVERLAY, ibakedmodel);
+                this.itemRenderer.render(
+                        itemstack,
+                        ItemDisplayContext.GROUND,
+                        false,
+                        PoseStackIn,
+                        bufferIn,
+                        packedLightIn,
+                        OverlayTexture.NO_OVERLAY,
+                        ibakedmodel);
                 PoseStackIn.popPose();
                 if (!flag) {
                     PoseStackIn.translate(0.0, 0.0, 0.09375F);
@@ -104,11 +139,9 @@ public class CustomItemRenderer extends EntityRenderer<CustomItemEntity> {
         super.render(entityIn, entityYaw, partialTicks, PoseStackIn, bufferIn, packedLightIn);
     }
 
-
     /**
      * Returns the location of an entity's texture.
      */
-
     @Override
     public ResourceLocation getTextureLocation(CustomItemEntity entity) {
         return TextureAtlas.LOCATION_BLOCKS;

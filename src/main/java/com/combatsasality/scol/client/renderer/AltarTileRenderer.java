@@ -19,10 +19,11 @@ import net.minecraftforge.client.model.data.ModelData;
 
 public class AltarTileRenderer implements BlockEntityRenderer<AltarTile> {
 
-    public AltarTileRenderer(BlockEntityRendererProvider.Context context) { }
+    public AltarTileRenderer(BlockEntityRendererProvider.Context context) {}
 
     @Override
-    public void render(AltarTile altarTile, float v, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int i1) {
+    public void render(
+            AltarTile altarTile, float v, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int i1) {
         var minecraft = Minecraft.getInstance();
         ItemStack stack = altarTile.getItem();
         if (!stack.isEmpty()) {
@@ -33,7 +34,10 @@ public class AltarTileRenderer implements BlockEntityRenderer<AltarTile> {
             double tick = System.currentTimeMillis() / 800.0D;
             poseStack.translate(0.0D, Math.sin(tick % (2 * Math.PI)) * 0.065D, 0.0D);
             poseStack.mulPose(Axis.YP.rotationDegrees((float) ((tick * 40.0D) % 360)));
-            minecraft.getItemRenderer().renderStatic(stack, ItemDisplayContext.GROUND, i, i1, poseStack, multiBufferSource, minecraft.level, 0);
+            minecraft
+                    .getItemRenderer()
+                    .renderStatic(
+                            stack, ItemDisplayContext.GROUND, i, i1, poseStack, multiBufferSource, minecraft.level, 0);
             poseStack.popPose();
         }
         BlockPos pos = altarTile.getBlockPos();
@@ -45,7 +49,18 @@ public class AltarTileRenderer implements BlockEntityRenderer<AltarTile> {
             if (level != null && level.isEmptyBlock(blockPos)) {
                 poseStack.pushPose();
                 poseStack.translate(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                minecraft.getBlockRenderer().renderBatched(ScolBlocks.PEDESTAL.defaultBlockState(), blockPos, level, poseStack, builder, false, level.getRandom(), ModelData.EMPTY, null);
+                minecraft
+                        .getBlockRenderer()
+                        .renderBatched(
+                                ScolBlocks.PEDESTAL.defaultBlockState(),
+                                blockPos,
+                                level,
+                                poseStack,
+                                builder,
+                                false,
+                                level.getRandom(),
+                                ModelData.EMPTY,
+                                null);
                 poseStack.popPose();
             }
         });

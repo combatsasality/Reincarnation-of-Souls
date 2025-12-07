@@ -6,7 +6,7 @@ import com.mojang.serialization.Codec;
 import net.minecraftforge.common.loot.IGlobalLootModifier;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class ScolLootModifiers extends AbstractRegistry<Codec<? extends IGlobalLootModifier>>{
+public class ScolLootModifiers extends AbstractRegistry<Codec<? extends IGlobalLootModifier>> {
 
     public ScolLootModifiers() {
         super(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS);

@@ -1,15 +1,12 @@
 package com.combatsasality.scol.client.model;
 
-import com.combatsasality.scol.Main;
 import com.combatsasality.scol.entity.projectile.PowerWaveEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.resources.ResourceLocation;
 
 public class PowerWaveModel extends EntityModel<PowerWaveEntity> {
     private final ModelPart wave;

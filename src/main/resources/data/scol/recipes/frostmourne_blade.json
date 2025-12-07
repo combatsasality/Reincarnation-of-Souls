@@ -5,22 +5,21 @@
     "XDX",
     "ABA"
   ],
-  "key" : {
+  "key": {
     "A": {
       "item": "minecraft:netherite_ingot"
     },
     "B": {
       "item": "minecraft:end_crystal"
     },
-    "X" : {
+    "X": {
       "item": "minecraft:phantom_membrane"
     },
-    "D" : {
+    "D": {
       "item": "minecraft:bone"
     }
   },
   "result": {
     "item": "scol:frostmourne_blade"
   }
-
 }

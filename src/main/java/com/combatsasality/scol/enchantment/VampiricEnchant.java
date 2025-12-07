@@ -6,13 +6,11 @@ import net.minecraft.world.item.enchantment.EnchantmentCategory;
 
 public class VampiricEnchant extends Enchantment {
     public VampiricEnchant() {
-        super(Rarity.RARE, EnchantmentCategory.WEAPON, new EquipmentSlot[]{EquipmentSlot.MAINHAND});
+        super(Rarity.RARE, EnchantmentCategory.WEAPON, new EquipmentSlot[] {EquipmentSlot.MAINHAND});
     }
 
     @Override
     public int getMaxLevel() {
         return 3;
     }
-
-
 }

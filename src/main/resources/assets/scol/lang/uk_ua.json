@@ -9,8 +9,6 @@
   "advancement.scol:findCombatsasality.desc": "Знайдіть крест combatsasality",
   "advancement.scol:frostmourne": "Один у полі воїн",
   "advancement.scol:frostmourne.desc": "Створіть Крижану Скорботу",
-
-
   "itemGroup.scolTab": "Reincarnation of Souls",
   "item.scol.frostmourne": "Крижана Скорбота",
   "item.scol.frostmourne_handle": "Рукоятка Крижаної Скорботи",
@@ -39,18 +37,12 @@
   "item.scol.soul": "Душа",
   "item.scol.friendly_soul": "Дружелюбна душа",
   "item.scol.aggressive_soul": "Агресивна душа",
-
-
   "block.scol.soul_glass": "Скло душ",
   "block.scol.soul_block": "Блок душ",
   "block.scol.aggressive_soul_block": "Блок душ",
   "block.scol.pedestal": "П'єдестал",
   "block.scol.altar": "Вівтар",
-
-
   "attribute.name.scol.magical_damage": " Магічна сила атаки",
-
-
   "tooltip.item.frostmourne.0": "§7Душ поглинено: %d",
   "tooltip.item.test_item.0": "Як ти отримав це?",
   "tooltip.scol.phoenix_ring_inactive.0": "§5§oТільки справжній герой сможе впоратися з силою цього кільця",
@@ -68,41 +60,27 @@
   "tooltip.scol.active": "§aАктивно",
   "tooltip.scol.zangetsu.combatsasality": "§4§lТи думав якщо мене вбити я візьму і покірно помру?",
   "tooltip.item.soul.0": "§7Душі добре горять! Хто б міг подумати?",
-
-
   "curios.identifier.scol_wings": "Крила",
-
-
   "entity.scol.ichigo_vizard": "Порожній Ічіґо",
   "entity.scol.zangetsu_entity": "Дідусь Зангецу",
   "entity.scol.onryo": "Онре",
-
   "effect.scol.training_effect": "Тренування!",
-
   "chat.send.truezangetsu": "§5Ви відчуваєте, що стали сильнішим...",
   "chat.send.wingspeed": "Швидкість крил: %d",
-
-
   "enchantment.scol.vampiric_enchant": "Вампіризм",
   "enchantment.scol.vampiric_enchant.desc": "Краде життєву енергію у ворога",
   "enchantment.scol.attack_speed_increase": "Швидкість рук",
   "enchantment.scol.attack_speed_increase.desc": "Підвищує швидкість атаки",
   "enchantment.scol.soul_catcher": "Ловец душ",
   "enchantment.scol.soul_catcher.desc": "Збільшує шанс випадіння душ",
-
-
   "death.attack.frostmourne": "%1$s був убитий Крижаною Скорботою гравця %2$s",
   "death.attack.ichigo": "Я повинен визнати, що мене ніколи не перестає дивувати яким безмозглим %1$s може бути",
-
-
   "key.categories.scol": "Reincarnation of Souls",
   "key.world_wing": "Переключити швидкість крил",
-
   "item.minecraft.potion.effect.hero_of_village": "Зілля героя селища",
   "item.minecraft.splash_potion.effect.hero_of_village": "Вибухове зілля героя селища",
   "item.minecraft.lingering_potion.effect.hero_of_village": "Осідаюче зілля героя селища",
   "item.minecraft.tipped_arrow.effect.hero_of_village": "Стріла героя селища",
-
   "scol.update.0": "§bВийшло нове оновлення для Reincarnation of Souls: %s",
   "scol.update.1": "§bВстановити його можна тут: §r[§lНатисни на мене§r]"
 }

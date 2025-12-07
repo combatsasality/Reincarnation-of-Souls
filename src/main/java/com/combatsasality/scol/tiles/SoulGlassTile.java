@@ -1,7 +1,7 @@
 package com.combatsasality.scol.tiles;
 
-import com.combatsasality.scol.tiles.generic.BaseTile;
 import com.combatsasality.scol.registries.ScolTiles;
+import com.combatsasality.scol.tiles.generic.BaseTile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntityType;

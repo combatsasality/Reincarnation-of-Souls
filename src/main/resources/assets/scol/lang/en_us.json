@@ -9,8 +9,6 @@
   "advancement.scol:findCombatsasality.desc": "Find the combatsasality cross",
   "advancement.scol:frostmourne": "One Man Army",
   "advancement.scol:frostmourne.desc": "Create an Frostmourne",
-
-
   "itemGroup.scolTab": "Reincarnation of Souls",
   "item.scol.frostmourne": "Frostmourne",
   "item.scol.frostmourne_handle": "Handle Frostmourne",
@@ -39,18 +37,12 @@
   "item.scol.soul": "Soul",
   "item.scol.friendly_soul": "Friendly Soul",
   "item.scol.aggressive_soul": "Aggressive Soul",
-
-
   "block.scol.soul_glass": "Soul Glass",
   "block.scol.soul_block": "Soul Block",
   "block.scol.aggressive_soul_block": "Soul Block",
   "block.scol.pedestal": "Pedestal",
   "block.scol.altar": "Altar",
-
-
   "attribute.name.scol.magical_damage": " Magical Damage",
-
-
   "tooltip.item.frostmourne.0": "§7Souls absorbed: %d",
   "tooltip.item.test_item.0": "How did you get it?",
   "tooltip.scol.phoenix_ring_inactive.0": "§5§oThe only true hero can overcome the power of this ring",
@@ -68,41 +60,27 @@
   "tooltip.scol.active": "§aActive",
   "tooltip.scol.zangetsu.combatsasality": "§4§lDid you think if you killed me, I'd just die meekly?",
   "tooltip.item.soul.0": "§7Souls burn brightly! Who would have thought?",
-
-
   "curios.identifier.scol_wings": "Wings",
-
-
   "entity.scol.ichigo_vizard": "Vasto Lorde Ichigo",
   "entity.scol.zangetsu_entity": "Old man Zangetsu",
   "entity.scol.onryo": "Onryo",
-
   "effect.scol.training_effect": "Training!",
-
   "chat.send.truezangetsu": "§5You feel that you have become stronger...",
   "chat.send.wingspeed": "Wing speed: %d",
-
-
   "enchantment.scol.vampiric_enchant": "Vampirism",
   "enchantment.scol.vampiric_enchant.desc": "Steals life energy from the enemy",
   "enchantment.scol.attack_speed_increase": "Hand Speed",
   "enchantment.scol.attack_speed_increase.desc": "Increases attack speed",
   "enchantment.scol.soul_catcher": "Soul Catcher",
   "enchantment.scol.soul_catcher.desc": "Increases the chance of getting a soul",
-
-
   "death.attack.frostmourne": "%1$s was killed by the Frostmourne player %2$s",
   "death.attack.ichigo": "I must admit, it never ceases to amaze me how brainless %1$s can be",
-
-
   "key.categories.scol": "Reincarnation of Souls",
   "key.world_wing": "Switch the speed of the wings",
-
   "item.minecraft.potion.effect.hero_of_village": "Potion Of The Village Hero",
   "item.minecraft.splash_potion.effect.hero_of_village": "Splash Potion Of The Village Hero",
   "item.minecraft.lingering_potion.effect.hero_of_village": "Lingering Potion Of The Village Hero",
   "item.minecraft.tipped_arrow.effect.hero_of_village": "Arrow Of The Village Hero",
-
   "scol.update.0": "§bNew update for Reincarnation of Souls is available: %s",
   "scol.update.1": "§bDownload it here: §r[§lClick me§r]"
 }

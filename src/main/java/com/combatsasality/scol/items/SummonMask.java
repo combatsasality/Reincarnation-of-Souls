@@ -20,7 +20,8 @@ public class SummonMask extends Item implements ITab {
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
-        boolean summoned = context.getLevel().addFreshEntity(new IchigoVizard(context.getLevel(), context.getClickLocation()));
+        boolean summoned =
+                context.getLevel().addFreshEntity(new IchigoVizard(context.getLevel(), context.getClickLocation()));
         if (summoned) {
             context.getItemInHand().setCount(context.getItemInHand().getCount() - 1);
         }

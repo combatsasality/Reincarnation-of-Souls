@@ -8,7 +8,13 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(AdvancementWidget.class)
 public class MixinFixTitleAdvancement {
 
-    @ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;substrByWidth(Lnet/minecraft/network/chat/FormattedText;I)Lnet/minecraft/network/chat/FormattedText;"))
+    @ModifyArg(
+            method = "<init>",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/client/gui/Font;substrByWidth(Lnet/minecraft/network/chat/FormattedText;I)Lnet/minecraft/network/chat/FormattedText;"))
     private int init(int i) {
         return i + 261;
     }

@@ -38,14 +38,14 @@ import org.lwjgl.glfw.GLFW;
 
 @Mod(Main.MODID)
 public class Main {
-    public static final CommonProxy PROXY = DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
+    public static final CommonProxy PROXY =
+            DistExecutor.unsafeRunForDist(() -> ClientProxy::new, () -> CommonProxy::new);
     private static final String PTC_VERSION = "1";
     public static SimpleChannel packetInstance;
     public static final String MODID = "scol";
     public static final String VERSION = "1.0";
     public static final String VERSION_MINECRAFT = "1.20.1";
     public static KeyBindHandler keyBindHandler;
-
 
     public Main() {
         FMLJavaModLoadingContext.get().getModEventBus().register(this);
@@ -58,8 +58,8 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(this);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         MinecraftForge.EVENT_BUS.register(keyBindHandler);
-//      Maybe later...
-//        MinecraftForge.EVENT_BUS.addListener(CheckVersionHandler::worldEventLoad);
+        //      Maybe later...
+        //        MinecraftForge.EVENT_BUS.addListener(CheckVersionHandler::worldEventLoad);
         new ScolTabs();
         new ScolEnchantments();
         new ScolTiles();
@@ -74,10 +74,25 @@ public class Main {
     }
 
     private void setup(final FMLCommonSetupEvent event) {
-        packetInstance = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(MODID, "main")).networkProtocolVersion(() -> PTC_VERSION).clientAcceptedVersions(PTC_VERSION::equals).serverAcceptedVersions(PTC_VERSION::equals).simpleChannel();
-        packetInstance.registerMessage(0, PacketSetCapability.class, PacketSetCapability::encode, PacketSetCapability::decode, PacketSetCapability::handle);
-        packetInstance.registerMessage(1, PacketGetCapability.class, PacketGetCapability::encode, PacketGetCapability::decode, PacketGetCapability::handle);
-        packetInstance.registerMessage(2, PacketWorldWing.class, PacketWorldWing::encode, PacketWorldWing::decode, PacketWorldWing::handle);
+        packetInstance = NetworkRegistry.ChannelBuilder.named(new ResourceLocation(MODID, "main"))
+                .networkProtocolVersion(() -> PTC_VERSION)
+                .clientAcceptedVersions(PTC_VERSION::equals)
+                .serverAcceptedVersions(PTC_VERSION::equals)
+                .simpleChannel();
+        packetInstance.registerMessage(
+                0,
+                PacketSetCapability.class,
+                PacketSetCapability::encode,
+                PacketSetCapability::decode,
+                PacketSetCapability::handle);
+        packetInstance.registerMessage(
+                1,
+                PacketGetCapability.class,
+                PacketGetCapability::encode,
+                PacketGetCapability::decode,
+                PacketGetCapability::handle);
+        packetInstance.registerMessage(
+                2, PacketWorldWing.class, PacketWorldWing::encode, PacketWorldWing::decode, PacketWorldWing::handle);
     }
 
     private void clientRegistries(FMLClientSetupEvent event) {
@@ -105,15 +120,16 @@ public class Main {
             if (item.equals(ScolItems.MUSIC_DISC_METAL_3) || item.equals(ScolItems.MUSIC_DISC_SILENT_RELAPSE)) {
                 if (event.getTab() != ScolTabs.MAIN) return;
                 event.accept(item);
-            };
+            }
+            ;
         });
     }
 
     @SubscribeEvent
     public void addAttribute(final EntityAttributeModificationEvent event) {
         event.add(EntityType.PLAYER, ScolAttributes.MAGICAL_DAMAGE);
-
     }
+
     @SubscribeEvent
     public void addEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(ScolEntities.ICHIGO_VAZARD, IchigoVizard.createAttributes().build());
@@ -123,6 +139,4 @@ public class Main {
     public void registerCaps(RegisterCapabilitiesEvent event) {
         event.register(ScolCapability.IScolCapability.class);
     }
-
-
 }

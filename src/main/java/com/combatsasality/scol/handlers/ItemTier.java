@@ -4,7 +4,7 @@ import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 
 public enum ItemTier implements Tier {
-    FOR_ALL(0,0, 0.0F, 0, 22);
+    FOR_ALL(0, 0, 0.0F, 0, 22);
 
     public int durability = 0;
     public float speed = 0;
@@ -21,6 +21,7 @@ public enum ItemTier implements Tier {
         this.harvestlevel = harvestlevel;
         this.enchantemnt = enchantemnt;
     }
+
     ItemTier(int durability, float speed, float attack, int harvestlevel, int enchantemnt, Ingredient repair) {
         this.durability = durability;
         this.speed = speed;

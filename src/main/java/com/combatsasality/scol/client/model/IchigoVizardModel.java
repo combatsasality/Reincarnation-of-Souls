@@ -21,7 +21,6 @@ public class IchigoVizardModel<T extends IchigoVizard> extends HumanoidModel<T> 
         return LayerDefinition.create(meshDefinition, 64, 64);
     }
 
-
     @Override
     public void setupAnim(T entity, float f, float f1, float f2, float f3, float f4) {
         this.rightArm.xRot = Mth.cos(f * 0.6662F) * f1;
@@ -34,7 +33,6 @@ public class IchigoVizardModel<T extends IchigoVizard> extends HumanoidModel<T> 
         this.leftArm.zRot = 0;
         this.setupAttackAnimation(entity, f2);
     }
-
 
     @Override
     public void translateToHand(HumanoidArm p_102854_, PoseStack p_102855_) {

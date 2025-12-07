@@ -38,15 +38,12 @@ public class BaseItemStackTile extends BaseTile {
         setChanged();
     }
 
-
     public void dispatchToNearbyPlayers() {
         var level = this.getLevel();
-        if (level == null)
-            return;
+        if (level == null) return;
 
         var packet = this.getUpdatePacket();
-        if (packet == null)
-            return;
+        if (packet == null) return;
 
         var players = level.players();
         var pos = this.getBlockPos();
@@ -60,9 +57,7 @@ public class BaseItemStackTile extends BaseTile {
         }
     }
 
-
     private static boolean isPlayerNearby(double x1, double z1, double x2, double z2) {
         return Math.hypot(x1 - x2, z1 - z2) < 64;
     }
-
 }

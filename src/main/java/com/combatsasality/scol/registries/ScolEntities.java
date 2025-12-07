@@ -1,6 +1,5 @@
 package com.combatsasality.scol.registries;
 
-import com.combatsasality.scol.Main;
 import com.combatsasality.scol.entity.CustomItemEntity;
 import com.combatsasality.scol.entity.IchigoVizard;
 import com.combatsasality.scol.entity.projectile.PowerWaveEntity;

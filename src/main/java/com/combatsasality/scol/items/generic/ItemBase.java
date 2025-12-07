@@ -4,7 +4,7 @@ import com.combatsasality.scol.registries.ScolTabs;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 
-public class ItemBase extends Item implements ITab{
+public class ItemBase extends Item implements ITab {
     public ItemBase(Properties properties) {
         super(properties);
     }
