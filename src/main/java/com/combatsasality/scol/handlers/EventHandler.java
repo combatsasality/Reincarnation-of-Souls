@@ -3,6 +3,7 @@ package com.combatsasality.scol.handlers;
 import com.combatsasality.scol.Main;
 import com.combatsasality.scol.capabilities.AcademyCapability;
 import com.combatsasality.scol.capabilities.ScolCapability;
+import com.combatsasality.scol.client.model.IchigoVizardModel;
 import com.combatsasality.scol.entity.CustomItemEntity;
 import com.combatsasality.scol.items.PhoenixRing;
 import com.combatsasality.scol.items.Zangetsu;
@@ -38,6 +39,7 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.BasicItemListing;
 import net.minecraftforge.common.util.FakePlayer;
 import net.minecraftforge.common.util.LazyOptional;
@@ -392,5 +394,10 @@ public class EventHandler {
                 }
             });
         }
+    }
+
+    @SubscribeEvent
+    public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+//        event.registerLayerDefinition(IchigoVizardModel.LAYER_LOCATION, IchigoVizardModel::createBodyLayer);
     }
 }

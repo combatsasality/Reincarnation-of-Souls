@@ -3,6 +3,10 @@ package com.combatsasality.scol.entity;
 import com.combatsasality.scol.items.Zangetsu;
 import com.combatsasality.scol.registries.*;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.BossEvent;
@@ -10,12 +14,10 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
@@ -24,15 +26,23 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.util.FakePlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+
 public class IchigoVizard extends Monster {
-    int cooldownSonido = 0;
+    private int cooldownSonido = 0;
+//    private Stage stage = Stage.DEFAULT;
+    private static final EntityDataAccessor<Integer> STAGE = SynchedEntityData.defineId(IchigoVizard.class, EntityDataSerializers.INT);
+    private boolean rageTriggered = false;
+    private static final EntityDataAccessor<Integer> CURRENT_TARGET =
+            SynchedEntityData.defineId(IchigoVizard.class, EntityDataSerializers.INT);
+
 
     public IchigoVizard(EntityType<IchigoVizard> type, Level level) {
         super(type, level);
@@ -71,10 +81,52 @@ public class IchigoVizard extends Monster {
 
     @Override
     protected void registerGoals() {
-        this.targetSelector.addGoal(0, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, false));
+        this.targetSelector.addGoal(0, new HurtByTargetGoal(this) {
+            @Override
+            public boolean canUse() {
+                return super.canUse() && !getStage().equals(Stage.RAGE);
+            }
+
+            @Override
+            public boolean canContinueToUse() {
+                return super.canContinueToUse() && !getStage().equals(Stage.RAGE);
+            }
+        });
+        this.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(this, Player.class, false) {
+            @Override
+            public boolean canUse() {
+                return super.canUse() && !getStage().equals(Stage.RAGE);
+            }
+
+            @Override
+            public boolean canContinueToUse() {
+                return super.canContinueToUse() && !getStage().equals(Stage.RAGE);
+            }
+        });
         this.targetSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, false));
+        this.goalSelector.addGoal(0, new LookAtPlayerGoal(this, Player.class, 10.0F, 1.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+    }
+
+    @Override
+    public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
+        super.readAdditionalSaveData(pCompound);
+        setStage(Stage.byId(pCompound.getInt("scol.stage")));
+        this.rageTriggered = pCompound.getBoolean("scol.rageTriggered");
+    }
+
+    @Override
+    public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
+        super.addAdditionalSaveData(pCompound);
+        pCompound.putInt("scol.stage", getStage().ordinal());
+        pCompound.putBoolean("scol.rageTriggered", this.rageTriggered);
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(STAGE, Stage.DEFAULT.ordinal());
+        this.entityData.define(CURRENT_TARGET, -1);
     }
 
     @Override
@@ -83,19 +135,19 @@ public class IchigoVizard extends Monster {
     }
 
     @Override
-    public void startSeenByPlayer(ServerPlayer player) {
+    public void startSeenByPlayer(@NotNull ServerPlayer player) {
         super.startSeenByPlayer(player);
         this.bossEvent.addPlayer(player);
     }
 
     @Override
-    public void stopSeenByPlayer(ServerPlayer player) {
+    public void stopSeenByPlayer(@NotNull ServerPlayer player) {
         super.stopSeenByPlayer(player);
         this.bossEvent.removePlayer(player);
     }
 
     @Override
-    public HumanoidArm getMainArm() {
+    public @NotNull HumanoidArm getMainArm() {
         return HumanoidArm.RIGHT;
     }
 
@@ -107,17 +159,12 @@ public class IchigoVizard extends Monster {
     }
 
     @Override
-    protected boolean shouldDespawnInPeaceful() {
-        return true;
-    }
-
-    @Override
     public boolean canChangeDimensions() {
         return false;
     }
 
     @Override
-    public boolean doHurtTarget(Entity entity) {
+    public boolean doHurtTarget(@NotNull Entity entity) {
         if (this.canAttack((LivingEntity) entity)) {
             entity.hurt(
                     this.damageSources().source(ScolDamageTypes.ICHIGO, this),
@@ -128,7 +175,11 @@ public class IchigoVizard extends Monster {
     }
 
     @Override
-    public boolean hurt(DamageSource source, float damage) {
+    public boolean hurt(@NotNull DamageSource source, float damage) {
+        if (getStage().equals(Stage.RAGE) && !source.is(DamageTypes.GENERIC_KILL)) {
+            return false;
+        }
+
         if (this.random.nextFloat() > 0.66) {
             if (source.getEntity() instanceof LivingEntity attacker) {
                 float returnDamage = (float) (damage * 0.75);
@@ -149,9 +200,9 @@ public class IchigoVizard extends Monster {
     }
 
     @Override
-    public void awardKillScore(Entity ent, int idk, DamageSource source) {
+    public void awardKillScore(@NotNull Entity ent, int pScoreValue, @NotNull DamageSource source) {
         this.heal(this.getMaxHealth());
-        super.awardKillScore(ent, idk, source);
+        super.awardKillScore(ent, pScoreValue, source);
     }
 
     @Override
@@ -163,31 +214,61 @@ public class IchigoVizard extends Monster {
     @Override
     public void tick() {
         super.tick();
+
+        // Placeholder DELETE!
+//        List<Player> playa = this.getPlayersAround(30);
+//
+//        if (!playa.isEmpty()) {
+//            this.setTarget(playa.get(0));
+//        }
         if (this.isAlive() && !this.level().isClientSide) {
-            if (this.cooldownSonido != 0) {
-                this.cooldownSonido--;
-            } else if (this.getTarget() != null) {
-                LivingEntity target = this.getTarget();
-                if (this.canAttack(target)) {
-                    Path path = this.getNavigation().createPath(target, 1);
-                    if (this.getVisibilityPercent(target) < 0.1
-                            || (path == null || !path.canReach())
-                            || Math.abs(Math.abs(target.getY()) - Math.abs(this.getY())) > 1.5) {
-                        this.setPos(target.getX(), target.getY(), target.getZ());
-                        this.cooldownSonido = 200;
-                        this.doHurtTarget(target);
-                        this.playSound(ScolSounds.SONIDO, 50f, 1f);
+            // Triggering rage
+            if (this.getHealth() / this.getMaxHealth() < 0.25F && !this.rageTriggered) {
+                setStage(Stage.RAGE);
+                this.rageTriggered = true;
+            } else if (getStage().equals(Stage.RAGE)) {
+                System.out.println(getSyncedTarget() == null);
+                if (getSyncedTarget() == null || !getSyncedTarget().isAlive()) {
+                    List<Player> players = this.getPlayersAround(30);
+                    if (!players.isEmpty()) {
+                        setSyncedTarget(players.get(0));
                     }
+                } else {
+
                 }
             }
-            List<Player> players = this.getPlayersAround(30);
-            if (!players.isEmpty()) {
-                for (Player player : players) {
-                    player.getAbilities().flying &= player.isCreative();
-                    player.onUpdateAbilities();
-                }
-            }
+
+
         }
+
+
+
+//        if (this.isAlive() && !this.level().isClientSide) {
+//            if (this.cooldownSonido != 0) {
+//                this.cooldownSonido--;
+//            } else if (this.getTarget() != null) {
+//                LivingEntity target = this.getTarget();
+//                if (this.canAttack(target)) {
+//                    Path path = this.getNavigation().createPath(target, 1);
+//                    if (this.getVisibilityPercent(target) < 0.1
+//                            || (path == null || !path.canReach())
+//                            || Math.abs(Math.abs(target.getY()) - Math.abs(this.getY())) > 1.5) {
+//                        this.setPos(target.getX(), target.getY(), target.getZ());
+//                        this.cooldownSonido = 200;
+//                        this.doHurtTarget(target);
+//                        this.playSound(ScolSounds.SONIDO, 50f, 1f);
+//                    }
+//                }
+//            }
+//            List<Player> players = this.getPlayersAround(30);
+//
+//            if (!players.isEmpty()) {
+//                for (Player player : players) {
+//                    player.getAbilities().flying &= player.isCreative();
+//                    player.onUpdateAbilities();
+//                }
+//            }
+//        }
     }
 
     public List<Player> getPlayersAround(double range) {
@@ -202,6 +283,8 @@ public class IchigoVizard extends Monster {
                 .getEntitiesOfClass(
                         Player.class, box, player -> !player.isSpectator() && !(player instanceof FakePlayer));
     }
+
+
 
     @Override
     protected void dropCustomDeathLoot(DamageSource source, int p_21386_, boolean p_21387_) {
@@ -223,4 +306,49 @@ public class IchigoVizard extends Monster {
             });
         }
     }
+
+    public Stage getStage() {
+        return Stage.byId(this.entityData.get(STAGE));
+    }
+
+    public void setStage(Stage state) {
+        this.entityData.set(STAGE, state.ordinal());
+    }
+
+    // server
+    public void setSyncedTarget(@Nullable LivingEntity target) {
+        this.entityData.set(CURRENT_TARGET, target == null ? -1 : target.getId());
+    }
+
+    // client and server
+    @Nullable
+    public LivingEntity getSyncedTarget() {
+        int id = this.entityData.get(CURRENT_TARGET);
+        if (id == -1) return null;
+        return this.level().getEntity(id) instanceof LivingEntity living ? living : null;
+    }
+
+    public enum Stage {
+        DEFAULT,
+        RAGE;
+
+        private static final Stage[] VALUES = values(); // values() creates a new array on every call, so cache it
+
+        public static Stage byId(int id) {
+            return id >= 0 && id < VALUES.length ? VALUES[id] : DEFAULT;
+        }
+    }
+//
+//    public enum Cero {
+//        PAUSE,
+//        CHARGING,
+//        ;
+//
+//        private static final Cero[] VALUES = values(); // values() creates a new array on every call, so cache it
+//
+//        public static Cero byId(int id) {
+//            return id >= 0 && id < VALUES.length ? VALUES[id] : PAUSE;
+//        }
+//    }
+
 }

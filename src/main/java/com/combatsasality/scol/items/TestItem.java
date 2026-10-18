@@ -11,6 +11,8 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -44,8 +46,7 @@ public class TestItem extends Item {
 
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int p_41407_, boolean p_41408_) {
-        if (entity instanceof ServerPlayer) {
-            ServerPlayer player = (ServerPlayer) entity;
+        if (entity instanceof ServerPlayer player && player.isAlive()) {
             player.setHealth(player.getMaxHealth());
             player.addEffect(new MobEffectInstance(MobEffects.SATURATION, 1000, 1, true, false));
             player.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 1000, 1, true, false));
@@ -66,5 +67,14 @@ public class TestItem extends Item {
             capa.setCoolDownPhoenixRing(0);
         });
         return super.useOn(context);
+    }
+
+    @Override
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+        if (entity  instanceof LivingEntity liv) {
+            liv.kill();
+        }
+
+        return super.onLeftClickEntity(stack, player, entity);
     }
 }

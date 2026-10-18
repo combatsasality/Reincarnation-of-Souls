@@ -17,6 +17,7 @@ plugins {
     id 'maven-publish'
     id 'net.minecraftforge.gradle' version '5.1.+'
     id 'org.spongepowered.mixin' version '0.7.+'
+    id 'org.parchmentmc.librarian.forgegradle' version '1.+'
 }
 
 
@@ -96,7 +97,8 @@ dependencies {
     compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
 }
 
-tasks.named('processResources', ProcessResources).configure {
+def generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    group = "build"
     var replaceProperties = [
             minecraft_version: minecraft_version, minecraft_version_range: minecraft_version_range,
             forge_version: forge_version, forge_version_range: forge_version_range,
@@ -106,10 +108,12 @@ tasks.named('processResources', ProcessResources).configure {
     ]
     inputs.properties replaceProperties
 
-    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
-        expand replaceProperties + [project: project]
-    }
+    expand replaceProperties + [project: project]
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
 }
+
+sourceSets.main.resources.srcDir generateModMetadata
 
 tasks.named('jar', Jar).configure {
     manifest {
