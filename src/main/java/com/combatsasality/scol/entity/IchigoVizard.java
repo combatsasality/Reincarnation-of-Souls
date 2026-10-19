@@ -3,12 +3,15 @@ package com.combatsasality.scol.entity;
 import com.combatsasality.scol.items.Zangetsu;
 import com.combatsasality.scol.registries.*;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializer;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
@@ -32,16 +35,26 @@ import net.minecraftforge.common.util.FakePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 
 public class IchigoVizard extends Monster {
     private int cooldownSonido = 0;
-//    private Stage stage = Stage.DEFAULT;
     private static final EntityDataAccessor<Integer> STAGE = SynchedEntityData.defineId(IchigoVizard.class, EntityDataSerializers.INT);
-    private boolean rageTriggered = false;
     private static final EntityDataAccessor<Integer> CURRENT_TARGET =
             SynchedEntityData.defineId(IchigoVizard.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> CERO = SynchedEntityData.defineId(IchigoVizard.class, EntityDataSerializers.INT);
+    private boolean rageTriggered = false;
+    // tick when the current Cero phase started, updated on both sides in onSyncedDataUpdated
+    private int ceroStartTick = 0;
+    private int ceroStageTick = 0;
+
+    private final List<Direction> beamSides = new ArrayList<>();
+    @Nullable
+    private Direction lastBeamSide;
 
 
     public IchigoVizard(EntityType<IchigoVizard> type, Level level) {
@@ -104,14 +117,24 @@ public class IchigoVizard extends Monster {
             }
         });
         this.targetSelector.addGoal(2, new MeleeAttackGoal(this, 1.0, false));
-        this.goalSelector.addGoal(0, new LookAtPlayerGoal(this, Player.class, 10.0F, 1.0F));
-        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this) {
+            @Override
+            public boolean canUse() {
+                return super.canUse() && !getStage().equals(Stage.RAGE);
+            }
+
+            @Override
+            public boolean canContinueToUse() {
+                return super.canContinueToUse() && !getStage().equals(Stage.RAGE);
+            }
+        });
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.readAdditionalSaveData(pCompound);
         setStage(Stage.byId(pCompound.getInt("scol.stage")));
+        setCero(Cero.byId(pCompound.getInt("scol.cero")));
         this.rageTriggered = pCompound.getBoolean("scol.rageTriggered");
     }
 
@@ -119,6 +142,7 @@ public class IchigoVizard extends Monster {
     public void addAdditionalSaveData(@NotNull CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
         pCompound.putInt("scol.stage", getStage().ordinal());
+        pCompound.putInt("scol.cero", getCero().ordinal());
         pCompound.putBoolean("scol.rageTriggered", this.rageTriggered);
     }
 
@@ -127,6 +151,20 @@ public class IchigoVizard extends Monster {
         super.defineSynchedData();
         this.entityData.define(STAGE, Stage.DEFAULT.ordinal());
         this.entityData.define(CURRENT_TARGET, -1);
+        this.entityData.define(CERO, Cero.PAUSE.ordinal());
+    }
+
+    @Override
+    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (CERO.equals(key)) {
+            this.ceroStartTick = this.tickCount; // restart the phase timer whenever the Cero state changes
+        }
+    }
+
+    /** Ticks since the current Cero phase started (used by the renderer for the attack animation). */
+    public float getCeroTicks(float partialTick) {
+        return this.tickCount - this.ceroStartTick + partialTick;
     }
 
     @Override
@@ -211,6 +249,39 @@ public class IchigoVizard extends Monster {
         super.customServerAiStep();
     }
 
+    /** Instantly looks at the given point. */
+    public void snapLookAt(Vec3 point) {
+        double dx = point.x - this.getX();
+        double dz = point.z - this.getZ();
+        double dy = point.y - this.getEyeY();
+        double horizontal = Math.sqrt(dx * dx + dz * dz);
+
+        float yaw = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F;
+        float pitch = (float) -(Mth.atan2(dy, horizontal) * Mth.RAD_TO_DEG);
+
+        // current rotation
+        this.setYRot(yaw);
+        this.setXRot(pitch);
+        this.yHeadRot = yaw;
+        this.yBodyRot = yaw;
+
+        // previous-tick rotation: set the same, so there is no smooth turn between ticks
+        this.yRotO = yaw;
+        this.xRotO = pitch;
+        this.yHeadRotO = yaw;
+        this.yBodyRotO = yaw;
+    }
+
+    /** Instantly looks at the center of the block. */
+    public void snapLookAt(BlockPos pos) {
+        this.snapLookAt(Vec3.atCenterOf(pos));
+    }
+
+    /** Instantly looks at the entity's eyes. */
+    public void snapLookAt(Entity target) {
+        this.snapLookAt(target.getEyePosition());
+    }
+
     @Override
     public void tick() {
         super.tick();
@@ -221,25 +292,42 @@ public class IchigoVizard extends Monster {
 //        if (!playa.isEmpty()) {
 //            this.setTarget(playa.get(0));
 //        }
-        if (this.isAlive() && !this.level().isClientSide) {
+        if (this.isAlive()) {
             // Triggering rage
             if (this.getHealth() / this.getMaxHealth() < 0.25F && !this.rageTriggered) {
                 setStage(Stage.RAGE);
                 this.rageTriggered = true;
             } else if (getStage().equals(Stage.RAGE)) {
-                System.out.println(getSyncedTarget() == null);
                 if (getSyncedTarget() == null || !getSyncedTarget().isAlive()) {
                     List<Player> players = this.getPlayersAround(30);
                     if (!players.isEmpty()) {
                         setSyncedTarget(players.get(0));
                     }
                 } else {
+                    snapLookAt(getSyncedTarget());
 
+                    if (!this.level().isClientSide) {
+                        if (this.ceroStageTick == 0) {
+                            BlockPos pos = getRandomPositionForBeam();
+                            setPos(pos.getX(), pos.getY(), pos.getZ());
+                            setCero(Cero.CHARGING);
+                        } else if (this.ceroStageTick == 120) {
+                            setCero(Cero.SHOT);
+                        } else if (this.ceroStageTick == 180) {
+                            setCero(Cero.PAUSE);
+                        }
+
+                        this.ceroStageTick++;
+                        if (this.ceroStageTick >= 190) { // 80 ticks of pause, then loop
+                            this.ceroStageTick = 0;
+                        }
+                    }
                 }
             }
 
 
         }
+
 
 
 
@@ -284,6 +372,45 @@ public class IchigoVizard extends Monster {
                         Player.class, box, player -> !player.isSpectator() && !(player instanceof FakePlayer));
     }
 
+    private Direction nextBeamSide() {
+        if (this.beamSides.isEmpty()) {
+            this.beamSides.addAll(Direction.Plane.HORIZONTAL.stream().toList());
+
+            // shuffle (Fisher-Yates)
+            for (int i = this.beamSides.size() - 1; i > 0; i--) {
+                int j = this.random.nextInt(i + 1);
+                Collections.swap(this.beamSides, i, j);
+            }
+
+            // avoid the same side twice in a row across two rounds
+            if (this.beamSides.get(0) == this.lastBeamSide) {
+                Collections.swap(this.beamSides, 0, this.beamSides.size() - 1);
+            }
+        }
+
+        this.lastBeamSide = this.beamSides.remove(0);
+        return this.lastBeamSide;
+    }
+
+    @Nullable
+    public BlockPos getRandomPositionForBeam() {
+        LivingEntity target = this.getSyncedTarget();
+        if (target == null) {
+            return null;
+        }
+
+        BlockPos targetPos = target.blockPosition();
+
+        // random horizontal side: north, south, east or west
+        Direction side = this.nextBeamSide();
+        int distance = Mth.nextInt(this.random, 10, 20);   // how far from the target along that side
+        int sideways = Mth.nextInt(this.random, -10, 10);  // random shift along the other horizontal axis
+
+        // same Y as the target
+        return targetPos
+                .relative(side, distance)
+                .relative(side.getClockWise(), sideways);
+    }
 
 
     @Override
@@ -315,6 +442,14 @@ public class IchigoVizard extends Monster {
         this.entityData.set(STAGE, state.ordinal());
     }
 
+    public Cero getCero() {
+        return Cero.byId(this.entityData.get(CERO));
+    }
+
+    public void setCero(Cero state) {
+        this.entityData.set(CERO, state.ordinal());
+    }
+
     // server
     public void setSyncedTarget(@Nullable LivingEntity target) {
         this.entityData.set(CURRENT_TARGET, target == null ? -1 : target.getId());
@@ -338,17 +473,17 @@ public class IchigoVizard extends Monster {
             return id >= 0 && id < VALUES.length ? VALUES[id] : DEFAULT;
         }
     }
-//
-//    public enum Cero {
-//        PAUSE,
-//        CHARGING,
-//        ;
-//
-//        private static final Cero[] VALUES = values(); // values() creates a new array on every call, so cache it
-//
-//        public static Cero byId(int id) {
-//            return id >= 0 && id < VALUES.length ? VALUES[id] : PAUSE;
-//        }
-//    }
+
+    public enum Cero {
+        PAUSE,
+        CHARGING,
+        SHOT;
+
+        private static final Cero[] VALUES = values(); // values() creates a new array on every call, so cache it
+
+        public static Cero byId(int id) {
+            return id >= 0 && id < VALUES.length ? VALUES[id] : PAUSE;
+        }
+    }
 
 }
