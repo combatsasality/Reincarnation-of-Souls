@@ -26,6 +26,7 @@ public class IchigoVizardRenderer extends MobRenderer<IchigoVizard, IchigoVizard
             new ResourceLocation(Main.MODID, "textures/entity/ichigo_vizard.png");
     public static final float[] colors = {0.0F, 0.0F, 0.0F};
     public static final float[] outerColors = {0.85F, 0.0F, 0.0F};
+    public static final float[] lockColors = {1.0F, 0.75F, 0.75F}; // the cube flashes pale while the aim is locked
     // geometry and timing come from the entity so the visuals match the server-side hit test
     public static final float beamStart = IchigoVizard.CERO_START;
     public static final float beamForward = IchigoVizard.CERO_FORWARD;
@@ -35,7 +36,7 @@ public class IchigoVizardRenderer extends MobRenderer<IchigoVizard, IchigoVizard
     public static final float cubeSize = 0.4F;
     public static final float cubeGlowSize = 0.45F;
     public static final float chargeTicks = IchigoVizard.CERO_CHARGE_TICKS; // cube grows
-    public static final float lockTicks = IchigoVizard.CERO_LOCK_TICKS;     // cube at full size, aim frozen
+    // lock (cube at full size, aim frozen) has a per-attack length: entity.getCeroLockTicks()
     public static final float fireTicks = IchigoVizard.CERO_FIRE_TICKS;     // beam shoots out
     public static final float holdTicks = IchigoVizard.CERO_HOLD_TICKS;     // beam holds
     public static final float fadeTicks = IchigoVizard.CERO_FADE_TICKS;     // beam and cube fade
@@ -55,7 +56,7 @@ public void render(IchigoVizard entity, float entityYaw, float partialTick, Pose
     if (entity.getStage().equals(IchigoVizard.Stage.RAGE) && target != null) {
         // ===== Timeline (in ticks), driven by the entity's synced Cero state =====
         float shotTicks = fireTicks + holdTicks + fadeTicks;
-        float shotStart = chargeTicks + lockTicks;
+        float shotStart = chargeTicks + entity.getCeroLockTicks();
         float t = getCeroTime(entity, partialTick);
 
         if (t < 0.0F || t >= shotStart + shotTicks) {
@@ -73,38 +74,44 @@ public void render(IchigoVizard entity, float entityYaw, float partialTick, Pose
 
         float time = entity.tickCount + partialTick;
 
-        // ===== Cube: grows while charging, holds while locked, collapses during the first fireTicks of the shot =====
+        // ===== Cube: grows while charging, freezes and flashes while locked, collapses during the first fireTicks =====
         if (t < shotStart + fireTicks) {
             float cubeScale;
             float cubeSpin;
+            float[] glow = outerColors;
+            float glowAlpha = 0.125F;
 
             if (t < chargeTicks) {
-                // charging: grows with ease-in (slow start, fast end) and spins faster and faster
+                // charging: pops up quickly (ease-out) so even a short charge is visible, then settles at full size
+                // while trembling more and more; the spin accelerates the whole time
                 float charge = t / chargeTicks;
-                float shake = 1.0F + Mth.sin(time * 3.0F) * 0.08F * charge; // trembles more near full charge
-                cubeScale = charge * charge * shake;
+                float grow = 1.0F - (1.0F - charge) * (1.0F - charge);
+                float shake = 1.0F + Mth.sin(time * 3.0F) * 0.08F * charge;
+                cubeScale = grow * shake;
                 cubeSpin = t * t / chargeTicks; // angle grows quadratically = accelerating rotation
             } else if (t < shotStart) {
-                // locked: full size, trembling harder = the telegraph for the player to step aside
-                cubeScale = 1.0F + Mth.sin(time * 3.0F) * 0.12F;
-                cubeSpin = chargeTicks + 2.0F * (t - chargeTicks); // continues at the final charge speed
+                // locked: the aim is frozen and so is the cube. It stops spinning, flashes pale and pulses hard:
+                // this is the frame the player has to react to
+                cubeScale = 1.0F + Mth.sin(time * 4.0F) * 0.15F;
+                cubeSpin = chargeTicks; // where the charge left it
+                glow = lockColors;
+                glowAlpha = 0.4F;
             } else {
-                // firing: cube collapses while the beam shoots out
+                // firing: cube collapses while the beam shoots out, spinning again
                 float shotT = t - shotStart;
                 float collapse = Mth.clamp(1.0F - shotT / fireTicks, 0.0F, 1.0F);
                 cubeScale = collapse * collapse; // fast at the start, smooth at the end
-                cubeSpin = chargeTicks + 2.0F * (t - chargeTicks);
+                cubeSpin = chargeTicks + 2.0F * shotT;
             }
-
 
             if (cubeScale > 0.01F) {
                 poseStack.pushPose();
                 poseStack.translate(0.0F, beamStart, 0.0F); // cube sits at the beam origin
                 CeroHandler.renderGlowCube(poseStack, buffer, BeaconRenderer.BEAM_LOCATION,
                         cubeSpin, 10.0F,
-                        colors, outerColors,
+                        colors, glow,
                         cubeSize * cubeScale, cubeGlowSize * cubeScale,
-                        0.125F);
+                        glowAlpha);
                 poseStack.popPose();
             }
         }
@@ -152,6 +159,7 @@ public void render(IchigoVizard entity, float entityYaw, float partialTick, Pose
      */
     private static float getCeroTime(IchigoVizard entity, float partialTick) {
         float phaseTicks = entity.getCeroTicks(partialTick);
+        float lockTicks = entity.getCeroLockTicks();
         return switch (entity.getCero()) {
             case CHARGING -> Math.min(phaseTicks, chargeTicks);
             case LOCKED -> chargeTicks + Math.min(phaseTicks, lockTicks);

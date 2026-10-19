@@ -2,6 +2,8 @@ package com.combatsasality.scol.entity;
 
 import com.combatsasality.scol.items.Zangetsu;
 import com.combatsasality.scol.registries.*;
+import com.mojang.logging.LogUtils;
+import org.slf4j.Logger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -53,9 +55,14 @@ public class IchigoVizard extends Monster {
     public static final int CERO_SHOT_TICKS = CERO_FIRE_TICKS + CERO_HOLD_TICKS + CERO_FADE_TICKS;
 
     // The dodge window: the aim is frozen for this long before the shot. While charging, the aim LEADS the
-    // target (velocity + acceleration), so a player who keeps running gets hit where they will be. The only
-    // way out is to stand still, wait for the lock, and move right after it.
-    public static final int CERO_LOCK_TICKS = 12;
+    // target (velocity + acceleration), so a player who keeps running gets hit where they will be. A running
+    // player could still dodge by simply STOPPING (braking takes 1-2 ticks, the lead is several blocks), so a
+    // moving target gets almost no window at all. A standing target gets the full one: the only way out is to
+    // stand, watch the cube freeze and sprint away at that very moment.
+    public static final int CERO_LOCK_MOVING_TICKS = 3;      // window for a target that kept moving
+    public static final int CERO_LOCK_STILL_TICKS = 12;      // window for a target that stood still
+    public static final int CERO_STILL_WINDOW_TICKS = 10;    // how far back "recently" reaches
+    public static final float CERO_STILL_DISTANCE = 1.0F;    // blocks moved in that window that count as fully moving
     public static final int CERO_HIT_DELAY_TICKS = 2;        // first damaging tick of the shot
     // The lead is capped by how fast the target CAN move, derived from its movement speed attribute (which already
     // includes Speed/Slowness effects, sprinting and modded buffs), so only noise is cut, never a real buff.
@@ -72,7 +79,10 @@ public class IchigoVizard extends Monster {
     public static final float CERO_START = 2.05F;      // beam origin height above the feet
     public static final float CERO_FORWARD = 0.80F;    // beam origin offset in front of the body
     public static final float CERO_RADIUS = 0.5F;      // hit radius of the beam core
-    public static final float CERO_PITCH_LIMIT = 60.0F;
+    // vertical aim limits in degrees: a little up, almost all the way down and even back under the boss,
+    // so that standing below a hovering boss is not a safe spot
+    public static final float CERO_PITCH_UP_LIMIT = 60.0F;
+    public static final float CERO_PITCH_DOWN_LIMIT = 170.0F;
     public static final float CERO_RANGE = 128.0F;     // how far the beam deals damage
     // In RAGE the boss hovers: no gravity, and each teleport puts it in the air above the target's level
     public static final int CERO_HOVER_MIN = 3;               // blocks above the target's feet
@@ -89,6 +99,8 @@ public class IchigoVizard extends Monster {
     // the server only updates it while the aim is not locked, so it freezes itself for LOCKED/SHOT
     private static final EntityDataAccessor<Float> CERO_YAW = SynchedEntityData.defineId(IchigoVizard.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> CERO_PITCH = SynchedEntityData.defineId(IchigoVizard.class, EntityDataSerializers.FLOAT); // positive = up
+    // length of the current LOCKED phase in ticks (depends on the target's stillness), synced for the renderer timeline
+    private static final EntityDataAccessor<Integer> CERO_LOCK = SynchedEntityData.defineId(IchigoVizard.class, EntityDataSerializers.INT);
     private boolean rageTriggered = false;
     // tick when the current Cero phase started, updated on both sides in onSyncedDataUpdated
     private int ceroStartTick = 0;
@@ -101,6 +113,11 @@ public class IchigoVizard extends Monster {
     // server only: the target's recent positions (oldest first, one per tick) for the predictive aim
     private final Deque<Vec3> targetTrack = new ArrayDeque<>();
     private int trackedTargetId = -1;
+
+    // Placeholder DELETE! diagnostics for the predictive aim
+    private static final Logger LOGGER = LogUtils.getLogger();
+    private Vec3 debugVelocity = Vec3.ZERO;
+    private Vec3 debugPredicted = Vec3.ZERO;
 
     private final List<Direction> beamSides = new ArrayList<>();
     @Nullable
@@ -203,6 +220,7 @@ public class IchigoVizard extends Monster {
         this.entityData.define(CERO, Cero.PAUSE.ordinal());
         this.entityData.define(CERO_YAW, 0.0F);
         this.entityData.define(CERO_PITCH, 0.0F);
+        this.entityData.define(CERO_LOCK, CERO_LOCK_STILL_TICKS);
     }
 
     @Override
@@ -308,6 +326,7 @@ public class IchigoVizard extends Monster {
         setSyncedTarget(null);
         this.entityData.set(CERO_YAW, 0.0F);
         this.entityData.set(CERO_PITCH, 0.0F);
+        this.entityData.set(CERO_LOCK, CERO_LOCK_STILL_TICKS);
 
         // rage and the Cero cycle
         this.rageTriggered = false;
@@ -398,9 +417,35 @@ public class IchigoVizard extends Monster {
         return Mth.rotLerp(partialTick, this.ceroYawO, this.ceroYaw);
     }
 
-    /** Vertical angle of the beam in degrees, positive = up, clamped so the beam stays in front of the face. */
+    /**
+     * Vertical angle of the beam in degrees, positive = up. Below -90 the beam goes backwards under the boss,
+     * which is what hits a target standing right beneath it.
+     */
     public float getCeroPitch(float partialTick) {
-        return Mth.clamp(Mth.lerp(partialTick, this.ceroPitchO, this.ceroPitch), -CERO_PITCH_LIMIT, CERO_PITCH_LIMIT);
+        return Mth.clamp(Mth.lerp(partialTick, this.ceroPitchO, this.ceroPitch), -CERO_PITCH_DOWN_LIMIT, CERO_PITCH_UP_LIMIT);
+    }
+
+    /** Length of the current LOCKED phase in ticks (both sides). */
+    public int getCeroLockTicks() {
+        return this.entityData.get(CERO_LOCK);
+    }
+
+    /**
+     * Server: how long the aim will stay locked for this target right now. A target that stood still for the last
+     * CERO_STILL_WINDOW_TICKS gets the full window, one that covered CERO_STILL_DISTANCE or more almost none.
+     * Running forward is handled by the lead; the short window is what stops "run, then brake at the lock".
+     */
+    private int computeCeroLockTicks() {
+        Vec3[] track = this.targetTrack.toArray(new Vec3[0]);
+        int window = Math.min(CERO_STILL_WINDOW_TICKS, track.length - 1);
+        if (window < 1) {
+            return CERO_LOCK_STILL_TICKS; // no history yet: be generous
+        }
+        Vec3 now = track[track.length - 1];
+        Vec3 then = track[track.length - 1 - window];
+        double moved = new Vec3(now.x - then.x, 0.0D, now.z - then.z).length() * CERO_STILL_WINDOW_TICKS / window;
+        float moving = (float) Mth.clamp(moved / CERO_STILL_DISTANCE, 0.0D, 1.0D); // 0 = stood still, 1 = kept moving
+        return Math.round(Mth.lerp(moving, CERO_LOCK_STILL_TICKS, CERO_LOCK_MOVING_TICKS));
     }
 
     /** Where the beam starts: in front of the face, rotated with the aim. */
@@ -429,15 +474,21 @@ public class IchigoVizard extends Monster {
         }
     }
 
-    /** Average horizontal velocity (blocks/tick) between two samples of the track. */
-    private static Vec3 horizontalVelocity(Vec3 from, Vec3 to, int ticks) {
-        return new Vec3(to.x - from.x, 0.0D, to.z - from.z).scale(1.0D / ticks);
+    /** Average velocity (blocks/tick) between two samples of the track; vertical part only for airborne targets. */
+    private static Vec3 velocityBetween(Vec3 from, Vec3 to, int ticks, boolean vertical) {
+        return new Vec3(to.x - from.x, vertical ? to.y - from.y : 0.0D, to.z - from.z).scale(1.0D / ticks);
+    }
+
+    /** Creative flight or elytra: moves in all three axes and is not bound by the movement speed attribute. */
+    private static boolean isAirborne(LivingEntity target) {
+        return target.isFallFlying() || (target instanceof Player player && player.getAbilities().flying);
     }
 
     /**
      * Server: where the center of the target's hitbox will be in ticksAhead ticks if it keeps moving like now.
      * Velocity is the average over the newer half of the history, acceleration the change between the two halves,
-     * so a single late or doubled movement packet barely moves the prediction.
+     * so a single late or doubled movement packet barely moves the prediction. Grounded targets are predicted
+     * horizontally only (jumps are noise), airborne ones in all three axes.
      */
     private Vec3 predictTargetCenter(LivingEntity target, float ticksAhead) {
         Vec3 center = target.position().add(0.0D, target.getBbHeight() / 2.0D, 0.0D);
@@ -448,11 +499,12 @@ public class IchigoVizard extends Monster {
             return center; // not enough history yet: aim at the target itself
         }
 
+        boolean vertical = isAirborne(target);
         Vec3 now = track[track.length - 1];
         Vec3 mid = track[track.length - 1 - half];
         Vec3 old = track[track.length - 1 - 2 * half];
-        Vec3 velocity = horizontalVelocity(mid, now, half);
-        Vec3 acceleration = velocity.subtract(horizontalVelocity(old, mid, half)).scale(1.0D / half);
+        Vec3 velocity = velocityBetween(mid, now, half, vertical);
+        Vec3 acceleration = velocity.subtract(velocityBetween(old, mid, half, vertical)).scale(1.0D / half);
 
         Vec3 accelLead = acceleration.scale(0.5D * ticksAhead * ticksAhead);
         if (accelLead.lengthSqr() > CERO_MAX_ACCEL_LEAD * CERO_MAX_ACCEL_LEAD) {
@@ -466,13 +518,16 @@ public class IchigoVizard extends Monster {
         if (lead.lengthSqr() > maxLead * maxLead) {
             lead = lead.normalize().scale(maxLead);
         }
+
+        this.debugVelocity = velocity;      // Placeholder DELETE!
+        this.debugPredicted = center.add(lead); // Placeholder DELETE!
         return center.add(lead);
     }
 
-    /** Fastest plausible horizontal speed of the target in blocks/tick, from its current movement speed attribute. */
+    /** Fastest plausible speed of the target in blocks/tick, from its current movement speed attribute. */
     private static double maxLeadSpeed(LivingEntity target) {
-        if (target.isFallFlying()) {
-            return CERO_LEAD_SPEED_CEILING; // elytra speed is not in the attribute: trust the measurement
+        if (isAirborne(target)) {
+            return CERO_LEAD_SPEED_CEILING; // flight speed is not in the attribute: trust the measurement
         }
         double walk = target.getAttributeValue(Attributes.MOVEMENT_SPEED) * CERO_ATTRIBUTE_TO_SPEED;
         return Mth.clamp(walk * CERO_LEAD_SPEED_MARGIN, CERO_LEAD_SPEED_FLOOR, CERO_LEAD_SPEED_CEILING);
@@ -480,19 +535,29 @@ public class IchigoVizard extends Monster {
 
     /** Server: points the beam at where the target will be when the beam starts to hurt. Not called while locked. */
     private void aimCeroAt(LivingEntity target) {
-        Vec3 point = predictTargetCenter(target, CERO_LOCK_TICKS + CERO_HIT_DELAY_TICKS);
+        // the lock length is not decided yet, so lead by what it would be if the aim locked right now
+        Vec3 point = predictTargetCenter(target, computeCeroLockTicks() + CERO_HIT_DELAY_TICKS);
 
         // yaw from the feet: the origin is shifted along the yaw itself, so it does not change the yaw
         double dx = point.x - this.getX();
         double dz = point.z - this.getZ();
         float yaw = (float) (Mth.atan2(dz, dx) * Mth.RAD_TO_DEG) - 90.0F;
 
-        // pitch from the actual beam origin, which depends on that yaw
+        // pitch from the actual beam origin, which depends on that yaw. The horizontal part is SIGNED along the
+        // facing direction: a target closer than the origin's forward offset (i.e. right under the boss) gives a
+        // negative value and a pitch below -90, so the beam bends back under the boss instead of missing in front.
+        Vec3 forward = Vec3.directionFromRotation(0.0F, yaw);
         Vec3 dir = point.subtract(ceroOriginAt(this.position(), yaw));
-        float pitch = (float) (Mth.atan2(dir.y, dir.horizontalDistance()) * Mth.RAD_TO_DEG);
+        double along = dir.x * forward.x + dir.z * forward.z;
+        float pitch = (float) (Mth.atan2(dir.y, along) * Mth.RAD_TO_DEG);
 
         this.entityData.set(CERO_YAW, yaw);
         this.entityData.set(CERO_PITCH, pitch);
+    }
+
+    // Placeholder DELETE!
+    private static String fmt(Vec3 v) {
+        return String.format("(%.2f %.2f %.2f)", v.x, v.y, v.z);
     }
 
     /** True while the aim is frozen: the boss no longer tracks the target and the beam flies along the locked line. */
@@ -514,11 +579,15 @@ public class IchigoVizard extends Monster {
                 continue;
             }
 
-            // Ichigo's damage type first, so the death message and the kill credit are his
+            // Ichigo's damage type first, so the death message and the kill credit are his.
+            // The hurt cooldown would otherwise swallow it when the player was hit hard in the last 10 ticks.
+            player.invulnerableTime = 0;
             player.hurt(this.damageSources().source(ScolDamageTypes.ICHIGO, this), CERO_DAMAGE);
 
-            // a totem, absorption or another mod saved them: the Cero does not allow that
+            // a totem, absorption or another mod saved them: the Cero does not allow that. The totem leaves
+            // 20 ticks of cooldown with lastHurt = MAX_VALUE, so without the reset nothing could ever pass it.
             if (player.isAlive()) {
+                player.invulnerableTime = 0;
                 player.hurt(this.damageSources().genericKill(), Float.MAX_VALUE);
             }
         }
@@ -527,13 +596,6 @@ public class IchigoVizard extends Monster {
     @Override
     public void tick() {
         super.tick();
-
-        // Placeholder DELETE!
-//        List<Player> playa = this.getPlayersAround(30);
-//
-//        if (!playa.isEmpty()) {
-//            this.setTarget(playa.get(0));
-//        }
         if (this.isAlive()) {
             // Triggering rage
             if (this.getHealth() / this.getMaxHealth() < 0.25F && !this.rageTriggered) {
@@ -550,7 +612,17 @@ public class IchigoVizard extends Monster {
                 if (getSyncedTarget() == null || !getSyncedTarget().isAlive()) {
                     List<Player> players = this.getPlayersAround(30);
                     if (!players.isEmpty()) {
-                        setSyncedTarget(players.get(0));
+                        try {
+                            for (Player playa : players) {
+                                if (playa.isCreative()) continue;
+                                setSyncedTarget(playa);
+                            }
+                        } finally {
+                            if (getSyncedTarget() == null) {
+                                resetState();
+                                // TODO: Maybe add ability to kill from creative
+                            }
+                        }
                     }
                 } else {
                     LivingEntity target = getSyncedTarget();
@@ -568,10 +640,11 @@ public class IchigoVizard extends Monster {
                     this.ceroPitch = this.entityData.get(CERO_PITCH);
 
                     // both sides: the body follows the aim exactly, also keeps AI/look control from turning it
-                    snapRotation(this.ceroYaw, -this.ceroPitch);
+                    // (the head cannot bend past straight down, the beam can)
+                    snapRotation(this.ceroYaw, Mth.clamp(-this.ceroPitch, -90.0F, 90.0F));
 
                     if (!this.level().isClientSide) {
-                        int shotStart = CERO_CHARGE_TICKS + CERO_LOCK_TICKS;
+                        int shotStart = CERO_CHARGE_TICKS + getCeroLockTicks();
 
                         if (this.ceroStageTick == 0) {
                             // moveTo also resets the previous-tick position, so there is no lerp from the old spot
@@ -581,7 +654,9 @@ public class IchigoVizard extends Monster {
                             this.getNavigation().stop();
                             setCero(Cero.CHARGING);
                         } else if (this.ceroStageTick == CERO_CHARGE_TICKS) {
-                            setCero(Cero.LOCKED); // the player has CERO_LOCK_TICKS from here to break their movement
+                            // the dodge window is decided now, from how much the target moved lately
+                            this.entityData.set(CERO_LOCK, computeCeroLockTicks());
+                            setCero(Cero.LOCKED);
                         } else if (this.ceroStageTick == shotStart) {
                             setCero(Cero.SHOT);
                         } else if (this.ceroStageTick == shotStart + CERO_SHOT_TICKS) {
@@ -590,13 +665,28 @@ public class IchigoVizard extends Monster {
 
                         // the beam hurts from the moment it has (almost) fully extended until it starts fading
                         int shotTick = this.ceroStageTick - shotStart;
-                        if (shotTick >= CERO_HIT_DELAY_TICKS && shotTick < CERO_FIRE_TICKS + CERO_HOLD_TICKS) {
-                            hitCeroTargets();
+                        if (shotTick == CERO_HIT_DELAY_TICKS) {
+                            // Placeholder DELETE! how far the target's center is from the beam line when it starts to hurt
+                            Vec3 center = target.position().add(0.0D, target.getBbHeight() / 2.0D, 0.0D);
+                            Vec3 from = getCeroOrigin(1.0F);
+                            Vec3 dir = getCeroDirection(1.0F);
+                            Vec3 rel = center.subtract(from);
+                            double miss = rel.subtract(dir.scale(rel.dot(dir))).length();
+                            LOGGER.info("[cero] FIRE  target={} predicted={} error={} missFromBeam={} (hit if < ~0.8)",
+                                    fmt(target.position()), fmt(this.debugPredicted),
+                                    String.format("%.2f", center.distanceTo(this.debugPredicted)),
+                                    String.format("%.2f", miss));
                         }
-
+                        // Advance the cycle BEFORE dealing damage: a kill runs awardKillScore -> resetState() from inside
+                        // hitCeroTargets(), and an increment after that would turn its fresh 0 into a 1, skipping the
+                        // teleport/CHARGING step of every following cycle.
                         this.ceroStageTick++;
                         if (this.ceroStageTick >= shotStart + CERO_SHOT_TICKS + CERO_PAUSE_TICKS) {
                             this.ceroStageTick = 0;
+                        }
+
+                        if (shotTick >= CERO_HIT_DELAY_TICKS && shotTick < CERO_FIRE_TICKS + CERO_HOLD_TICKS) {
+                            hitCeroTargets();
                         }
                     }
                 }
