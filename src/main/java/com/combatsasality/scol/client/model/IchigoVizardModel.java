@@ -72,6 +72,18 @@ public class IchigoVizardModel<T extends IchigoVizard> extends HumanoidModel<T> 
         this.leftArm.yRot = 0;
         this.leftArm.zRot = 0;
         this.setupAttackAnimation(entity, limbSwingAmount);
+
+        // guard: the sword arm comes up and across the body, blade in front of the face, the off hand braces it.
+        // Blended over the walk/attack animation so the arms visibly fold into the stance and unfold after it.
+        float guard = entity.getCounterBlend(ageInTicks);
+        if (guard > 0.0F) {
+            this.rightArm.xRot = Mth.lerp(guard, this.rightArm.xRot, -1.9F);
+            this.rightArm.yRot = Mth.lerp(guard, this.rightArm.yRot, -0.7F);
+            this.rightArm.zRot = Mth.lerp(guard, this.rightArm.zRot, 0.35F);
+            this.leftArm.xRot = Mth.lerp(guard, this.leftArm.xRot, -1.1F);
+            this.leftArm.yRot = Mth.lerp(guard, this.leftArm.yRot, 0.6F);
+            this.leftArm.zRot = Mth.lerp(guard, this.leftArm.zRot, -0.2F);
+        }
     }
 
     @Override
