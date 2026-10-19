@@ -15,7 +15,6 @@ import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -27,16 +26,19 @@ public class IchigoVizardRenderer extends MobRenderer<IchigoVizard, IchigoVizard
             new ResourceLocation(Main.MODID, "textures/entity/ichigo_vizard.png");
     public static final float[] colors = {0.0F, 0.0F, 0.0F};
     public static final float[] outerColors = {0.85F, 0.0F, 0.0F};
-    public static final float beamStart = 2.05F;
+    // geometry and timing come from the entity so the visuals match the server-side hit test
+    public static final float beamStart = IchigoVizard.CERO_START;
+    public static final float beamForward = IchigoVizard.CERO_FORWARD;
     public static final float maxLength = 1024.0F;
-    public static final float beamRadius = 0.5F;
+    public static final float beamRadius = IchigoVizard.CERO_RADIUS;
     public static final float glowRadius = 0.55F;
     public static final float cubeSize = 0.4F;
     public static final float cubeGlowSize = 0.45F;
-    public static final float chargeTicks = 120.0F; // cube grows
-    public static final float fireTicks = 20.0F;    // beam shoots out
-    public static final float holdTicks = 30.0F;   // beam holds
-    public static final float fadeTicks = 10.0F;   // beam and cube fade
+    public static final float chargeTicks = IchigoVizard.CERO_CHARGE_TICKS; // cube grows
+    public static final float lockTicks = IchigoVizard.CERO_LOCK_TICKS;     // cube at full size, aim frozen
+    public static final float fireTicks = IchigoVizard.CERO_FIRE_TICKS;     // beam shoots out
+    public static final float holdTicks = IchigoVizard.CERO_HOLD_TICKS;     // beam holds
+    public static final float fadeTicks = IchigoVizard.CERO_FADE_TICKS;     // beam and cube fade
 
 
     public IchigoVizardRenderer(EntityRendererProvider.Context context) {
@@ -53,36 +55,26 @@ public void render(IchigoVizard entity, float entityYaw, float partialTick, Pose
     if (entity.getStage().equals(IchigoVizard.Stage.RAGE) && target != null) {
         // ===== Timeline (in ticks), driven by the entity's synced Cero state =====
         float shotTicks = fireTicks + holdTicks + fadeTicks;
+        float shotStart = chargeTicks + lockTicks;
         float t = getCeroTime(entity, partialTick);
 
-        if (t < 0.0F || t >= chargeTicks + shotTicks) {
+        if (t < 0.0F || t >= shotStart + shotTicks) {
             return; // paused, or the shot has fully faded out
         }
 
-        // ===== Aim (pitch only, beam stays in front of the face) =====
-        float bodyYaw = Mth.rotLerp(partialTick, entity.yBodyRotO, entity.yBodyRot);
-        float pitch = 0.0F;
-
-
-        Vec3 origin = entity.getPosition(partialTick)
-                .add(new Vec3(0.0D, beamStart, 0.80D).yRot(-bodyYaw * Mth.DEG_TO_RAD));
-        Vec3 targetCenter = target.getPosition(partialTick).add(0.0D, target.getBbHeight() / 2.0D, 0.0D);
-        Vec3 dir = targetCenter.subtract(origin);
-
-        // vertical angle to the target: positive = above
-        pitch = (float) (Mth.atan2(dir.y, dir.horizontalDistance()) * Mth.RAD_TO_DEG);
-        pitch = Mth.clamp(pitch, -60.0F, 60.0F); // keep the beam in front of the face
-
+        // ===== Aim: the synced beam angles, the same ones the server tests hits against =====
+        float bodyYaw = entity.getCeroYaw(partialTick);
+        float pitch = entity.getCeroPitch(partialTick);
 
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - bodyYaw));
-        poseStack.translate(0.0F, 0.0F, -0.80F);
+        poseStack.translate(0.0F, 0.0F, -beamForward);
         poseStack.rotateAround(Axis.XP.rotationDegrees(-90.0F + pitch), 0.0F, beamStart, 0.0F);
 
         float time = entity.tickCount + partialTick;
 
-        // ===== Cube: grows while charging, collapses during the first fireTicks of the shot =====
-        if (t < chargeTicks + fireTicks) {
+        // ===== Cube: grows while charging, holds while locked, collapses during the first fireTicks of the shot =====
+        if (t < shotStart + fireTicks) {
             float cubeScale;
             float cubeSpin;
 
@@ -92,12 +84,16 @@ public void render(IchigoVizard entity, float entityYaw, float partialTick, Pose
                 float shake = 1.0F + Mth.sin(time * 3.0F) * 0.08F * charge; // trembles more near full charge
                 cubeScale = charge * charge * shake;
                 cubeSpin = t * t / chargeTicks; // angle grows quadratically = accelerating rotation
+            } else if (t < shotStart) {
+                // locked: full size, trembling harder = the telegraph for the player to step aside
+                cubeScale = 1.0F + Mth.sin(time * 3.0F) * 0.12F;
+                cubeSpin = chargeTicks + 2.0F * (t - chargeTicks); // continues at the final charge speed
             } else {
                 // firing: cube collapses while the beam shoots out
-                float shotT = t - chargeTicks;
+                float shotT = t - shotStart;
                 float collapse = Mth.clamp(1.0F - shotT / fireTicks, 0.0F, 1.0F);
                 cubeScale = collapse * collapse; // fast at the start, smooth at the end
-                cubeSpin = chargeTicks + 2.0F * shotT; // continues at the final charge speed
+                cubeSpin = chargeTicks + 2.0F * (t - chargeTicks);
             }
 
 
@@ -115,8 +111,8 @@ public void render(IchigoVizard entity, float entityYaw, float partialTick, Pose
 
 
         // ===== Beam: only during the shot =====
-        if (t >= chargeTicks) {
-            float shotT = t - chargeTicks;
+        if (t >= shotStart) {
+            float shotT = t - shotStart;
 
             // 1. extend: 0 -> 1 during fireTicks, with ease-out (fast start, smooth stop)
             float extend = Mth.clamp(shotT / fireTicks, 0.0F, 1.0F);
@@ -148,15 +144,18 @@ public void render(IchigoVizard entity, float entityYaw, float partialTick, Pose
 
     /**
      * Maps the entity's Cero state onto the attack timeline (in ticks):
-     * CHARGING -> [0, chargeTicks] (held at full charge until the shot starts),
-     * SHOT -> [chargeTicks, chargeTicks + fireTicks + holdTicks + fadeTicks].
+     * CHARGING -> [0, chargeTicks],
+     * LOCKED -> [chargeTicks, chargeTicks + lockTicks],
+     * SHOT -> [chargeTicks + lockTicks, + fireTicks + holdTicks + fadeTicks].
+     * Phases that the server holds longer than expected stay at their last frame.
      * Returns -1 while the Cero is paused, i.e. nothing to draw.
      */
     private static float getCeroTime(IchigoVizard entity, float partialTick) {
         float phaseTicks = entity.getCeroTicks(partialTick);
         return switch (entity.getCero()) {
             case CHARGING -> Math.min(phaseTicks, chargeTicks);
-            case SHOT -> chargeTicks + phaseTicks;
+            case LOCKED -> chargeTicks + Math.min(phaseTicks, lockTicks);
+            case SHOT -> chargeTicks + lockTicks + phaseTicks;
             default -> -1.0F;
         };
     }
