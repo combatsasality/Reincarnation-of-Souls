@@ -41,8 +41,11 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
 
 
 public class IchigoVizard extends Monster {
@@ -88,7 +91,9 @@ public class IchigoVizard extends Monster {
     public static final int CERO_HOVER_MIN = 3;               // blocks above the target's feet
     public static final int CERO_HOVER_MAX = 8;
     public static final int CERO_TELEPORT_SEARCH_HEIGHT = 24; // how far up/down to look for free space at the teleport spot
-    public static final float CERO_DAMAGE = Float.MAX_VALUE;   // lethal through armor and effects
+    // The beam gets stronger with every shot of the rage: shot N deals N / CERO_SHOTS_TO_KILL of the target's max
+    // health, shot CERO_SHOTS_TO_KILL and later kill outright. Each beam hurts a player once.
+    public static final int CERO_SHOTS_TO_KILL = 5;
 
     private int cooldownSonido = 0;
     private static final EntityDataAccessor<Integer> STAGE = SynchedEntityData.defineId(IchigoVizard.class, EntityDataSerializers.INT);
@@ -105,6 +110,8 @@ public class IchigoVizard extends Monster {
     // tick when the current Cero phase started, updated on both sides in onSyncedDataUpdated
     private int ceroStartTick = 0;
     private int ceroStageTick = 0; // server only: position inside the Cero cycle
+    private int ceroShots = 0;     // server only: beams fired in this rage, drives the damage ramp (saved in NBT)
+    private final Set<UUID> ceroHitThisShot = new HashSet<>(); // server only: players already hurt by the current beam
     // per-tick mirror of the synced aim (current and previous tick) for interpolation
     private float ceroYaw = 0.0F;
     private float ceroYawO = 0.0F;
@@ -202,6 +209,7 @@ public class IchigoVizard extends Monster {
         setStage(Stage.byId(pCompound.getInt("scol.stage")));
         setCero(Cero.byId(pCompound.getInt("scol.cero")));
         this.rageTriggered = pCompound.getBoolean("scol.rageTriggered");
+        this.ceroShots = pCompound.getInt("scol.ceroShots");
     }
 
     @Override
@@ -210,6 +218,7 @@ public class IchigoVizard extends Monster {
         pCompound.putInt("scol.stage", getStage().ordinal());
         pCompound.putInt("scol.cero", getCero().ordinal());
         pCompound.putBoolean("scol.rageTriggered", this.rageTriggered);
+        pCompound.putInt("scol.ceroShots", this.ceroShots);
     }
 
     @Override
@@ -287,14 +296,6 @@ public class IchigoVizard extends Monster {
             return false;
         }
 
-        if (this.random.nextFloat() > 0.66) {
-            if (source.getEntity() instanceof LivingEntity attacker) {
-                float returnDamage = (float) (damage * 0.75);
-                DamageSource returnSource = new DamageSource(source.typeHolder(), source.getEntity(), this, null);
-                attacker.hurt(returnSource, returnDamage);
-            }
-        }
-
         if (source.is(DamageTypes.IN_WALL)
                 || source.is(DamageTypes.ON_FIRE)
                 || source.is(DamageTypes.IN_FIRE)
@@ -331,6 +332,8 @@ public class IchigoVizard extends Monster {
         // rage and the Cero cycle
         this.rageTriggered = false;
         this.ceroStageTick = 0;
+        this.ceroShots = 0;
+        this.ceroHitThisShot.clear();
         this.ceroStartTick = this.tickCount;
         this.ceroYaw = this.ceroYawO = 0.0F;
         this.ceroPitch = this.ceroPitchO = 0.0F;
@@ -566,7 +569,15 @@ public class IchigoVizard extends Monster {
         return cero == Cero.LOCKED || cero == Cero.SHOT;
     }
 
-    /** Server: every survival player inside the beam cylinder dies, no exceptions. */
+    /** Damage of the current beam for this target: a growing share of its max health, lethal from the Nth shot on. */
+    private float ceroDamageFor(LivingEntity target) {
+        if (this.ceroShots >= CERO_SHOTS_TO_KILL) {
+            return Float.MAX_VALUE;
+        }
+        return target.getMaxHealth() * this.ceroShots / CERO_SHOTS_TO_KILL;
+    }
+
+    /** Server: hurts every survival player inside the beam cylinder, once per beam. */
     private void hitCeroTargets() {
         Vec3 from = this.getCeroOrigin(1.0F);
         Vec3 to = from.add(this.getCeroDirection(1.0F).scale(CERO_RANGE));
@@ -574,19 +585,23 @@ public class IchigoVizard extends Monster {
 
         for (Player player : this.level().getEntitiesOfClass(
                 Player.class, sweep, p -> p.isAlive() && !p.isSpectator() && !p.isCreative())) {
+            if (this.ceroHitThisShot.contains(player.getUUID())) {
+                continue; // this beam already got them
+            }
             // ray vs. the hitbox grown by the beam radius = cylinder vs. box, good enough here
             if (player.getBoundingBox().inflate(CERO_RADIUS).clip(from, to).isEmpty()) {
                 continue;
             }
+            this.ceroHitThisShot.add(player.getUUID());
 
-            // Ichigo's damage type first, so the death message and the kill credit are his.
-            // The hurt cooldown would otherwise swallow it when the player was hit hard in the last 10 ticks.
-            player.invulnerableTime = 0;
-            player.hurt(this.damageSources().source(ScolDamageTypes.ICHIGO, this), CERO_DAMAGE);
+            // scol:cero bypasses armor, effects, enchantments, resistance, shields, the hurt cooldown and
+            // invulnerability, so the share of max health lands as is and a totem does not save from the kill shot
+            float damage = ceroDamageFor(player);
+            player.invulnerableTime = 0; // belt and braces next to the bypasses_cooldown tag
+            player.hurt(this.damageSources().source(ScolDamageTypes.CERO, this), damage);
 
-            // a totem, absorption or another mod saved them: the Cero does not allow that. The totem leaves
-            // 20 ticks of cooldown with lastHurt = MAX_VALUE, so without the reset nothing could ever pass it.
-            if (player.isAlive()) {
+            // another mod intercepted the kill shot: the Cero does not allow that
+            if (damage == Float.MAX_VALUE && player.isAlive()) {
                 player.invulnerableTime = 0;
                 player.hurt(this.damageSources().genericKill(), Float.MAX_VALUE);
             }
@@ -658,6 +673,8 @@ public class IchigoVizard extends Monster {
                             this.entityData.set(CERO_LOCK, computeCeroLockTicks());
                             setCero(Cero.LOCKED);
                         } else if (this.ceroStageTick == shotStart) {
+                            this.ceroShots++;
+                            this.ceroHitThisShot.clear();
                             setCero(Cero.SHOT);
                         } else if (this.ceroStageTick == shotStart + CERO_SHOT_TICKS) {
                             setCero(Cero.PAUSE);

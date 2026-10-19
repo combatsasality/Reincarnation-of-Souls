@@ -83,6 +83,7 @@
   "enchantment.scol.soul_catcher.desc": "Increases the chance of getting a soul",
   "death.attack.frostmourne": "%1$s was killed by the Frostmourne player %2$s",
   "death.attack.ichigo": "I must admit, it never ceases to amaze me how brainless %1$s can be",
+  "death.attack.cero": "%1$s was erased by the Cero of %2$s",
   "key.categories.scol": "Reincarnation of Souls",
   "key.world_wing": "Switch the speed of the wings",
   "item.minecraft.potion.effect.hero_of_village": "Potion Of The Village Hero",

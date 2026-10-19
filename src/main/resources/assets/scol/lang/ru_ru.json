@@ -83,6 +83,7 @@
   "enchantment.scol.soul_catcher.desc": "Увеличивает шанс выпадения души",
   "death.attack.frostmourne": "%1$s был убит Ледяной Скорбью игрока %2$s",
   "death.attack.ichigo": "Я должен признать, что меня никогда не перестаёт удивлять каким безмозглым %1$s может быть",
+  "death.attack.cero": "%1$s был испепелён Серо %2$s",
   "key.categories.scol": "Reincarnation of Souls",
   "key.world_wing": "Переключить скорость крыльев",
   "item.minecraft.potion.effect.hero_of_village": "Зелье героя деревни",

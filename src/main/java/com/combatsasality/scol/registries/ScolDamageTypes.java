@@ -9,6 +9,8 @@ import net.minecraft.world.damagesource.DamageType;
 public class ScolDamageTypes {
     public static final ResourceKey<DamageType> FROSTMOURNE = register("frostmourne");
     public static final ResourceKey<DamageType> ICHIGO = register("ichigo");
+    // the Cero beam: bypasses armor, effects, enchantments, resistance, shields, invulnerability and the hurt cooldown
+    public static final ResourceKey<DamageType> CERO = register("cero");
 
     private static ResourceKey<DamageType> register(String name) {
         return ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(Main.MODID, name));
